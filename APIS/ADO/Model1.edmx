@@ -1,0 +1,662 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="A_ZULIA_12Model.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Usuarios">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Usuario" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Clave" Type="nvarchar" MaxLength="255" Nullable="false" />
+        </EntityType>
+        <EntityType Name="ZCotizacionNB">
+          <Key>
+            <PropertyRef Name="doc_num" />
+          </Key>
+          <Property Name="doc_num" Type="char" MaxLength="20" Nullable="false" />
+          <Property Name="co_cli" Type="char" MaxLength="16" Nullable="false" />
+          <Property Name="co_tran" Type="char" MaxLength="6" Nullable="false" />
+          <Property Name="tip_cli" Type="char" MaxLength="6" />
+          <Property Name="fec_emis" Type="smalldatetime" Nullable="false" />
+          <Property Name="total_bruto" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="monto_imp" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="total_neto" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+        </EntityType>
+        <EntityType Name="ZCotizacionRengNB">
+          <Key>
+            <PropertyRef Name="reng_num" />
+            <PropertyRef Name="doc_num" />
+          </Key>
+          <Property Name="reng_num" Type="int" Nullable="false" />
+          <Property Name="doc_num" Type="char" MaxLength="20" Nullable="false" />
+          <Property Name="co_art" Type="char" MaxLength="30" Nullable="false" />
+          <Property Name="total_art" Type="decimal" Precision="18" Scale="5" Nullable="false" />
+          <Property Name="prec_vta" Type="decimal" Precision="18" Scale="5" Nullable="false" />
+          <Property Name="tipo_imp" Type="int" Nullable="false" />
+          <Property Name="monto_imp" Type="decimal" Precision="18" Scale="5" Nullable="false" />
+          <Property Name="reng_neto" Type="decimal" Precision="18" Scale="5" Nullable="false" />
+        </EntityType>
+        <Function Name="buscarCliente1" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="consulta" Type="varchar" Mode="In" />
+        </Function>
+        <Function Name="buscarPedidosActivos" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="consulta" Type="nvarchar" Mode="In" />
+        </Function>
+        <Function Name="buscarPrecios" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="busqueda" Type="varchar" Mode="In" />
+        </Function>
+        <Function Name="buscarRengCC" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="consulta" Type="nvarchar" Mode="In" />
+        </Function>
+        <Function Name="buscarRengCP1" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="consulta" Type="nvarchar" Mode="In" />
+        </Function>
+        <Function Name="buscarRengPE2" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="consulta" Type="nvarchar" Mode="In" />
+        </Function>
+        <Function Name="buscarVendedor" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="consulta" Type="varchar" Mode="In" />
+        </Function>
+        <EntityContainer Name="A_ZULIA_12ModelStoreContainer">
+          <EntitySet Name="Usuarios" EntityType="Self.Usuarios" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ZCotizacionNB" EntityType="Self.ZCotizacionNB" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="ZCotizacionRengNB" EntityType="Self.ZCotizacionRengNB" Schema="dbo" store:Type="Tables" />
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="A_ZULIA_12Model" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityContainer Name="A_ZULIA_12Entities" annotation:LazyLoadingEnabled="true" >
+          <FunctionImport Name="buscarPorDocumCC" ReturnType="Collection(A_ZULIA_12Model.buscarPorDocumCC_Result)">
+            <Parameter Name="consulta" Mode="In" Type="String" />
+            <Parameter Name="cantidad" Mode="In" Type="Int32" />
+            <Parameter Name="usuario" Mode="In" Type="String" />
+          </FunctionImport>
+          <EntitySet Name="Usuarios" EntityType="A_ZULIA_12Model.Usuarios" />
+          <FunctionImport Name="buscarPorDocumCC1" ReturnType="Collection(A_ZULIA_12Model.buscarPorDocumCC1_Result)">
+            <Parameter Name="consulta" Mode="In" Type="String" />
+            <Parameter Name="cantidad" Mode="In" Type="Int32" />
+            <Parameter Name="usuario" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="buscarPorDocumCC11" ReturnType="Collection(A_ZULIA_12Model.buscarPorDocumCC11_Result)">
+            <Parameter Name="consulta" Mode="In" Type="String" />
+            <Parameter Name="cantidad" Mode="In" Type="Int32" />
+            <Parameter Name="usuario" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="buscarPrecios" ReturnType="Collection(A_ZULIA_12Model.buscarPrecios_Result)">
+          <Parameter Name="busqueda" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="buscarPorDocumCP" ReturnType="Collection(A_ZULIA_12Model.buscarPorDocumCP_Result)">
+            <Parameter Name="consulta" Mode="In" Type="String" />
+            <Parameter Name="cantidad" Mode="In" Type="Int32" />
+            <Parameter Name="usuario" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="BuscarCliente" ReturnType="Collection(A_ZULIA_12Model.BuscarCliente_Result)">
+            <Parameter Name="consulta" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="BuscarTransporte" ReturnType="Collection(A_ZULIA_12Model.BuscarTransporte_Result)">
+            <Parameter Name="consulta" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="buscarCliente1" ReturnType="Collection(A_ZULIA_12Model.buscarCliente1_Result)">
+          <Parameter Name="consulta" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="buscarPrecios1" ReturnType="Collection(A_ZULIA_12Model.buscarPrecios1_Result)">
+          <Parameter Name="busqueda" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="buscarVendedor" ReturnType="Collection(A_ZULIA_12Model.buscarVendedor_Result)">
+          <Parameter Name="consulta" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="buscarTransporte1" ReturnType="Collection(A_ZULIA_12Model.buscarTransporte1_Result)" />
+          <EntitySet Name="ZCotizacionRengNB" EntityType="A_ZULIA_12Model.ZCotizacionRengNB" />
+          <FunctionImport Name="buscarCliente11" ReturnType="Collection(A_ZULIA_12Model.buscarCliente11_Result)">
+          <Parameter Name="consulta" Mode="In" Type="String" />
+          </FunctionImport>
+          <EntitySet Name="ZCotizacionNB" EntityType="A_ZULIA_12Model.ZCotizacionNB" />
+          <FunctionImport Name="buscarRengCC" ReturnType="Collection(A_ZULIA_12Model.buscarRengCC_Result)">
+          <Parameter Name="consulta" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="buscarRengCP" ReturnType="Collection(A_ZULIA_12Model.buscarRengCP_Result)">
+            <Parameter Name="consulta" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="buscarRengCP1" ReturnType="Collection(A_ZULIA_12Model.buscarRengCP1_Result)">
+          <Parameter Name="consulta" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="buscarPedidosActivos" ReturnType="Collection(A_ZULIA_12Model.buscarPedidosActivos_Result)">
+          <Parameter Name="consulta" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="buscarRengPE" ReturnType="Collection(A_ZULIA_12Model.buscarRengPE_Result)">
+          <Parameter Name="consulta" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="buscarRengPE2" ReturnType="Collection(A_ZULIA_12Model.buscarRengPE2_Result)">
+            <Parameter Name="consulta" Mode="In" Type="String" />
+          </FunctionImport>
+        </EntityContainer>
+        <ComplexType Name="buscarPorDocumCC_Result">
+          <Property Type="String" Name="co_ven" Nullable="false" MaxLength="6" />
+          <Property Type="String" Name="co_cli" Nullable="false" MaxLength="16" />
+          <Property Type="String" Name="cli_des" Nullable="false" MaxLength="100" />
+          <Property Type="String" Name="co_tipo_doc" Nullable="false" MaxLength="6" />
+          <Property Type="String" Name="Doc" Nullable="false" MaxLength="6" />
+          <Property Type="String" Name="nro_doc" Nullable="false" MaxLength="20" />
+          <Property Type="String" Name="doc_orig" Nullable="true" MaxLength="6" />
+          <Property Type="DateTime" Name="fec_emis" Nullable="false" Precision="16" />
+          <Property Type="String" Name="fec_emis1" Nullable="true" MaxLength="4000" />
+          <Property Type="Int32" Name="Dias" Nullable="true" />
+          <Property Type="Decimal" Name="Ret25" Nullable="false" Precision="18" Scale="2" />
+          <Property Type="Decimal" Name="Ret75" Nullable="true" Precision="38" Scale="14" />
+          <Property Type="Decimal" Name="saldo" Nullable="true" Precision="38" Scale="12" />
+          <Property Type="Decimal" Name="saldo1" Nullable="true" Precision="38" Scale="14" />
+          <Property Type="Decimal" Name="monto_bru" Nullable="true" Precision="38" Scale="14" />
+          <Property Type="Decimal" Name="monto_net" Nullable="true" Precision="38" Scale="14" />
+          <Property Type="Decimal" Name="monto_imp" Nullable="true" Precision="38" Scale="14" />
+          <Property Type="Decimal" Name="IVA25" Nullable="true" Precision="38" Scale="14" />
+          <Property Type="Decimal" Name="IVA75" Nullable="true" Precision="38" Scale="12" />
+        </ComplexType>
+        <EntityType Name="Usuarios">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Usuario" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Clave" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
+        </EntityType>
+        <ComplexType Name="buscarPorDocumCC1_Result">
+          <Property Type="String" Name="co_ven" Nullable="false" MaxLength="6" />
+          <Property Type="String" Name="co_cli" Nullable="false" MaxLength="16" />
+          <Property Type="String" Name="cli_des" Nullable="false" MaxLength="100" />
+          <Property Type="String" Name="co_tipo_doc" Nullable="false" MaxLength="6" />
+          <Property Type="String" Name="Doc" Nullable="false" MaxLength="6" />
+          <Property Type="String" Name="nro_doc" Nullable="false" MaxLength="20" />
+          <Property Type="String" Name="doc_orig" Nullable="true" MaxLength="6" />
+          <Property Type="DateTime" Name="fec_emis" Nullable="false" Precision="16" />
+          <Property Type="String" Name="fec_emis1" Nullable="true" MaxLength="4000" />
+          <Property Type="Int32" Name="Dias" Nullable="true" />
+          <Property Type="Decimal" Name="saldo_moneda" Nullable="true" Precision="38" Scale="14" />
+          <Property Type="Decimal" Name="monto_bru" Nullable="true" Precision="38" Scale="14" />
+          <Property Type="Decimal" Name="monto_net" Nullable="true" Precision="38" Scale="14" />
+          <Property Type="Decimal" Name="monto_imp" Nullable="true" Precision="38" Scale="14" />
+          <Property Type="Decimal" Name="IVA25" Nullable="true" Precision="38" Scale="14" />
+          <Property Type="Decimal" Name="IVA75" Nullable="true" Precision="38" Scale="12" />
+          <Property Type="Decimal" Name="Ret25" Nullable="false" Precision="18" Scale="2" />
+          <Property Type="Decimal" Name="Ret75" Nullable="true" Precision="38" Scale="14" />
+          <Property Type="Decimal" Name="esperado_ret75" Nullable="true" Precision="38" Scale="12" />
+          <Property Type="Decimal" Name="monto_ret_imp_convertido" Nullable="false" Precision="38" Scale="17" />
+          <Property Type="String" Name="estado_retencion" Nullable="true" MaxLength="20" />
+        </ComplexType>
+        <ComplexType Name="buscarPorDocumCC11_Result">
+          <Property Type="String" Name="co_ven" Nullable="false" MaxLength="6" />
+          <Property Type="String" Name="co_cli" Nullable="false" MaxLength="16" />
+          <Property Type="String" Name="cli_des" Nullable="false" MaxLength="100" />
+          <Property Type="String" Name="co_tipo_doc" Nullable="false" MaxLength="6" />
+          <Property Type="String" Name="Doc" Nullable="false" MaxLength="6" />
+          <Property Type="String" Name="nro_doc" Nullable="false" MaxLength="20" />
+          <Property Type="String" Name="doc_orig" Nullable="true" MaxLength="6" />
+          <Property Type="DateTime" Name="fec_emis" Nullable="false" Precision="16" />
+          <Property Type="String" Name="fec_emis1" Nullable="true" MaxLength="4000" />
+          <Property Type="Int32" Name="Dias" Nullable="true" />
+          <Property Type="Decimal" Name="saldo_moneda" Nullable="true" Precision="38" Scale="14" />
+          <Property Type="Decimal" Name="monto_bru" Nullable="true" Precision="38" Scale="14" />
+          <Property Type="Decimal" Name="monto_net" Nullable="true" Precision="38" Scale="14" />
+          <Property Type="Decimal" Name="monto_imp" Nullable="true" Precision="38" Scale="14" />
+          <Property Type="Decimal" Name="IVA25" Nullable="true" Precision="38" Scale="14" />
+          <Property Type="Decimal" Name="IVA75" Nullable="true" Precision="38" Scale="12" />
+          <Property Type="Decimal" Name="Ret25" Nullable="false" Precision="18" Scale="2" />
+          <Property Type="Decimal" Name="Ret75" Nullable="true" Precision="38" Scale="14" />
+          <Property Type="Decimal" Name="esperado_ret75" Nullable="true" Precision="38" Scale="12" />
+          <Property Type="Decimal" Name="monto_ret_imp_convertido" Nullable="false" Precision="38" Scale="17" />
+          <Property Type="String" Name="estado_retencion" Nullable="true" MaxLength="20" />
+        </ComplexType>
+        <ComplexType Name="buscarPrecios_Result">
+          <Property Type="String" Name="co_art" Nullable="false" MaxLength="30" />
+          <Property Type="String" Name="art_des" Nullable="false" MaxLength="120" />
+          <Property Type="Decimal" Name="Precio1" Nullable="true" Precision="18" Scale="5" />
+          <Property Type="Decimal" Name="Precio2" Nullable="true" Precision="18" Scale="5" />
+          <Property Type="Decimal" Name="Precio3" Nullable="true" Precision="18" Scale="5" />
+          <Property Type="Decimal" Name="Precio4" Nullable="true" Precision="18" Scale="5" />
+          <Property Type="Decimal" Name="Precio5" Nullable="true" Precision="18" Scale="5" />
+        </ComplexType>
+        <ComplexType Name="buscarPorDocumCP_Result">
+          <Property Type="String" Name="co_prov" Nullable="false" MaxLength="16" />
+          <Property Type="String" Name="prov_des" Nullable="false" MaxLength="100" />
+          <Property Type="String" Name="co_tipo_doc" Nullable="false" MaxLength="6" />
+          <Property Type="String" Name="Doc" Nullable="false" MaxLength="6" />
+          <Property Type="String" Name="nro_doc" Nullable="false" MaxLength="20" />
+          <Property Type="String" Name="doc_orig" Nullable="true" MaxLength="6" />
+          <Property Type="DateTime" Name="fec_emis" Nullable="false" Precision="16" />
+          <Property Type="String" Name="fec_emis1" Nullable="true" MaxLength="4000" />
+          <Property Type="Int32" Name="Dias" Nullable="true" />
+          <Property Type="Decimal" Name="saldo" Nullable="true" Precision="38" Scale="14" />
+          <Property Type="Decimal" Name="monto_bru" Nullable="true" Precision="38" Scale="14" />
+          <Property Type="Decimal" Name="monto_net" Nullable="true" Precision="38" Scale="14" />
+          <Property Type="Decimal" Name="monto_imp" Nullable="true" Precision="38" Scale="14" />
+          <Property Type="Decimal" Name="IVA25" Nullable="true" Precision="38" Scale="14" />
+          <Property Type="Decimal" Name="IVA75" Nullable="true" Precision="38" Scale="12" />
+          <Property Type="Decimal" Name="Ret25" Nullable="false" Precision="18" Scale="2" />
+          <Property Type="Decimal" Name="Ret75" Nullable="true" Precision="38" Scale="14" />
+          <Property Type="Decimal" Name="esperado_ret75" Nullable="true" Precision="38" Scale="12" />
+          <Property Type="Decimal" Name="monto_ret_imp_convertido" Nullable="false" Precision="38" Scale="17" />
+          <Property Type="String" Name="estado_retencion" Nullable="true" MaxLength="4000" />
+        </ComplexType>
+        <ComplexType Name="BuscarCliente_Result">
+          <Property Type="String" Name="co_cli" Nullable="false" MaxLength="16" />
+          <Property Type="String" Name="tip_cli" Nullable="false" MaxLength="6" />
+          <Property Type="String" Name="cli_des" Nullable="false" MaxLength="100" />
+          <Property Type="String" Name="direc1" Nullable="true" />
+          <Property Type="String" Name="dir_ent2" Nullable="true" />
+          <Property Type="String" Name="direc2" Nullable="true" />
+          <Property Type="String" Name="telefonos" Nullable="true" MaxLength="60" />
+          <Property Type="String" Name="fax" Nullable="true" MaxLength="60" />
+          <Property Type="Boolean" Name="inactivo" Nullable="false" />
+          <Property Type="String" Name="comentario" Nullable="true" />
+          <Property Type="String" Name="respons" Nullable="true" MaxLength="60" />
+          <Property Type="DateTime" Name="fecha_reg" Nullable="false" Precision="16" />
+          <Property Type="Int32" Name="puntaje" Nullable="false" />
+          <Property Type="Decimal" Name="mont_cre" Nullable="false" Precision="18" Scale="2" />
+          <Property Type="String" Name="co_mone" Nullable="true" MaxLength="6" />
+          <Property Type="String" Name="cond_pag" Nullable="true" MaxLength="6" />
+          <Property Type="Int32" Name="plaz_pag" Nullable="false" />
+          <Property Type="Decimal" Name="desc_ppago" Nullable="false" Precision="18" Scale="2" />
+          <Property Type="String" Name="co_zon" Nullable="false" MaxLength="6" />
+          <Property Type="String" Name="co_seg" Nullable="false" MaxLength="6" />
+          <Property Type="String" Name="co_ven" Nullable="false" MaxLength="6" />
+          <Property Type="Decimal" Name="desc_glob" Nullable="false" Precision="18" Scale="2" />
+          <Property Type="String" Name="horar_caja" Nullable="true" MaxLength="60" />
+          <Property Type="String" Name="frecu_vist" Nullable="true" MaxLength="60" />
+          <Property Type="Boolean" Name="lunes" Nullable="false" />
+          <Property Type="Boolean" Name="martes" Nullable="false" />
+          <Property Type="Boolean" Name="miercoles" Nullable="false" />
+          <Property Type="Boolean" Name="jueves" Nullable="false" />
+          <Property Type="Boolean" Name="viernes" Nullable="false" />
+          <Property Type="Boolean" Name="sabado" Nullable="false" />
+          <Property Type="Boolean" Name="domingo" Nullable="false" />
+          <Property Type="String" Name="rif" Nullable="true" MaxLength="18" />
+          <Property Type="String" Name="nit" Nullable="true" MaxLength="18" />
+          <Property Type="Boolean" Name="contrib" Nullable="false" />
+          <Property Type="Int32" Name="numcom" Nullable="true" />
+          <Property Type="DateTime" Name="feccom" Nullable="true" Precision="16" />
+          <Property Type="String" Name="dis_cen" Nullable="true" MaxLength="Max" />
+          <Property Type="String" Name="email" Nullable="true" MaxLength="60" />
+          <Property Type="String" Name="co_cta_ingr_egr" Nullable="false" MaxLength="20" />
+          <Property Type="Boolean" Name="juridico" Nullable="false" />
+          <Property Type="Int32" Name="tipo_adi" Nullable="false" />
+          <Property Type="String" Name="matriz" Nullable="true" MaxLength="16" />
+          <Property Type="String" Name="co_tab" Nullable="true" MaxLength="20" />
+          <Property Type="String" Name="tipo_per" Nullable="true" MaxLength="1" />
+          <Property Type="Boolean" Name="valido" Nullable="false" />
+          <Property Type="String" Name="ciudad" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="zip" Nullable="true" MaxLength="10" />
+          <Property Type="String" Name="login" Nullable="true" MaxLength="10" />
+          <Property Type="String" Name="password" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="website" Nullable="true" MaxLength="200" />
+          <Property Type="Boolean" Name="sincredito" Nullable="false" />
+          <Property Type="Boolean" Name="contribu_e" Nullable="false" />
+          <Property Type="Boolean" Name="rete_regis_doc" Nullable="false" />
+          <Property Type="Decimal" Name="porc_esp" Nullable="false" Precision="18" Scale="2" />
+          <Property Type="String" Name="co_pais" Nullable="true" MaxLength="6" />
+          <Property Type="String" Name="serialp" Nullable="true" MaxLength="30" />
+          <Property Type="Int32" Name="Id" Nullable="false" />
+          <Property Type="String" Name="salestax" Nullable="true" MaxLength="8" />
+          <Property Type="String" Name="estado" Nullable="true" MaxLength="1" />
+          <Property Type="String" Name="campo1" Nullable="true" MaxLength="60" />
+          <Property Type="String" Name="campo2" Nullable="true" MaxLength="60" />
+          <Property Type="String" Name="campo3" Nullable="true" MaxLength="60" />
+          <Property Type="String" Name="campo4" Nullable="true" MaxLength="60" />
+          <Property Type="String" Name="campo5" Nullable="true" MaxLength="60" />
+          <Property Type="String" Name="campo6" Nullable="true" MaxLength="60" />
+          <Property Type="String" Name="campo7" Nullable="true" MaxLength="60" />
+          <Property Type="String" Name="campo8" Nullable="true" MaxLength="60" />
+          <Property Type="String" Name="co_us_in" Nullable="false" MaxLength="6" />
+          <Property Type="DateTime" Name="fe_us_in" Nullable="false" Precision="23" />
+          <Property Type="String" Name="co_sucu_in" Nullable="true" MaxLength="6" />
+          <Property Type="String" Name="co_us_mo" Nullable="false" MaxLength="6" />
+          <Property Type="DateTime" Name="fe_us_mo" Nullable="false" Precision="23" />
+          <Property Type="String" Name="co_sucu_mo" Nullable="true" MaxLength="6" />
+          <Property Type="String" Name="revisado" Nullable="true" MaxLength="1" />
+          <Property Type="String" Name="trasnfe" Nullable="true" MaxLength="1" />
+          <Property Type="Binary" Name="validador" Nullable="false" MaxLength="8" />
+          <Property Type="Guid" Name="rowguid" Nullable="false" />
+          <Property Type="String" Name="email_alterno" Nullable="true" MaxLength="120" />
+        </ComplexType>
+        <ComplexType Name="BuscarTransporte_Result">
+          <Property Type="String" Name="co_tran" Nullable="false" MaxLength="6" />
+          <Property Type="String" Name="des_tran" Nullable="false" MaxLength="60" />
+          <Property Type="String" Name="resp_tra" Nullable="true" MaxLength="60" />
+          <Property Type="Int32" Name="numcom" Nullable="true" />
+          <Property Type="DateTime" Name="feccom" Nullable="true" Precision="16" />
+          <Property Type="String" Name="dis_cen" Nullable="true" MaxLength="Max" />
+          <Property Type="String" Name="campo1" Nullable="true" MaxLength="60" />
+          <Property Type="String" Name="campo2" Nullable="true" MaxLength="60" />
+          <Property Type="String" Name="campo3" Nullable="true" MaxLength="60" />
+          <Property Type="String" Name="campo4" Nullable="true" MaxLength="60" />
+          <Property Type="String" Name="campo5" Nullable="true" MaxLength="60" />
+          <Property Type="String" Name="campo6" Nullable="true" MaxLength="60" />
+          <Property Type="String" Name="campo7" Nullable="true" MaxLength="60" />
+          <Property Type="String" Name="campo8" Nullable="true" MaxLength="60" />
+          <Property Type="String" Name="co_us_in" Nullable="false" MaxLength="6" />
+          <Property Type="String" Name="co_sucu_in" Nullable="true" MaxLength="6" />
+          <Property Type="DateTime" Name="fe_us_in" Nullable="false" Precision="23" />
+          <Property Type="String" Name="co_us_mo" Nullable="false" MaxLength="6" />
+          <Property Type="String" Name="co_sucu_mo" Nullable="true" MaxLength="6" />
+          <Property Type="DateTime" Name="fe_us_mo" Nullable="false" Precision="23" />
+          <Property Type="String" Name="revisado" Nullable="true" MaxLength="1" />
+          <Property Type="String" Name="trasnfe" Nullable="true" MaxLength="1" />
+          <Property Type="Binary" Name="validador" Nullable="false" MaxLength="8" />
+          <Property Type="Guid" Name="rowguid" Nullable="false" />
+        </ComplexType>
+        <ComplexType Name="buscarCliente1_Result">
+          <Property Type="String" Name="co_cli" Nullable="false" MaxLength="16" />
+          <Property Type="String" Name="cli_des" Nullable="false" MaxLength="100" />
+          <Property Type="String" Name="co_ven" Nullable="false" MaxLength="6" />
+        </ComplexType>
+        <ComplexType Name="buscarPrecios1_Result">
+          <Property Type="String" Name="co_art" Nullable="false" MaxLength="30" />
+          <Property Type="String" Name="art_des" Nullable="false" MaxLength="120" />
+          <Property Type="Decimal" Name="Precio1" Nullable="true" Precision="18" Scale="5" />
+          <Property Type="Decimal" Name="Precio2" Nullable="true" Precision="18" Scale="5" />
+          <Property Type="Decimal" Name="Precio3" Nullable="true" Precision="18" Scale="5" />
+          <Property Type="Decimal" Name="Precio4" Nullable="true" Precision="18" Scale="5" />
+          <Property Type="Decimal" Name="Precio5" Nullable="true" Precision="18" Scale="5" />
+        </ComplexType>
+        <ComplexType Name="buscarVendedor_Result">
+          <Property Type="String" Name="co_ven" Nullable="false" MaxLength="6" />
+          <Property Type="String" Name="ven_des" Nullable="true" MaxLength="60" />
+        </ComplexType>
+        <ComplexType Name="buscarTransporte1_Result">
+          <Property Type="String" Name="co_tran" Nullable="false" MaxLength="6" />
+          <Property Type="String" Name="des_tran" Nullable="false" MaxLength="60" />
+        </ComplexType>
+        <EntityType Name="ZCotizacionRengNB">
+          <Key>
+            <PropertyRef Name="reng_num" />
+            <PropertyRef Name="doc_num" />
+          </Key>
+          <Property Name="reng_num" Type="Int32" Nullable="false" />
+          <Property Name="doc_num" Type="String" Nullable="false" MaxLength="20" FixedLength="true" Unicode="false" />
+          <Property Name="co_art" Type="String" Nullable="false" MaxLength="30" FixedLength="true" Unicode="false" />
+          <Property Name="total_art" Type="Decimal" Nullable="false" Precision="18" Scale="5" />
+          <Property Name="prec_vta" Type="Decimal" Nullable="false" Precision="18" Scale="5" />
+          <Property Name="tipo_imp" Type="Int32" Nullable="false" />
+          <Property Name="monto_imp" Type="Decimal" Nullable="false" Precision="18" Scale="5" />
+          <Property Name="reng_neto" Type="Decimal" Nullable="false" Precision="18" Scale="5" />
+        </EntityType>
+        <ComplexType Name="buscarCliente11_Result">
+          <Property Type="String" Name="co_cli" Nullable="false" MaxLength="16" />
+          <Property Type="String" Name="tip_cli" Nullable="false" MaxLength="6" />
+          <Property Type="String" Name="cli_des" Nullable="false" MaxLength="100" />
+          <Property Type="String" Name="co_ven" Nullable="false" MaxLength="6" />
+        </ComplexType>
+        <EntityType Name="ZCotizacionNB">
+          <Key>
+            <PropertyRef Name="doc_num" />
+          </Key>
+          <Property Name="doc_num" Type="String" Nullable="false" MaxLength="20" FixedLength="true" Unicode="false" />
+          <Property Name="co_cli" Type="String" Nullable="false" MaxLength="16" FixedLength="true" Unicode="false" />
+          <Property Name="co_tran" Type="String" Nullable="false" MaxLength="6" FixedLength="true" Unicode="false" />
+          <Property Name="tip_cli" Type="String" MaxLength="6" FixedLength="true" Unicode="false" />
+          <Property Name="fec_emis" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="total_bruto" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
+          <Property Name="monto_imp" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
+          <Property Name="total_neto" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
+        </EntityType>
+        <ComplexType Name="buscarRengCC_Result">
+          <Property Type="String" Name="nro_doc" Nullable="true" MaxLength="20" />
+          <Property Type="String" Name="co_tipo_doc" Nullable="false" MaxLength="6" />
+          <Property Type="String" Name="co_cli" Nullable="false" MaxLength="16" />
+          <Property Type="Int32" Name="reng_num" Nullable="false" />
+          <Property Type="String" Name="doc_num" Nullable="false" MaxLength="20" />
+          <Property Type="String" Name="co_art" Nullable="false" MaxLength="30" />
+          <Property Type="String" Name="art_des" Nullable="false" MaxLength="120" />
+          <Property Type="Decimal" Name="total_art" Nullable="false" Precision="18" Scale="5" />
+          <Property Type="Decimal" Name="prec_vta" Nullable="false" Precision="18" Scale="5" />
+          <Property Type="String" Name="tipo_imp" Nullable="false" MaxLength="1" />
+          <Property Type="Decimal" Name="monto_imp" Nullable="false" Precision="18" Scale="5" />
+          <Property Type="Decimal" Name="reng_neto" Nullable="false" Precision="18" Scale="2" />
+          <Property Type="String" Name="origen" Nullable="false" MaxLength="4" />
+        </ComplexType>
+        <ComplexType Name="buscarRengCP_Result">
+          <Property Type="String" Name="nro_doc" Nullable="true" MaxLength="20" />
+          <Property Type="String" Name="A" Nullable="true" MaxLength="20" />
+          <Property Type="String" Name="co_tipo_doc" Nullable="false" MaxLength="6" />
+          <Property Type="String" Name="co_prov" Nullable="false" MaxLength="16" />
+          <Property Type="Int32" Name="reng_num" Nullable="false" />
+          <Property Type="String" Name="doc_num" Nullable="false" MaxLength="20" />
+          <Property Type="String" Name="co_art" Nullable="false" MaxLength="30" />
+          <Property Type="String" Name="art_des" Nullable="false" MaxLength="120" />
+          <Property Type="Decimal" Name="total_art" Nullable="false" Precision="18" Scale="5" />
+          <Property Type="Decimal" Name="prec_vta" Nullable="false" Precision="18" Scale="5" />
+          <Property Type="String" Name="tipo_imp" Nullable="false" MaxLength="1" />
+          <Property Type="Decimal" Name="monto_imp" Nullable="false" Precision="18" Scale="5" />
+          <Property Type="Decimal" Name="reng_neto" Nullable="false" Precision="18" Scale="2" />
+          <Property Type="String" Name="origen" Nullable="false" MaxLength="4" />
+        </ComplexType>
+        <ComplexType Name="buscarRengCP1_Result">
+          <Property Type="String" Name="nro_doc" Nullable="true" MaxLength="20" />
+          <Property Type="String" Name="A" Nullable="true" MaxLength="20" />
+          <Property Type="String" Name="co_tipo_doc" Nullable="false" MaxLength="6" />
+          <Property Type="String" Name="co_prov" Nullable="false" MaxLength="16" />
+          <Property Type="Decimal" Name="tasa" Nullable="false" Precision="21" Scale="8" />
+          <Property Type="Int32" Name="reng_num" Nullable="false" />
+          <Property Type="String" Name="doc_num" Nullable="false" MaxLength="20" />
+          <Property Type="String" Name="co_art" Nullable="false" MaxLength="30" />
+          <Property Type="String" Name="art_des" Nullable="false" MaxLength="120" />
+          <Property Type="Decimal" Name="total_art" Nullable="false" Precision="18" Scale="5" />
+          <Property Type="Decimal" Name="prec_vta" Nullable="false" Precision="18" Scale="5" />
+          <Property Type="String" Name="tipo_imp" Nullable="false" MaxLength="1" />
+          <Property Type="Decimal" Name="monto_imp" Nullable="false" Precision="18" Scale="5" />
+          <Property Type="Decimal" Name="reng_neto" Nullable="false" Precision="18" Scale="2" />
+          <Property Type="String" Name="origen" Nullable="false" MaxLength="4" />
+        </ComplexType>
+        <ComplexType Name="buscarPedidosActivos_Result">
+          <Property Type="String" Name="doc_num" Nullable="false" MaxLength="20" />
+          <Property Type="String" Name="co_cli" Nullable="false" MaxLength="16" />
+          <Property Type="String" Name="cli_des" Nullable="false" MaxLength="100" />
+          <Property Type="DateTime" Name="fec_emis" Nullable="false" Precision="16" />
+          <Property Type="Boolean" Name="anulado" Nullable="false" />
+          <Property Type="String" Name="status" Nullable="true" MaxLength="1" />
+          <Property Type="Decimal" Name="tasa" Nullable="false" Precision="21" Scale="8" />
+          <Property Type="Decimal" Name="total_bruto" Nullable="false" Precision="18" Scale="2" />
+          <Property Type="Decimal" Name="monto_imp" Nullable="false" Precision="18" Scale="2" />
+          <Property Type="Decimal" Name="total_neto" Nullable="false" Precision="18" Scale="2" />
+          <Property Type="Decimal" Name="saldo" Nullable="false" Precision="18" Scale="2" />
+        </ComplexType>
+        <ComplexType Name="buscarRengPE_Result">
+          <Property Type="String" Name="doc_num" Nullable="false" MaxLength="20" />
+          <Property Type="String" Name="co_cli" Nullable="false" MaxLength="16" />
+          <Property Type="Decimal" Name="tasa" Nullable="false" Precision="21" Scale="8" />
+          <Property Type="Int32" Name="reng_num" Nullable="false" />
+          <Property Type="String" Name="co_art" Nullable="false" MaxLength="30" />
+          <Property Type="String" Name="art_des" Nullable="false" MaxLength="120" />
+          <Property Type="Decimal" Name="total_art" Nullable="false" Precision="18" Scale="5" />
+          <Property Type="Decimal" Name="prec_vta" Nullable="false" Precision="18" Scale="5" />
+          <Property Type="String" Name="tipo_imp" Nullable="false" MaxLength="1" />
+          <Property Type="Decimal" Name="monto_imp" Nullable="false" Precision="18" Scale="5" />
+          <Property Type="Decimal" Name="reng_neto" Nullable="false" Precision="18" Scale="2" />
+        </ComplexType>
+        <ComplexType Name="buscarRengPE2_Result">
+          <Property Type="String" Name="doc_num" Nullable="true" MaxLength="10" />
+          <Property Type="String" Name="co_cli" Nullable="false" MaxLength="16" />
+          <Property Type="Decimal" Name="tasa" Nullable="false" Precision="21" Scale="8" />
+          <Property Type="Int32" Name="reng_num" Nullable="false" />
+          <Property Type="String" Name="co_art" Nullable="false" MaxLength="30" />
+          <Property Type="String" Name="art_des" Nullable="false" MaxLength="120" />
+          <Property Type="Decimal" Name="total_art" Nullable="false" Precision="18" Scale="5" />
+          <Property Type="Decimal" Name="prec_vta" Nullable="false" Precision="18" Scale="5" />
+          <Property Type="String" Name="tipo_imp" Nullable="false" MaxLength="1" />
+          <Property Type="Decimal" Name="monto_imp" Nullable="false" Precision="18" Scale="5" />
+          <Property Type="Decimal" Name="reng_neto" Nullable="false" Precision="18" Scale="2" />
+        </ComplexType>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+    <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+  <EntityContainerMapping StorageEntityContainer="A_ZULIA_12ModelStoreContainer" CdmEntityContainer="A_ZULIA_12Entities">
+    <EntitySetMapping Name="Usuarios">
+      <EntityTypeMapping TypeName="IsTypeOf(A_ZULIA_12Model.Usuarios)">
+        <MappingFragment StoreEntitySet="Usuarios">
+          <ScalarProperty Name="Id" ColumnName="Id" />
+          <ScalarProperty Name="Usuario" ColumnName="Usuario" />
+          <ScalarProperty Name="Clave" ColumnName="Clave" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="buscarPrecios1" FunctionName="A_ZULIA_12Model.Store.buscarPrecios">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="A_ZULIA_12Model.buscarPrecios1_Result">
+                <ScalarProperty Name="co_art" ColumnName="co_art" />
+                <ScalarProperty Name="art_des" ColumnName="art_des" />
+                <ScalarProperty Name="Precio1" ColumnName="Precio1" />
+                <ScalarProperty Name="Precio2" ColumnName="Precio2" />
+                <ScalarProperty Name="Precio3" ColumnName="Precio3" />
+                <ScalarProperty Name="Precio4" ColumnName="Precio4" />
+                <ScalarProperty Name="Precio5" ColumnName="Precio5" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="buscarVendedor" FunctionName="A_ZULIA_12Model.Store.buscarVendedor">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="A_ZULIA_12Model.buscarVendedor_Result">
+                <ScalarProperty Name="co_ven" ColumnName="co_ven" />
+                <ScalarProperty Name="ven_des" ColumnName="ven_des" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <EntitySetMapping Name="ZCotizacionRengNB">
+            <EntityTypeMapping TypeName="A_ZULIA_12Model.ZCotizacionRengNB">
+              <MappingFragment StoreEntitySet="ZCotizacionRengNB">
+                <ScalarProperty Name="reng_neto" ColumnName="reng_neto" />
+                <ScalarProperty Name="monto_imp" ColumnName="monto_imp" />
+                <ScalarProperty Name="tipo_imp" ColumnName="tipo_imp" />
+                <ScalarProperty Name="prec_vta" ColumnName="prec_vta" />
+                <ScalarProperty Name="total_art" ColumnName="total_art" />
+                <ScalarProperty Name="co_art" ColumnName="co_art" />
+                <ScalarProperty Name="doc_num" ColumnName="doc_num" />
+                <ScalarProperty Name="reng_num" ColumnName="reng_num" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="buscarCliente11" FunctionName="A_ZULIA_12Model.Store.buscarCliente1">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="A_ZULIA_12Model.buscarCliente11_Result">
+                <ScalarProperty Name="co_cli" ColumnName="co_cli" />
+                <ScalarProperty Name="tip_cli" ColumnName="tip_cli" />
+                <ScalarProperty Name="cli_des" ColumnName="cli_des" />
+                <ScalarProperty Name="co_ven" ColumnName="co_ven" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <EntitySetMapping Name="ZCotizacionNB">
+            <EntityTypeMapping TypeName="A_ZULIA_12Model.ZCotizacionNB">
+              <MappingFragment StoreEntitySet="ZCotizacionNB">
+                <ScalarProperty Name="total_neto" ColumnName="total_neto" />
+                <ScalarProperty Name="monto_imp" ColumnName="monto_imp" />
+                <ScalarProperty Name="total_bruto" ColumnName="total_bruto" />
+                <ScalarProperty Name="fec_emis" ColumnName="fec_emis" />
+                <ScalarProperty Name="tip_cli" ColumnName="tip_cli" />
+                <ScalarProperty Name="co_tran" ColumnName="co_tran" />
+                <ScalarProperty Name="co_cli" ColumnName="co_cli" />
+                <ScalarProperty Name="doc_num" ColumnName="doc_num" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="buscarRengCC" FunctionName="A_ZULIA_12Model.Store.buscarRengCC">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="A_ZULIA_12Model.buscarRengCC_Result">
+                <ScalarProperty Name="nro_doc" ColumnName="nro_doc" />
+                <ScalarProperty Name="co_tipo_doc" ColumnName="co_tipo_doc" />
+                <ScalarProperty Name="co_cli" ColumnName="co_cli" />
+                <ScalarProperty Name="reng_num" ColumnName="reng_num" />
+                <ScalarProperty Name="doc_num" ColumnName="doc_num" />
+                <ScalarProperty Name="co_art" ColumnName="co_art" />
+                <ScalarProperty Name="art_des" ColumnName="art_des" />
+                <ScalarProperty Name="total_art" ColumnName="total_art" />
+                <ScalarProperty Name="prec_vta" ColumnName="prec_vta" />
+                <ScalarProperty Name="tipo_imp" ColumnName="tipo_imp" />
+                <ScalarProperty Name="monto_imp" ColumnName="monto_imp" />
+                <ScalarProperty Name="reng_neto" ColumnName="reng_neto" />
+                <ScalarProperty Name="origen" ColumnName="origen" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="buscarRengCP1" FunctionName="A_ZULIA_12Model.Store.buscarRengCP1">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="A_ZULIA_12Model.buscarRengCP1_Result">
+                <ScalarProperty Name="nro_doc" ColumnName="nro_doc" />
+                <ScalarProperty Name="A" ColumnName="A" />
+                <ScalarProperty Name="co_tipo_doc" ColumnName="co_tipo_doc" />
+                <ScalarProperty Name="co_prov" ColumnName="co_prov" />
+                <ScalarProperty Name="tasa" ColumnName="tasa" />
+                <ScalarProperty Name="reng_num" ColumnName="reng_num" />
+                <ScalarProperty Name="doc_num" ColumnName="doc_num" />
+                <ScalarProperty Name="co_art" ColumnName="co_art" />
+                <ScalarProperty Name="art_des" ColumnName="art_des" />
+                <ScalarProperty Name="total_art" ColumnName="total_art" />
+                <ScalarProperty Name="prec_vta" ColumnName="prec_vta" />
+                <ScalarProperty Name="tipo_imp" ColumnName="tipo_imp" />
+                <ScalarProperty Name="monto_imp" ColumnName="monto_imp" />
+                <ScalarProperty Name="reng_neto" ColumnName="reng_neto" />
+                <ScalarProperty Name="origen" ColumnName="origen" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="buscarPedidosActivos" FunctionName="A_ZULIA_12Model.Store.buscarPedidosActivos">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="A_ZULIA_12Model.buscarPedidosActivos_Result">
+                <ScalarProperty Name="doc_num" ColumnName="doc_num" />
+                <ScalarProperty Name="co_cli" ColumnName="co_cli" />
+                <ScalarProperty Name="cli_des" ColumnName="cli_des" />
+                <ScalarProperty Name="fec_emis" ColumnName="fec_emis" />
+                <ScalarProperty Name="anulado" ColumnName="anulado" />
+                <ScalarProperty Name="status" ColumnName="status" />
+                <ScalarProperty Name="tasa" ColumnName="tasa" />
+                <ScalarProperty Name="total_bruto" ColumnName="total_bruto" />
+                <ScalarProperty Name="monto_imp" ColumnName="monto_imp" />
+                <ScalarProperty Name="total_neto" ColumnName="total_neto" />
+                <ScalarProperty Name="saldo" ColumnName="saldo" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="buscarRengPE2" FunctionName="A_ZULIA_12Model.Store.buscarRengPE2">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="A_ZULIA_12Model.buscarRengPE2_Result">
+                <ScalarProperty Name="doc_num" ColumnName="doc_num" />
+                <ScalarProperty Name="co_cli" ColumnName="co_cli" />
+                <ScalarProperty Name="tasa" ColumnName="tasa" />
+                <ScalarProperty Name="reng_num" ColumnName="reng_num" />
+                <ScalarProperty Name="co_art" ColumnName="co_art" />
+                <ScalarProperty Name="art_des" ColumnName="art_des" />
+                <ScalarProperty Name="total_art" ColumnName="total_art" />
+                <ScalarProperty Name="prec_vta" ColumnName="prec_vta" />
+                <ScalarProperty Name="tipo_imp" ColumnName="tipo_imp" />
+                <ScalarProperty Name="monto_imp" ColumnName="monto_imp" />
+                <ScalarProperty Name="reng_neto" ColumnName="reng_neto" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          </EntityContainerMapping>
+</Mapping></edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="false" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="False" />
+        <DesignerProperty Name="UseLegacyProvider" Value="True" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="Ninguno" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

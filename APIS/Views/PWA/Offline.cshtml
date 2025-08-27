@@ -1,0 +1,162 @@
+@{
+    ViewBag.Title = "Sin Conexión - APIS";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>@ViewBag.Title</title>
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/Content/mobile.css" rel="stylesheet" />
+    <style>
+        .offline-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .offline-card {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 400px;
+            width: 100%;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+        
+        .offline-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.8;
+        }
+        
+        .offline-title {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        
+        .offline-message {
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+            opacity: 0.9;
+            line-height: 1.6;
+        }
+        
+        .retry-btn {
+            background: rgba(255,255,255,0.2);
+            border: 2px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .retry-btn:hover {
+            background: rgba(255,255,255,0.3);
+            border-color: rgba(255,255,255,0.5);
+            transform: translateY(-2px);
+        }
+        
+        .offline-features {
+            margin-top: 30px;
+            text-align: left;
+        }
+        
+        .offline-features h4 {
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+        
+        .offline-features ul {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .offline-features li {
+            padding: 8px 0;
+            opacity: 0.8;
+        }
+        
+        .offline-features li:before {
+            content: "✓";
+            color: #4CAF50;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="offline-container">
+        <div class="offline-card">
+            <div class="offline-icon">📱</div>
+            <h1 class="offline-title">Sin Conexión</h1>
+            <p class="offline-message">
+                No tienes conexión a internet en este momento. 
+                Algunas funcionalidades pueden no estar disponibles.
+            </p>
+            
+            <button class="retry-btn" onclick="checkConnection()">
+                🔄 Reintentar Conexión
+            </button>
+            
+            <div class="offline-features">
+                <h4>Funcionalidades Disponibles Offline:</h4>
+                <ul>
+                    <li>Navegación básica de la aplicación</li>
+                    <li>Datos en caché recientes</li>
+                    <li>Formularios guardados localmente</li>
+                    <li>Configuración de la aplicación</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function checkConnection() {
+            const btn = document.querySelector('.retry-btn');
+            btn.innerHTML = '🔄 Verificando...';
+            btn.disabled = true;
+            
+            // Simular verificación de conexión
+            setTimeout(() => {
+                if (navigator.onLine) {
+                    window.location.reload();
+                } else {
+                    btn.innerHTML = '❌ Sin Conexión';
+                    btn.style.background = 'rgba(244,67,54,0.2)';
+                    btn.style.borderColor = 'rgba(244,67,54,0.3)';
+                    
+                    setTimeout(() => {
+                        btn.innerHTML = '🔄 Reintentar Conexión';
+                        btn.style.background = 'rgba(255,255,255,0.2)';
+                        btn.style.borderColor = 'rgba(255,255,255,0.3)';
+                        btn.disabled = false;
+                    }, 2000);
+                }
+            }, 1500);
+        }
+        
+        // Detectar cuando se recupera la conexión
+        window.addEventListener('online', function() {
+            window.location.reload();
+        });
+        
+        // Detectar cuando se pierde la conexión
+        window.addEventListener('offline', function() {
+            // Ya estamos en la página offline
+        });
+    </script>
+</body>
+</html>

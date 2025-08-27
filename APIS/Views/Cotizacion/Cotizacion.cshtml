@@ -1,0 +1,1154 @@
+@{
+    ViewBag.Title = "Cotizacion";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    body {
+        background: #f8f9fa;
+        font-family: 'Segoe UI', Arial, sans-serif;
+        color: #222;
+    }
+
+    h2 {
+        font-size: 20px;
+        color: #1565c0;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 24px;
+        text-align: left;
+    }
+
+    .card {
+        background: #fff;
+        border-radius: 10px;
+        border: 1px solid #ececec;
+        box-shadow: none;
+        margin-bottom: 24px;
+    }
+
+    .card-header {
+        background: none;
+        color: #1565c0;
+        font-weight: 600;
+        font-size: 16px;
+        border-bottom: 1px solid #ececec;
+        padding: 16px 20px 8px 20px;
+    }
+
+    .card-body {
+        padding: 20px;
+    }
+
+    .form-label {
+        color: #1565c0;
+        font-weight: 500;
+        font-size: 14px;
+        margin-bottom: 4px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .form-control {
+        border: 1px solid #e0e0e0;
+        border-radius: 6px;
+        padding: 10px 14px;
+        font-size: 15px;
+        background: #fff;
+        color: #222;
+        box-shadow: none;
+        transition: border-color 0.2s;
+    }
+
+        .form-control:focus {
+            border-color: #1565c0;
+            outline: none;
+        }
+
+    .btn {
+        border-radius: 6px;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        padding: 10px 20px;
+        background: #1565c0;
+        color: #fff;
+        border: none;
+        box-shadow: none;
+        transition: background 0.2s;
+    }
+
+        .btn:hover {
+            background: #0d47a1;
+        }
+
+    .table {
+        width: 100%;
+        border-collapse: collapse;
+        background: #fff;
+        font-size: 15px;
+    }
+
+        .table thead th {
+            background: #f4f6fb;
+            color: #1565c0;
+            font-weight: 600;
+            border-bottom: 1px solid #ececec;
+            padding: 10px 6px;
+            text-align: left;
+        }
+
+        .table tbody td {
+            border-bottom: 1px solid #f0f0f0;
+            padding: 10px 6px;
+        }
+
+        .table tbody tr:hover {
+            background: #f0f4fa;
+        }
+
+    .input-group {
+        display: flex;
+        gap: 8px;
+    }
+
+        .input-group .form-control {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .input-group .btn {
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+    #clienteSeleccionado, #searchArticulo {
+        font-size: 15px;
+        font-weight: 500;
+        background: #f8f9fa;
+        border: 1px solid #e0e0e0;
+        color: #1565c0;
+        border-radius: 6px;
+        box-shadow: none;
+        width: 100%;
+        min-width: 100%;
+        white-space: nowrap;
+        overflow-x: auto;
+        text-overflow: ellipsis;
+    }
+
+    #codigo, #vendedor, #Transporte {
+        font-size: 15px;
+        font-weight: 500;
+        background: #f8f9fa;
+        border: 1px solid #e0e0e0;
+        color: #1565c0;
+        border-radius: 6px;
+        box-shadow: none;
+        width: 50%;
+        min-width: 0;
+        white-space: nowrap;
+        overflow-x: auto;
+        text-overflow: ellipsis;
+    }
+
+    #codigoArticulo {
+        width: 75px;
+        min-width: 50px;
+        max-width: 100%;
+    }
+
+    #descripcionArticulo {
+        width: 600px;
+        min-width: 50px;
+        max-width: 100%;
+    }
+
+    #ivaArticulo {
+        width: 70px;
+        min-width: 50px;
+        max-width: 100%;
+    }
+
+    #precio1Articulo {
+        width: 90px;
+        min-width: 50px;
+        max-width: 100%;
+    }
+
+
+
+    /*configurara colores de tarjetas*/
+    .resaltado-cotizacion {
+        background: #e3f2fd;
+        border: 2px solid #1565c0;
+        box-shadow: 0 2px 8px rgba(21, 101, 192, 0.08);
+    }
+
+    .busqueda-articulos {
+        background: #e3f2fd;
+        border: 2px solid #1565c0;
+        box-shadow: 0 2px 8px rgba(21, 101, 192, 0.08);
+    }
+
+    .resaltado-cliente {
+        background: #e3f2fd;
+        border: 2px solid #1565c0;
+        box-shadow: 0 2px 8px rgba(21, 101, 192, 0.08);
+    }
+
+    /* NUEVO: Clases para resaltar selección */
+    .resaltado-seleccion {
+        border: 2px solid #00bcd4 !important;
+        background: #e0f7fa !important;
+        transition: border 0.3s, background 0.3s;
+    }
+
+    .resaltado-transporte {
+        border: 2px solid #ff9800 !important;
+        background: #fff3e0 !important;
+        transition: border 0.3s, background 0.3s;
+    }
+
+    .completado {
+        border: 2px solid #4caf50 !important;
+        background: #e8f5e9 !important;
+        transition: border 0.3s, background 0.3s;
+    }
+
+    /* Asegura que el input-group y el botón se vean bien en todos los tamaños */
+    .input-group {
+        width: 100%;
+    }
+
+    #btnLimpiarCliente {
+        min-width: 90px;
+        height: 48px;
+        margin-left: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* Estilo para resaltar los resultados de búsqueda de clientes */
+    #tablaClientesContainer table {
+        background: #fffbe7;
+        border: 1.5px solid #ffe082;
+    }
+
+    #tablaClientesContainer tbody tr {
+        background: #fffbe7;
+        transition: background 0.2s;
+    }
+
+        #tablaClientesContainer tbody tr:hover {
+            background: #ffe082;
+        }
+
+    /* Estilo para resaltar los resultados de búsqueda de artículos */
+    #tablaArticulosContainer table {
+        background: #e7f7ff;
+        border: 1.5px solid #82cfff;
+    }
+
+    #tablaArticulosContainer tbody tr {
+        background: #e7f7ff;
+        transition: background 0.2s;
+    }
+
+        #tablaArticulosContainer tbody tr:hover {
+            background: #b3e5fc;
+        }
+
+    /* Estilos para móvil - Mejoras implementadas */
+    @@media (max-width: 768px) {
+        /* Aumentar tamaño de botones para mejor interacción táctil */
+        .btn {
+            min-height: 50px;
+            padding: 12px 24px;
+            font-size: 1.1em;
+            border-radius: 8px;
+        }
+        /* Aumentar tamaño de campos de entrada */
+        .form-control {
+            min-height: 50px;
+            padding: 14px 18px;
+            font-size: 16px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+        /* Mejorar espaciado general */
+        .input-group {
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+        /* Aumentar tamaño de iconos */
+        .fas {
+            font-size: 1.4em;
+        }
+        /* Mejorar visibilidad de estados de resaltado */
+        .resaltado-seleccion, .resaltado-transporte {
+            padding: 16px;
+            margin-bottom: 12px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        /* Mejorar tabla en modo móvil */
+        .table-responsive {
+            overflow-x: auto;
+            margin: 12px 0;
+            border-radius: 8px;
+            background: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .table {
+            font-size: 14px;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+            .table thead th,
+            .table tbody td {
+                padding: 12px 8px;
+                min-width: 100px;
+            }
+        /* Ajustes específicos para botón de limpiar cliente */
+        #btnLimpiarCliente {
+            width: 60px !important;
+            min-width: 50px !important;
+            max-width: 60px !important;
+            height: 60px !important;
+            font-size: 1.8rem !important;
+            border-radius: 50% !important;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        /* Mejorar campos de búsqueda */
+        #searchArticulo {
+            font-size: 18px;
+            padding: 16px 20px;
+            width: 100%;
+            margin-bottom: 15px;
+        }
+        /* Ajustes para la tabla de resultados */
+        #tablaArticulosContainer table {
+            border-radius: 8px;
+            overflow: hidden;
+            width: 100%;
+        }
+
+        #tablaArticulosContainer tbody tr {
+            transition: all 0.3s ease;
+        }
+
+            #tablaArticulosContainer tbody tr:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            }
+        /* Mejoras en la estructura de la página */
+        .container-fluid {
+            padding: 10px;
+        }
+
+        .card {
+            margin-bottom: 15px !important;
+        }
+        /* Optimizar espaciado de títulos */
+        h2 {
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+        /* Ajustes para formularios */
+        .form-group {
+            margin-bottom: 15px;
+        }
+        /* Mejorar interacción táctil */
+        .form-control:focus {
+            background-color: #1565c0 !important; /* Azul corporativo */
+            border-color: #1565c0 !important;
+            color: #fff !important;
+            border-color: #1565c0;
+            box-shadow: 0 0 0 0.2rem rgba(21, 101, 192, 0.25);
+        }
+        /* Ajustes para botones de acción */
+        .btn-primary {
+            background-color: #1565c0 !important; /* Azul corporativo */
+            border-color: #1565c0 !important;
+            color: #fff !important;
+            padding: 12px 20px;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+        /* Optimizar menús desplegables */
+        .dropdown-menu {
+            min-width: 200px;
+            padding: 8px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+
+        .dropdown-item {
+            padding: 8px 16px;
+            font-size: 14px;
+        }
+    }
+
+    #btnAgregarArticulo {
+        background-color: #1565c0 !important;
+        border-color: #1565c0 !important;
+        color: #fff !important;
+    }
+
+        #btnAgregarArticulo:hover, #btnAgregarArticulo:focus {
+            background-color: #0d47a1 !important;
+            border-color: #0d47a1 !important;
+            color: #fff !important;
+        }
+
+   #bloqueoOverlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(180, 180, 180, 0.5); /* Gris semitransparente */
+        z-index: 9999;
+        pointer-events: all;
+    }
+
+   
+    #btnNuevaCotizacion {
+        position: fixed !important;
+        bottom: 40px;
+        right: 40px;
+        z-index: 10000 !important;
+        display: none;
+    }
+
+
+</style>
+
+<div class="container-fluid">
+    <h2 class="mb-4">Cotizacion</h2>
+
+
+    <!-- Búsqueda de Cliente -->
+    <div class="card mb-4 resaltado-cliente">
+        <div class="card-header">
+            <i class="fas fa-user me-1"></i>
+            Datos del Cliente
+        </div>
+        <div class="card-body">
+            <div class="cliente-container">
+                <div class="input-group mb-3">
+                    <input type="text" id="clienteSeleccionado" class="form-control form-control-lg" autocomplete="off" autocorrect="off" autocapitalize="off" placeholder="BUSCAR CLIENTE POR NOMBRE O CODIGO">
+                </div>
+                <input type="hidden" id="codigoCliente">
+                <input type="hidden" id="tipCli">
+
+                <div class="table-responsive" id="tablaClientesContainer" style="display:none; position:absolute; z-index:10; width:100%;">
+                    <table class="table table-bordered table-hover mb-0" id="clientesTable" width="100%" cellspacing="0" style="font-size: 0.9rem;">
+                        <thead>
+                            <tr>
+                                <th>Codigo</th>
+                                <th>Cliente</th>
+                                <th>Ven</th>
+                                <th>Tipo</th>
+                            </tr>
+                        </thead>
+                        <tbody id="clientesBody">
+                            <!-- Los resultados se cargarán aquí dinámicamente -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="camposCliente" style="display:none;">
+                <div class="row g-4 mb-4">
+                    <div class="col-6 col-md-3">
+                        <label class="form-label fw-bold">Codigo:</label>
+                        <input type="text" id="codigo" class="form-control form-control-lg" readonly>
+                    </div>
+
+                    <div class="col-6 col-md-2">
+                        <label class="form-label fw-bold">Vendedor:</label>
+                        <input type="text" id="vendedor" class="form-control form-control-lg text-center" readonly>
+                    </div>
+
+                    <div class="col-6 col-md-3">
+                        <label class="form-label fw-bold">Transporte:</label>
+                        <select id="transporteSelect" class="form-control form-control-lg">
+                            <option value="">Seleccionar Transporte</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Búsqueda de Artículo -->
+    <div class="card mb-4 busqueda-articulos">
+        <div class="card-header">
+            <i class="fas fa-search me-1"></i>
+            Buscar Articulo
+        </div>
+        <div class="card-body">
+            <div class="input-group mb-3">
+                <input type="text" id="searchArticulo" class="form-control form-control-lg" placeholder="BUSCAR ARTICULO..." autocomplete="off" autocorrect="off" autocapitalize="off">
+                <!-- Botón de buscar eliminado -->
+            </div>
+
+            <div class="table-responsive" id="tablaArticulosContainer" style="display:none; position:absolute; z-index:10; width:100%;">
+                <table class="table table-bordered table-hover mb-0" id="articulosTable" width="100%" cellspacing="0" style="font-size: 0.9rem;">
+                    <thead>
+                        <tr>
+                            <th>Codigo</th>
+                            <th>Descripcion</th>
+                            <th>IVA</th>
+                        </tr>
+                    </thead>
+                    <tbody id="articulosBody">
+                        <!-- Los resultados se cargarán aquí dinámicamente -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <!-- Mostrar artículo seleccionado -->
+    <div class="row g-3 mb-3" id="articuloSeleccionadoRow" style="display:none;">
+        <div class="col-6 col-md-1">
+            <label class="form-label fw-bold">Codigo:</label>
+            <input type="text" id="codigoArticulo" class="form-control form-control-lg" readonly>
+        </div>
+        <div class="col-6 col-md-5">
+            <label class="form-label fw-bold">Articulo:</label>
+            <input type="text" id="descripcionArticulo" class="form-control form-control-lg" readonly>
+        </div>
+        <div class="col-6 col-md-1">
+            <label class="form-label fw-bold">IVA:</label>
+            <input type="text" id="ivaArticulo" class="form-control form-control-lg" readonly>
+        </div>
+        <div class="col-6 col-md-1">
+            <label class="form-label fw-bold">Precio:</label>
+            <input type="text" id="precio1Articulo" class="form-control form-control-lg" readonly>
+        </div>
+        <div class="col-6 col-md-1">
+            <label class="form-label fw-bold">Cantidad:</label>
+            <input type="number" id="cantidadArticulo" class="form-control form-control-lg resaltado-transporte" min="1" value="1">
+        </div>
+        <div class="col-6 col-md-1">
+            <label class="form-label fw-bold">Total:</label>
+            <input type="text" id="calcularTotalArticulo" class="form-control form-control-lg" readonly>
+        </div>
+        <div class="col-12 col-md-2 d-flex align-items-end">
+            <button type="button" id="btnAgregarArticulo" class="btn btn-primary w-100">
+                <i class="fas fa-plus me-1"></i> Agregar
+            </button>
+        </div>
+    </div>
+
+
+    <!-- Tabla de Artículos Agregados -->
+    <div class="card mb-4 resaltado-cotizacion">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <span>
+                <i class="fas fa-shopping-cart me-1"></i>
+                ARTICULOS SELECIONADOS
+            </span>
+            <span id="cotizacionNumero" class="alert alert-info py-1 px-2 mb-0" style="display:none; font-size:14px;">
+                Cotizacion generada: <span id="nroCotizacion"></span>
+            </span>
+        </div>
+        <div class="card-body">
+
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover" id="tablaArticulosCotizacion" width="100%" cellspacing="0">
+                    <thead>
+
+                        <tr>
+                            <th style="width: 5%;">#</th>
+                            <th style="width: 10%;">Codigo</th>
+                            <th style="width: 40%;">Descripcion</th>
+                            <th style="width: 10%;">Cantidad</th>
+                            <th style="width: 10%;">Precio</th>
+                            <th style="width: 10%;">IVA</th>
+                            <th style="width: 10%;">Total</th>
+                            <th style="width: 5%;">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cuerpoTablaArticulos">
+
+                        <!-- Los artículos se agregarán aquí dinámicamente -->
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="6" class="text-end fw-bold">Subtotal:</td>
+                            <td id="subtotal" class="text-end fw-bold">0.00</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td colspan="6" class="text-end fw-bold">IVA (12%):</td>
+                            <td id="iva" class="text-end fw-bold">0.00</td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td colspan="6" class="text-end fw-bold">Total General:</td>
+                            <td id="totalGeneral" class="text-end fw-bold">0.00</td>
+                            <td></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="text-end mb-4">
+        <button id="btnGuardarCotizacion" class="btn btn-success">
+            <i class="fas fa-save"></i> Guardar Cotizacion
+        </button>
+        <button id="btnNuevaCotizacion" class="btn btn-primary" style="display:none;">
+            <i class="fas fa-plus"></i> Nueva Cotizacion
+        </button>
+    </div>
+    <div id="bloqueoOverlay"></div>
+</div>
+
+@section Scripts {
+    <script>
+    $(document).ready(function() {
+        // Al cargar, oculta y deshabilita el botón LIMPIAR
+        $('#btnLimpiarCliente').hide().prop('disabled', true);
+
+        // NUEVO: Búsqueda de cliente desde el input dentro del cuerpo de cotización
+        function buscarClientes(consulta) {
+            if (consulta.length < 2) {
+                $('#clientesBody').empty();
+                $('#tablaClientesContainer').hide();
+                return;
+            }
+            $('#btnNuevaCotizacion').on('click', function () {
+                limpiarFormulario();
+                desbloquearFormulario();
+            });
+
+            $.ajax({
+                url: '@Url.Action("buscarCliente1", "Cotizacion")',
+                type: 'GET',
+                data: { consulta: consulta },
+                dataType: 'json',
+                success: function(data) {
+                    var tbody = $('#clientesBody');
+                    tbody.empty();
+                    $('#tablaClientesContainer').show();
+
+                    if (data.length === 0) {
+                        tbody.append('<tr><td colspan="3" class="text-center">No se encontraron clientes</td></tr>');
+                        return;
+                    }
+
+                    $.each(data, function (index, cliente) {
+                        console.log(cliente);
+                        var row = $('<tr>');
+                        row.append($('<td>').text(cliente.co_cli));
+                        row.append($('<td>').text(cliente.cli_des));
+                        row.append($('<td>').text(cliente.co_ven));
+                        row.append($('<td>').text(cliente.tip_cli));
+                        row.css('cursor', 'pointer');
+                        row.on('click', function (e) {
+                            seleccionarCliente(cliente);
+                        });
+                        tbody.append(row);
+                    });
+                },
+                error: function() {
+                    console.error('Error al buscar clientes');
+                }
+            });
+        }
+
+        // Evento de búsqueda al escribir en el input de cliente
+        $('#clienteSeleccionado').off('input').on('input', function() {
+            var consulta = $(this).val().trim();
+            buscarClientes(consulta);
+        });
+        // Ocultar resultados si se borra el input
+        $('#clienteSeleccionado').off('keydown').on('keydown', function(e) {
+            if (e.key === "Escape") {
+                $('#clientesBody').empty();
+                $('#tablaClientesContainer').hide();
+            }
+        });
+        // Ocultar resultados al hacer clic fuera
+        $(document).on('click', function(e) {
+            if (!$(e.target).closest('#clienteSeleccionado, #tablaClientesContainer').length) {
+                $('#tablaClientesContainer').hide();
+            }
+        });
+
+        // Adaptar seleccionarCliente para limpiar y ocultar resultados
+        function seleccionarCliente(cliente) {
+            $('#codigoCliente').val(cliente.co_cli);
+            $('#clienteSeleccionado').val(cliente.cli_des);
+            $('#codigo').val(cliente.co_cli ? cliente.co_cli.substring(0, 12) : '');
+            $('#vendedor').val(cliente.co_ven ? cliente.co_ven.substring(0, 2) : '');
+            $('#transporteSelect').val(cliente.co_tran || ''); // Asegúrate de que co_tran esté en el cliente
+            $('#tipCli').val(cliente.tip_cli || '');
+            $('#transporteSelect').focus();
+            // Resaltado visual: cliente, código y vendedor azul, transporte naranja
+            $('#clienteSeleccionado, #codigo, #vendedor').addClass('resaltado-seleccion').removeClass('completado');
+            $('#transporteSelect').addClass('resaltado-transporte').removeClass('completado resaltado-seleccion');
+            // Mostrar botón LIMPIAR
+            $('#btnLimpiarCliente').show().prop('disabled', false);
+            // Mostrar los campos de código, vendedor y transporte
+            $('#camposCliente').show();
+            // OCULTAR EL LISTADO DE CLIENTES
+            $('#tablaClientesContainer').hide();
+        }
+
+        // Eliminar el evento anterior y asegurar que el botón de limpiar a la derecha de transporte limpie los datos del cliente
+        $('#btnLimpiarCliente').on('click', function() {
+            $('#clienteSeleccionado, #codigo, #vendedor, #transporteSelect, #codigoCliente').val('');
+            $('#clienteSeleccionado, #codigo, #vendedor, #transporteSelect').removeClass('resaltado-seleccion resaltado-transporte completado');
+            $('#tablaClientesContainer').hide();
+            $('#clientesBody').empty();
+            // Ocultar botón LIMPIAR
+            $('#btnLimpiarCliente').hide().prop('disabled', true);
+            // Ocultar los campos de código, vendedor y transporte
+            $('#camposCliente').hide();
+        });
+
+        // Cargar transportes en el select
+        $.ajax({
+            url: '@Url.Action("ObtenerTransportes", "Cotizacion")',
+            type: 'GET',
+            dataType: 'json',
+            success: function(data) {
+                var select = $('#transporteSelect');
+                select.empty();
+                select.append('<option value="">Seleccione transporte...</option>');
+                $.each(data, function(i, transporte) {
+                    select.append($('<option>', {
+                        value: transporte.co_tran, // Cambia por 'Id' si tu modelo lo tiene así
+                        text: transporte.des_tran  // Cambia por 'Nombre' si tu modelo lo tiene así
+                    }));
+                });
+            },
+            error: function(xhr, status, error) {
+                console.error('Error al cargar transportes:', error);
+            }
+
+        });
+
+        // NUEVO: Resaltar transporte al seleccionar
+        $('#transporteSelect').on('change', function() {
+            if ($(this).val()) {
+                $('#transporteSelect, #clienteSeleccionado, #codigo, #vendedor').removeClass('resaltado-seleccion resaltado-transporte').addClass('completado');
+            } else {
+                $('#transporteSelect').removeClass('completado resaltado-seleccion').addClass('resaltado-transporte');
+                $('#clienteSeleccionado, #codigo, #vendedor').removeClass('completado resaltado-transporte').addClass('resaltado-seleccion');
+            }
+        });
+
+        // Función para buscar artículos
+        function buscarPrecios(consulta) {
+            if (consulta.length < 2) {
+                $('#articulosBody').empty();
+                $('#tablaArticulosContainer').hide();
+                return;
+            }
+
+            $.ajax({
+                url: '@Url.Action("Buscar", "Precios")',
+                type: 'GET',
+                data: { busqueda: consulta },
+                dataType: 'json',
+                success: function(data) {
+                    var tbody = $('#articulosBody');
+                    tbody.empty();
+                    $('#tablaArticulosContainer').show();
+
+                    if (data.length === 0) {
+                        tbody.append('<tr><td colspan="3" class="text-center">No se encontraron artículos</td></tr>');
+                        return;
+                    }
+
+                    $.each(data, function(index, articulo) {
+                        var row = $('<tr>');
+                        row.append($('<td>').text(articulo.co_art));
+                        row.append($('<td>').text(articulo.art_des));
+                        row.append($('<td>').text(articulo.iva || '0'));
+                        row.css('cursor', 'pointer');
+                        row.on('click', function (e) {
+                            seleccionarArticulo(articulo);
+                        });
+                        tbody.append(row);
+                    });
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error al buscar artículos:', error);
+                    $('#articulosBody').html('<tr><td colspan="3" class="text-center text-danger">Error al cargar los artículos</td></tr>');
+                }
+            });
+        }
+
+            // Calcular el total cuando cambia la cantidad o el precio
+            function calcularTotalArticulo() {
+                var cantidad = parseFloat($('#cantidadArticulo').val()) || 0;
+                var precio = parseFloat($('#precio1Articulo').val()) || 0;
+                var total = cantidad * precio;
+                $('#calcularTotalArticulo').val(total.toFixed(2));
+            }
+
+        // Reemplaza la función seleccionarArticulo por esta versión mejorada
+        function seleccionarArticulo(articulo) {
+            $('#codigoArticulo').val(articulo.co_art);
+            $('#descripcionArticulo').val(articulo.art_des);
+            $('#ivaArticulo').val(articulo.iva || '0');
+
+            // Obtener el tipo de cliente seleccionado
+            var tipCli = $('#tipCli').val().toString().padStart(2, '0');
+
+            // Mostrar el precio según el tipo de cliente
+            if (tipCli === '01') {
+                $('#precio1Articulo').val(articulo.precio1 || '0');
+            } else if (tipCli === '02') {
+                $('#precio1Articulo').val(articulo.precio2 || '0');
+            } else if (tipCli === '03') {
+                $('#precio1Articulo').val(articulo.precio3 || '0');
+            } else if (tipCli === '04') {
+                $('#precio1Articulo').val(articulo.precio4 || '0');
+            } else if (tipCli === '05') {
+                $('#precio1Articulo').val(articulo.precio5 || '0');
+            } else {
+                $('#precio1Articulo').val(articulo.precio1 || '0'); // Por defecto precio1
+            }
+
+            $('#precio2Articulo').val(articulo.precio2 || '0');
+            $('#precio3Articulo').val(articulo.precio3 || '0');
+            $('#precio4Articulo').val(articulo.precio4 || '0');
+            $('#precio5Articulo').val(articulo.precio5 || '0');
+            $('#cantidadArticulo').val(1);
+            calcularTotalArticulo();
+            $('#articuloSeleccionadoRow').show();
+            $('#articulosBody').empty();
+            $('#searchArticulo').val('');
+            $('#tablaArticulosContainer').hide();
+
+            // Resaltar campos de artículo
+            $('#codigoArticulo, #descripcionArticulo, #ivaArticulo, #precio1Articulo, #cantidadArticulo,#calcularTotalArticulo, #btnAgregarArticulo').addClass('resaltado-seleccion').removeClass('completado');
+        }
+
+            // Evento: recalcular total al cambiar cantidad
+            $('#cantidadArticulo').on('input', function () {
+                calcularTotalArticulo();
+            });
+
+        // Evento de búsqueda al escribir en el input de artículo
+        $('#searchArticulo').off('input').on('input', function() {
+            var consulta = $(this).val().trim();
+            buscarPrecios(consulta);
+        });
+        // Ocultar resultados si se borra el input
+        $('#searchArticulo').off('keydown').on('keydown', function(e) {
+            if (e.key === "Escape") {
+                $('#articulosBody').empty();
+                $('#tablaArticulosContainer').hide();
+            }
+        });
+        // Ocultar resultados al hacer clic fuera
+        $(document).on('click', function(e) {
+            if (!$(e.target).closest('#searchArticulo, #tablaArticulosContainer').length) {
+                $('#tablaArticulosContainer').hide();
+            }
+        });
+        // Evento de búsqueda al hacer clic en el botón eliminado
+
+            let articulos = [];
+            let contadorArticulos = 0;
+
+            // Función para formatear moneda
+            function formatearMoneda(valor) {
+                return parseFloat(valor).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            }
+
+            // Función para calcular totales
+            function calcularTotales() {
+                let subtotal = 0;
+                let ivaTotal = 0;
+
+                articulos.forEach(articulo => {
+                    const totalLinea = articulo.cantidad * articulo.precio;
+                    const ivaLinea = totalLinea * (articulo.iva / 100);
+                    subtotal += totalLinea;
+                    ivaTotal += ivaLinea;
+                });
+
+                const totalGeneral = subtotal + ivaTotal;
+
+                $('#subtotal').text('$' + formatearMoneda(subtotal));
+                $('#iva').text('$' + formatearMoneda(ivaTotal));
+                $('#totalGeneral').text('$' + formatearMoneda(totalGeneral));
+            }
+
+            // Función para agregar artículo a la tabla
+            function agregarArticulo(articulo) {
+                const totalLinea = articulo.cantidad * articulo.precio;
+                const ivaLinea = totalLinea * (articulo.iva / 100);
+
+                const fila = `
+                    <tr data-id="${articulo.id}">
+                        <td>${++contadorArticulos}</td>
+                        <td>${articulo.codigo}</td>
+                        <td>${articulo.descripcion}</td>
+                        <td class="text-end">${articulo.cantidad}</td>
+                        <td class="text-end">$${formatearMoneda(articulo.precio)}</td>
+                        <td class="text-end">${articulo.iva}%</td>
+                        <td class="text-end">$${formatearMoneda(totalLinea)}</td>
+                        <td class="text-center">
+                            <button class="btn btn-sm btn-warning btn-editar" title="Editar">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-sm btn-danger btn-eliminar" title="Eliminar">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+
+                $('#cuerpoTablaArticulos').append(fila);
+                calcularTotales();
+            }
+
+            // Evento para agregar artículo
+            $('#btnAgregarArticulo').on('click', function() {
+                const codigo = $('#codigoArticulo').val();
+                const descripcion = $('#descripcionArticulo').val();
+                const cantidad = parseFloat($('#cantidadArticulo').val()) || 1;
+                const precio = parseFloat($('#precio1Articulo').val().replace(/[^0-9.-]+/g,"")) || 0;
+                const iva = parseFloat($('#ivaArticulo').val()) || 0;
+
+                if (!codigo || !descripcion) {
+                    alert('Por favor seleccione un artículo válido');
+                    return;
+                }
+
+                const articulo = {
+                    id: Date.now(),
+                    codigo: codigo,
+                    descripcion: descripcion,
+                    cantidad: cantidad,
+                    precio: precio,
+                    iva: iva
+                };
+
+                articulos.push(articulo);
+                agregarArticulo(articulo);
+
+                // NUEVO: Marcar campos como completados
+                $('#codigoArticulo, #descripcionArticulo, #ivaArticulo, #precio1Articulo, #cantidadArticulo, #btnAgregarArticulo')
+                    .removeClass('resaltado-seleccion')
+                    .addClass('completado');
+                setTimeout(function() {
+                    $('#codigoArticulo, #descripcionArticulo, #ivaArticulo, #precio1Articulo, #cantidadArticulo, #btnAgregarArticulo')
+                        .removeClass('completado');
+                }, 800);
+
+                // Limpiar campos
+                $('#codigoArticulo, #descripcionArticulo, #ivaArticulo, #precio1Articulo').val('');
+                $('#cantidadArticulo').val('1');
+                $('#articuloSeleccionadoRow').hide();
+            });
+
+            // Delegación de eventos para botones de eliminar
+            $(document).on('click', '.btn-eliminar', function() {
+                const fila = $(this).closest('tr');
+                const id = parseInt(fila.data('id'));
+
+                articulos = articulos.filter(a => a.id !== id);
+                fila.remove();
+
+                // Renumerar filas
+                $('#cuerpoTablaArticulos tr').each(function(index) {
+                    $(this).find('td:first').text(index + 1);
+                });
+
+                contadorArticulos = articulos.length;
+                calcularTotales();
+            });
+
+            // Delegación de eventos para botones de editar
+            $(document).on('click', '.btn-editar', function() {
+                const fila = $(this).closest('tr');
+                const id = parseInt(fila.data('id'));
+                const articulo = articulos.find(a => a.id === id);
+
+                if (articulo) {
+                    // Llenar formulario con datos del artículo
+                    $('#codigoArticulo').val(articulo.codigo);
+                    $('#descripcionArticulo').val(articulo.descripcion);
+                    $('#cantidadArticulo').val(articulo.cantidad);
+                    $('#precio1Articulo').val(articulo.precio);
+                    $('#ivaArticulo').val(articulo.iva);
+                    $('#articuloSeleccionadoRow').show();
+
+                    // Eliminar el artículo de la lista
+                    articulos = articulos.filter(a => a.id !== id);
+                    fila.remove();
+                    contadorArticulos = articulos.length;
+                    calcularTotales();
+
+                    // Hacer scroll al formulario
+                    $('html, body').animate({
+                        scrollTop: $('#articuloSeleccionadoRow').offset().top - 100
+                    }, 500);
+                }
+            });
+
+        // Mejoras específicas para móvil
+        if ($(window).width() <= 768) {
+            // Ajustar tamaño de fuente según el dispositivo
+            function adjustFontSize() {
+                const baseFontSize = 16;
+                const viewportWidth = Math.min(window.innerWidth, 768);
+                const fontSize = baseFontSize * (viewportWidth / 768);
+                $('body').css('font-size', fontSize + 'px');
+            }
+
+            // Ajustar automáticamente al cargar y al redimensionar
+            adjustFontSize();
+            $(window).resize(adjustFontSize);
+
+            // Mejorar interacción táctil
+            $('.form-control').on('focus', function() {
+                $(this).closest('.form-group').addClass('touched');
+            }).on('blur', function() {
+                $(this).closest('.form-group').removeClass('touched');
+            });
+
+            // Optimizar desplazamiento para tablas
+            $('.table-responsive').on('touchstart', function(e) {
+                var target = $(e.target);
+                if (target.closest('th, td').length) {
+                    $(this).css('overflow', 'auto');
+                }
+            }).on('touchend', function() {
+                $(this).css('overflow', '');
+            });
+        }
+
+        // Resto del código existente
+
+        $('#btnGuardarCotizacion').on('click', function () {
+
+            // Validar cliente
+            if (!$('#codigo').val()) {
+                alert('Debe seleccionar un cliente antes de guardar la cotizacion.');
+                return;
+            }
+            // Validar transporte
+            if (!$('#transporteSelect').val()) {
+                alert('Debe seleccionar un transporte antes de guardar la cotizacion.');
+                return;
+            }
+            // Validar que haya al menos un artículo
+            if (articulos.length === 0) {
+                alert('Debe agregar al menos un articulo a la cotizacion.');
+                return;
+            }
+
+    var renglones = articulos
+        .filter(a => a && a.codigo && a.cantidad && a.precio)
+        .map(a => {
+            // Determinar tipo_imp según el IVA
+            var tipoImp = (parseFloat(a.iva) === 16 ? "1" : "7");
+            // Calcular reng_neto según tipo_imp
+            var rengNeto = (tipoImp === "1")
+                ? a.precio * a.cantidad
+                : a.precio * a.cantidad;
+            // Calcular monto_imp según tipo_imp
+            var montoImp = (tipoImp === "1")
+                ? a.precio * 0.16 * a.cantidad
+                : 0;
+            return {
+                co_art: a.codigo,
+                total_art: a.cantidad,
+                prec_vta: a.precio,
+                tipo_imp: tipoImp,
+                reng_neto: rengNeto,
+                monto_imp: montoImp
+            };
+        });
+
+    var cotizacion = {
+        co_cli: $('#codigo').val(),
+        tip_cli: $('#tipCli').val(),
+        co_tran: $('#transporteSelect').val(),
+        fec_emis: new Date().toISOString(),
+        total_bruto: parseFloat($('#subtotal').text().replace(/[^0-9.-]+/g,"")) || 0,
+        monto_imp: parseFloat($('#iva').text().replace(/[^0-9.-]+/g,"")) || 0,
+        total_neto: parseFloat($('#totalGeneral').text().replace(/[^0-9.-]+/g,"")) || 0,
+        renglones: renglones
+    };
+
+    $.ajax({
+        url: '@Url.Action("GuardarCotizacion", "Cotizacion")',
+        type: 'POST',
+        data: JSON.stringify(cotizacion),
+        contentType: 'application/json; charset=utf-8',
+        success: function (response) {
+            if (response.success) {
+                $('#nroCotizacion').text(response.doc_num);
+                $('#cotizacionNumero').show();
+                bloquearFormulario();
+                $('#btnGuardarCotizacion').hide();
+                $('#btnNuevaCotizacion').show();
+            } else {
+                alert('Error: ' + response.error);
+            }
+        },
+        error: function(xhr, status, error) {
+            alert('Error al guardar la cotización');
+        }
+
+    });
+ 
+       });
+        function bloquearFormulario() {
+            // Deshabilita todos los inputs, selects y botones excepto el de nueva cotización
+            $('input, select, textarea, button').not('#btnNuevaCotizacion').prop('disabled', true);
+            $('.btn-editar, .btn-eliminar, #btnAgregarArticulo').prop('disabled', true);
+            // Mostrar overlay
+            $('#bloqueoOverlay').show();
+        }
+
+        function desbloquearFormulario() {
+            $('input, select, textarea, button').prop('disabled', false);
+            $('#btnNuevaCotizacion').hide();
+            $('#btnGuardarCotizacion').show();
+            $('#cotizacionNumero').hide();
+            // Ocultar overlay
+            $('#bloqueoOverlay').hide();
+        }
+
+        function limpiarFormulario() {
+            // Limpia todos los campos de cliente
+            $('#clienteSeleccionado, #codigo, #vendedor, #transporteSelect, #codigoCliente').val('');
+            $('#camposCliente').hide();
+            // Limpia artículos
+            articulos = [];
+            contadorArticulos = 0;
+            $('#cuerpoTablaArticulos').empty();
+            $('#subtotal, #iva, #totalGeneral').text('0.00');
+            // Limpia campos de artículo seleccionado
+            $('#codigoArticulo, #descripcionArticulo, #ivaArticulo, #precio1Articulo').val('');
+            $('#cantidadArticulo').val('1');
+            $('#articuloSeleccionadoRow').hide();
+            // Oculta número de cotización
+            $('#cotizacionNumero').hide();
+        }
+    });
+    </script>
+}
+

@@ -1,0 +1,54 @@
+@{
+    ViewBag.Title = "Error";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-exclamation-triangle"></i> Error
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning">
+                        <h5>Error en la Aplicación</h5>
+                        <p>@ViewBag.ErrorMessage</p>
+                    </div>
+
+                    <div class="mt-4">
+                        <a href="@Url.Action("Index", "Home")" class="btn btn-primary">
+                            <i class="fas fa-home"></i> Volver al Inicio
+                        </a>
+                        <button onclick="history.back()" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Volver Atrás
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    }
+    
+    .alert {
+        border-radius: 0.375rem;
+    }
+    
+    .btn {
+        margin-right: 0.5rem;
+    }
+    
+    @media (max-width: 768px) {
+        .btn {
+            display: block;
+            width: 100%;
+            margin-bottom: 0.5rem;
+        }
+    }
+</style> 

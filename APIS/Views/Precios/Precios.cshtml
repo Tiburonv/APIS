@@ -1,0 +1,934 @@
+@{
+    ViewBag.Title = "Buscar Articulos";
+}
+
+<style>
+    body {
+        background: #f4f6fb;
+        font-family: 'Segoe UI', 'Montserrat', Arial, Verdana, sans-serif;
+    }
+
+    h4 {
+        color: #1565c0;
+        font-weight: 600;
+        font-family: inherit;
+    }
+
+    .search-container {
+        margin: 32px auto 24px auto;
+        max-width: 520px;
+        background: #fff;
+        border-radius: 10px;
+        box-shadow: 0 2px 16px rgba(21,101,192,0.10);
+        padding: 28px 36px 20px 36px;
+        font-family: inherit;
+    }
+
+    .search-flex {
+        display: flex;
+        align-items: center;
+        position: relative;
+        font-family: inherit;
+    }
+
+        .search-flex img {
+            height: 38px;
+            margin-right: 14px;
+            border-radius: 6px;
+        }
+
+    .search-input-container {
+        position: relative;
+        flex: 1;
+        font-family: inherit;
+    }
+
+    .search-input {
+        width: 100%;
+        padding: 12px 40px 12px 12px;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-size: 14px;
+        transition: all 0.3s ease;
+        font-family: inherit;
+    }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #1565c0;
+            box-shadow: 0 0 0 3px rgba(21,101,192,0.1);
+        }
+
+    .search-button {
+        position: absolute;
+        right: 8px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: #1565c0;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        padding: 6px 12px;
+        cursor: pointer;
+        transition: background 0.2s;
+        font-family: inherit;
+    }
+
+        .search-button:hover {
+            background: #0d47a1;
+        }
+
+        .search-button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+    .clear-button {
+        position: absolute;
+        right: 60px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: #f44336;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        padding: 6px 12px;
+        cursor: pointer;
+        transition: background 0.2s;
+        font-size: 12px;
+        font-family: inherit;
+    }
+
+        .clear-button:hover {
+            background: #d32f2f;
+        }
+
+    .filters-container {
+        margin: 20px auto;
+        max-width: 800px;
+        background: #fff;
+        border-radius: 10px;
+        box-shadow: 0 2px 16px rgba(21,101,192,0.10);
+        padding: 20px 30px;
+        font-family: inherit;
+    }
+
+    .filters-title,
+    .section-header {
+        color: #1565c0;
+        font-weight: 600;
+        margin-bottom: 15px;
+        font-size: 1.1rem;
+        font-family: inherit;
+    }
+
+    .filters-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 15px;
+        align-items: center;
+        font-family: inherit;
+    }
+
+    .filter-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px;
+        border-radius: 6px;
+        transition: background 0.2s;
+        font-family: inherit;
+    }
+
+        .filter-item:hover {
+            background: #f5f5f5;
+        }
+
+        .filter-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: #1565c0;
+            cursor: pointer;
+        }
+
+        .filter-item label {
+            margin: 0;
+            font-weight: 500;
+            color: #333;
+            cursor: pointer;
+            user-select: none;
+            font-family: inherit;
+        }
+
+    .filter-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 15px;
+        justify-content: center;
+        flex-wrap: wrap;
+        font-family: inherit;
+    }
+
+    .btn-filter {
+        background: #1565c0;
+        color: white;
+        border: none;
+        padding: 10px 18px;
+        border-radius: 6px;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-family: inherit;
+    }
+
+        .btn-filter:hover {
+            background: #0d47a1;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(21,101,192,0.3);
+        }
+
+        .btn-filter.secondary {
+            background: #6c757d;
+        }
+
+            .btn-filter.secondary:hover {
+                background: #545b62;
+            }
+
+    .cabecera-azul-claro {
+        background-color: #1565c0 !important;
+        color: #fff;
+        border-radius: 6px 6px 0 0;
+        font-size: 1.1rem;
+        letter-spacing: 0.5px;
+        padding: 12px 8px;
+        font-family: inherit;
+    }
+    /*tamaño de la columma  precios*/
+    .table thead th {
+        /* background-color: #1565c0 !important;
+        color: #fff !important;
+        font-weight: 700;
+        text-transform: uppercase;
+        font-size: 1rem;
+        padding: 0.75rem;
+        border-bottom: 2px solid #0d47a1;
+        text-align: center;
+        vertical-align: middle;
+        font-family: inherit;
+        letter-spacing: 0.5px;*/
+
+        background-color: #1565c0 !important;
+        color: #fff !important;
+        font-weight: 700;
+        text-transform: uppercase;
+        font-size: 0.85rem; /* Más pequeño */
+        padding: 4px 2px; /* Menos alto */
+        border-bottom: 2px solid #0d47a1;
+        text-align: center;
+        vertical-align: middle;
+        font-family: inherit;
+        letter-spacing: 0.5px;
+    }
+
+    .card-header.bg-primary {
+        font-size: 1rem !important;
+        padding-top: 6px !important;
+        padding-bottom: 6px !important;
+        min-height: 32px !important;
+    }
+
+    .table {
+        border-collapse: collapse;
+        width: 100%;
+        margin-bottom: 1rem;
+        background-color: #fff;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        font-family: inherit;
+    }
+
+        .table tbody tr {
+            transition: background-color 0.15s ease-in-out;
+        }
+
+            .table tbody tr:hover {
+                background-color: rgba(21, 101, 192, 0.05);
+            }
+
+        .table tbody td {
+            padding: 0.75rem;
+            vertical-align: middle;
+            border-top: 1px solid #e9ecef;
+            color: #333;
+            font-family: inherit;
+        }
+
+        .table tbody tr:first-child td {
+            border-top: none;
+        }
+
+        .table tbody tr:last-child td {
+            border-bottom: 1px solid #dee2e6;
+        }
+
+    .text-end {
+        text-align: right !important;
+    }
+
+    .text-center {
+        text-align: center !important;
+    }
+
+    .table-bordered {
+        border: 1px solid #dee2e6;
+    }
+
+        .table-bordered th,
+        .table-bordered td {
+            border: 1px solid #dee2e6;
+        }
+
+    .table-striped tbody tr:nth-of-type(odd) {
+        background-color: rgba(0, 0, 0, 0.02);
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: #e3f2fd !important;
+        transition: background 0.2s;
+    }
+
+    .precio-header {
+        background-color: #e9ecef;
+        font-weight: 600;
+    }
+
+    .precio-iva-header {
+        background-color: #f8f9fa;
+        font-weight: 500;
+    }
+
+    .highlight {
+        background-color: #fff3cd;
+        padding: 2px 4px;
+        border-radius: 3px;
+        font-weight: 600;
+        color: #856404;
+        border: 1px solid #ffeaa7;
+        font-family: inherit;
+    }
+
+    .autocomplete-list {
+        position: absolute;
+        z-index: 1000;
+        width: 100%;
+        max-height: 200px;
+        overflow-y: auto;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        border-radius: 0 0 8px 8px;
+        background: #fff;
+        border: 1px solid #e0e0e0;
+        border-top: none;
+        font-family: inherit;
+    }
+
+    .autocomplete-item {
+        cursor: pointer;
+        transition: background 0.2s;
+        padding: 10px 12px;
+        border-bottom: 1px solid #f0f0f0;
+        font-family: inherit;
+    }
+
+        .autocomplete-item:hover {
+            background: #e3f2fd;
+        }
+
+        .autocomplete-item:last-child {
+            border-bottom: none;
+        }
+
+    .table-responsive {
+        margin-top: 24px;
+        border-radius: 8px;
+        box-shadow: 0 2px 12px rgba(21,101,192,0.08);
+        background: #fff;
+        padding: 16px;
+        overflow-x: auto;
+        font-family: inherit;
+    }
+
+    .table {
+        margin-bottom: 0;
+    }
+
+    .row-seleccionada, .table-active {
+        background-color: #e3f2fd !important;
+        font-weight: 600;
+        border-left: 4px solid #1565c0 !important;
+        box-shadow: 0 2px 4px rgba(21, 101, 192, 0.1);
+        font-family: inherit;
+    }
+
+    .pagination {
+        margin-top: 20px;
+        font-family: inherit;
+    }
+
+    .page-link {
+        color: #1565c0;
+        border-color: #dee2e6;
+        font-family: inherit;
+    }
+
+        .page-link:hover {
+            color: #0d47a1;
+            background-color: #e3f2fd;
+            border-color: #1565c0;
+        }
+
+    .page-item.active .page-link {
+        background-color: #1565c0;
+        border-color: #1565c0;
+    }
+
+    .alert-warning {
+        background-color: #fff3cd;
+        border-color: #ffeaa7;
+        color: #856404;
+        border-radius: 8px;
+        padding: 15px 20px;
+        font-family: inherit;
+    }
+
+    .alert-info {
+        background-color: #d1ecf1;
+        border-color: #bee5eb;
+        color: #0c5460;
+        border-radius: 8px;
+        padding: 15px 20px;
+        font-family: inherit;
+    }
+
+    .loading-spinner {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        color: #1565c0;
+        font-size: 16px;
+        font-family: inherit;
+        font-weight: 500;
+    }
+
+    .results-summary {
+        background: #e3f2fd;
+        border-radius: 6px;
+        padding: 12px 18px;
+        margin-bottom: 15px;
+        color: #1565c0;
+        font-weight: 600;
+        font-family: inherit;
+        font-size: 14px;
+        border-left: 4px solid #1565c0;
+    }
+
+    .no-results {
+        text-align: center;
+        padding: 40px 20px;
+        color: #666;
+        font-family: inherit;
+    }
+
+        .no-results i {
+            font-size: 48px;
+            color: #ccc;
+            margin-bottom: 15px;
+        }
+
+        .no-results h5 {
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 10px;
+            font-family: inherit;
+        }
+
+        .no-results p {
+            font-size: 14px;
+            line-height: 1.5;
+            color: #6c757d;
+            font-family: inherit;
+        }
+
+    @@media (max-width: 768px) {
+        .search-container {
+            margin: 20px 15px;
+            padding: 20px;
+        }
+
+        .filters-container {
+            margin: 15px;
+            padding: 15px;
+        }
+
+        .filters-grid {
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 10px;
+        }
+
+        .filter-actions {
+            flex-direction: column;
+        }
+
+        .btn-filter {
+            justify-content: center;
+        }
+
+        .table td:nth-child(2) {
+            min-width: 100px;
+            max-width: 250px;
+            width: auto;
+        }
+        /* Mejora visual para los números de la tabla de precios */
+        .table td.text-end,
+        .table td.text-center,
+        .table td.numero,
+        .table td[class*="precio"] {
+            font-family: 'Segoe UI', Arial, Verdana, sans-serif !important;
+            font-size: 1.08rem !important;
+            font-weight: 600 !important;
+            color: #222 !important;
+            letter-spacing: 0.5px;
+            text-shadow: 0 0 0.5px #fff, 0 0 0.5px #fff; /* Sutil mejora de nitidez */
+        }
+    }
+</style>
+
+<div class="container" id="precios-root">
+    <div class="search-container">
+        <h4><i class="fa fa-search"></i> Buscar Articulos</h4>
+        <div style="position:relative;">
+            <div class="search-flex">
+                <img src="~/Content/Zulia_log.bmp" alt="Logo" />
+                <div class="search-input-container">
+                    <input type="text"
+                           class="search-input"
+                           v-model="busqueda"
+                           v-on:focus="limpiarSugerencias"
+                           v-on:input="buscarSugerenciasDebounced"
+                           v-on:keyup.enter="buscar"
+                           placeholder="Codigo o descripcion del artculo..."
+                           autocomplete="off" />
+                    <button class="clear-button"
+                            v-if="busqueda"
+                            v-on:click="limpiarBusqueda"
+                            title="Limpiar búsqueda">
+                        <i class="fa fa-times"></i>
+                    </button>
+                    <button class="search-button"
+                            v-on:click="buscar"
+                            v-bind:disabled="!busqueda.trim() || cargando"
+                            title="Buscar">
+                        <i class="fa fa-search"></i>
+                    </button>
+                </div>
+            </div>
+            <ul v-if="sugerencias.length > 0" class="autocomplete-list list-group">
+                <li class="autocomplete-item list-group-item"
+                    v-for="(s, i) in sugerencias"
+                    :key="i"
+                    v-on:click="seleccionarSugerencia(s)">
+                    <i class="fa fa-cube"></i> [[ s ]]
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Filtros de Precios -->
+    <div class="filters-container">
+        <div class="filters-grid">
+            <div class="filter-item">
+                <input type="checkbox" id="precio1" v-model="filtrosPrecios.precio1" />
+                <label for="precio1">P1</label>
+            </div>
+            <div class="filter-item">
+                <input type="checkbox" id="precio2" v-model="filtrosPrecios.precio2" />
+                <label for="precio2">P2</label>
+            </div>
+            <div class="filter-item">
+                <input type="checkbox" id="precio3" v-model="filtrosPrecios.precio3" />
+                <label for="precio3">P3</label>
+            </div>
+            <div class="filter-item">
+                <input type="checkbox" id="precio4" v-model="filtrosPrecios.precio4" />
+                <label for="precio4">P4</label>
+            </div>
+            <div class="filter-item">
+                <input type="checkbox" id="precio5" v-model="filtrosPrecios.precio5" />
+                <label for="precio5">P5</label>
+            </div>
+        </div>
+    </div>
+
+    <!-- Resumen de resultados -->
+    <div v-if="resultados.length > 0 && hayPreciosSeleccionados" class="results-summary">
+        <i class="fa fa-info-circle"></i>
+        Mostrando [[ resultadosPaginados.length ]] de [[ resultados.length ]] articulos
+        (Pagina [[ paginaActual ]] de [[ totalPaginas ]])
+    </div>
+
+    <div v-if="resultadosPaginados.length > 0 && hayPreciosSeleccionados" class="mt-4">
+        <div class="card border-primary shadow-sm">
+            <div class="card-header bg-primary text-white d-flex align-items-center" style="font-size:1.15rem;">
+                <i class="fa fa-list-alt mr-2"></i>
+                <span class="ml-2">Resultados de precios de articulos</span>
+            </div>
+            <div class="card-body p-3" style="background:#f8fafc;">
+                <div class="table-responsive">
+                    <table class="table table-bordered mb-0" style="border-collapse: collapse; width: 100%;">
+                        <thead>
+                            <tr>
+                                <th class="text-center" style="width: 10%;"><i class="fa fa-id-card"></i> Codigo</th>
+                                <th class="text-center" style="width: 30%;"><i class="fa fa-cube"></i> Nombre</th>
+                                <th class="text-center" style="width: 5%;"><i class="fa fa-percentage"></i> IVA</th>
+                                <th class="text-center precio-header" v-if="filtrosPrecios.precio1" style="width: 8%;">P1</th>
+                                <th class="text-center precio-iva-header" v-if="filtrosPrecios.precio1 && tieneIVA16" style="width: 8%;">+IVA</th>
+                                <th class="text-center precio-header" v-if="filtrosPrecios.precio2" style="width: 8%;">P2</th>
+                                <th class="text-center precio-iva-header" v-if="filtrosPrecios.precio2 && tieneIVA16" style="width: 8%;">+IVA</th>
+                                <th class="text-center precio-header" v-if="filtrosPrecios.precio3" style="width: 8%;">P3</th>
+                                <th class="text-center precio-iva-header" v-if="filtrosPrecios.precio3 && tieneIVA16" style="width: 8%;">+IVA</th>
+                                <th class="text-center precio-header" v-if="filtrosPrecios.precio4" style="width: 8%;">P4</th>
+                                <th class="text-center precio-iva-header" v-if="filtrosPrecios.precio4 && tieneIVA16" style="width: 8%;">+IVA</th>
+                                <th class="text-center precio-header" v-if="filtrosPrecios.precio5" style="width: 8%;">P5</th>
+                                <th class="text-center precio-iva-header" v-if="filtrosPrecios.precio5 && tieneIVA16" style="width: 8%;">+IVA</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="(item, index) in resultadosPaginados"
+                                :key="item.co_art + '-' + index"
+                                :class="{
+                                    'table-active': item.co_art === busqueda,
+                                    'row-seleccionada': item.co_art === busqueda
+                                }"
+                                style="cursor:pointer;"
+                                v-on:click="seleccionarArticulo(item)">
+                                <td class="text-center" v-html="highlight(item.co_art)" style="font-weight: 500;"></td>
+                                <td v-html="highlight(item.art_des)" style="padding-left: 12px;"></td>
+                                <td class="text-center" v-html="highlight(item.iva)" style="font-weight: 500;"></td>
+                                <td class="text-end" v-if="filtrosPrecios.precio1" style="font-weight: 500;">[[ formatNumero(item.precio1) ]]</td>
+                                <td class="text-end" v-if="filtrosPrecios.precio1 && tieneIVA16" style="font-weight: 500;">[[ mostrarPrecioConIVA(item.precio1, item.tipo_imp) ]]</td>
+                                <td class="text-end" v-if="filtrosPrecios.precio2" style="font-weight: 500;">[[ formatNumero(item.precio2) ]]</td>
+                                <td class="text-end" v-if="filtrosPrecios.precio2 && tieneIVA16" style="font-weight: 500;">[[ mostrarPrecioConIVA(item.precio2, item.tipo_imp) ]]</td>
+                                <td class="text-end" v-if="filtrosPrecios.precio3" style="font-weight: 500;">[[ formatNumero(item.precio3) ]]</td>
+                                <td class="text-end" v-if="filtrosPrecios.precio3 && tieneIVA16" style="font-weight: 500;">[[ mostrarPrecioConIVA(item.precio3, item.tipo_imp) ]]</td>
+                                <td class="text-end" v-if="filtrosPrecios.precio4" style="font-weight: 500;">[[ formatNumero(item.precio4) ]]</td>
+                                <td class="text-end" v-if="filtrosPrecios.precio4 && tieneIVA16" style="font-weight: 500;">[[ mostrarPrecioConIVA(item.precio4, item.tipo_imp) ]]</td>
+                                <td class="text-end" v-if="filtrosPrecios.precio5" style="font-weight: 500;">[[ formatNumero(item.precio5) ]]</td>
+                                <td class="text-end" v-if="filtrosPrecios.precio5 && tieneIVA16" style="font-weight: 500;">[[ mostrarPrecioConIVA(item.precio5, item.tipo_imp) ]]</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        @*BOTON PDF*@
+
+        @*<button v-if="resultadosPaginados.length > 0" class="btn btn-primary mt-3" v-on:click="imprimirPDF">
+                <i class="fa fa-print"></i> Imprimir PDF
+            </button>*@
+    </div>
+
+    <nav v-if="totalPaginas > 1 && hayPreciosSeleccionados">
+        <ul class="pagination justify-content-center">
+            <li :class="['page-item', {disabled: paginaActual === 1}]">
+                <a class="page-link" href="#" v-on:click.prevent="cambiarPagina(paginaActual - 1)">
+                    <i class="fa fa-chevron-left"></i> Anterior
+                </a>
+            </li>
+            <li v-for="n in totalPaginas" :key="n" :class="['page-item', {active: paginaActual === n}]">
+                <a class="page-link" href="#" v-on:click.prevent="cambiarPagina(n)">[[ n ]]</a>
+            </li>
+            <li :class="['page-item', {disabled: paginaActual === totalPaginas}]">
+                <a class="page-link" href="#" v-on:click.prevent="cambiarPagina(paginaActual + 1)">
+                    Siguiente <i class="fa fa-chevron-right"></i>
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <div v-else-if="busqueda && !cargando && resultados.length === 0" class="no-results">
+        <i class="fa fa-search"></i>
+        <h5>No se encontraron articulos</h5>
+        <p>Intenta con otros términos de búsqueda o verifica la ortografia.</p>
+    </div>
+
+    <div v-else-if="resultados.length > 0 && !hayPreciosSeleccionados" class="alert alert-warning mt-3">
+        <i class="fa fa-exclamation-triangle"></i>
+        No hay precios seleccionados. Por favor, selecciona al menos un precio para ver los resultados.
+    </div>
+
+    <div v-if="cargando" class="loading-spinner">
+        <i class="fa fa-spinner fa-spin"></i> Buscando articulos...
+    </div>
+</div>
+
+@section scripts{
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:700&display=swap" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.9.0/axios.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+    <script>
+        function debounce(func, wait) {
+            let timeout;
+            return function (...args) {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func.apply(this, args), wait);
+            };
+        }
+
+        new Vue({
+            el: "#precios-root",
+            delimiters: ['[[', ']]'],
+            data: {
+                busqueda: '',
+                sugerencias: [],
+                resultados: [],
+                cargando: false,
+                todosResultados: [],
+                paginaActual: 1,
+                resultadosPorPagina: 10,
+                filtrosPrecios: {
+                    precio1: true,
+                    precio2: true,
+                    precio3: true,
+                    precio4: true,
+                    precio5: true
+                }
+            },
+            computed: {
+                resultadosPaginados() {
+                    const inicio = (this.paginaActual - 1) * this.resultadosPorPagina;
+                    return this.resultados.slice(inicio, inicio + this.resultadosPorPagina);
+                },
+                totalPaginas() {
+                    return Math.ceil(this.resultados.length / this.resultadosPorPagina);
+                },
+                tieneIVA16() {
+                    return this.resultadosPaginados.some(item => item.tipo_imp === "1");
+                },
+                hayPreciosSeleccionados() {
+                    return this.filtrosPrecios.precio1 ||
+                        this.filtrosPrecios.precio2 ||
+                        this.filtrosPrecios.precio3 ||
+                        this.filtrosPrecios.precio4 ||
+                        this.filtrosPrecios.precio5;
+                }
+            },
+            watch: {
+                filtrosPrecios: {
+                    handler() {
+                        if (this.resultados.length > 0) {
+                            this.paginaActual = 1;
+                        }
+                    },
+                    deep: true
+                }
+            },
+            methods: {
+                buscar() {
+                    if (!this.busqueda.trim()) {
+                        this.limpiarResultados();
+                        return;
+                    }
+                    this.limpiarResultados();
+                    this.cargando = true;
+                    axios.get('/Precios/Buscar', { params: { busqueda: this.busqueda } })
+                        .then(res => {
+                            this.resultados = res.data;
+                            this.todosResultados = res.data;
+                            this.paginaActual = 1;
+                        })
+                        .catch((error) => {
+                            console.error('Error en la búsqueda:', error);
+                            this.resultados = [];
+                            this.paginaActual = 1;
+                        })
+                        .finally(() => {
+                            this.cargando = false;
+                        });
+                },
+                limpiarResultados() {
+                    this.resultados = [];
+                    this.todosResultados = [];
+                    this.paginaActual = 1;
+                    this.sugerencias = [];
+                },
+                buscarSugerencias() {
+                    if (this.busqueda.length < 2) {
+                        this.sugerencias = [];
+                        return;
+                    }
+                    const texto = this.busqueda.toLowerCase();
+                    const sugerenciasSet = new Set();
+                    this.todosResultados.forEach(item => {
+                        if (item.art_des && item.art_des.toLowerCase().includes(texto)) {
+                            sugerenciasSet.add(item.art_des);
+                        }
+                        if (item.co_art && item.co_art.toLowerCase().includes(texto)) {
+                            sugerenciasSet.add(item.co_art);
+                        }
+                    });
+                    this.sugerencias = Array.from(sugerenciasSet).slice(0, 10);
+                },
+                seleccionarSugerencia(s) {
+                    this.busqueda = s;
+                    this.sugerencias = [];
+                    this.buscar();
+                },
+                limpiarSugerencias() {
+                    this.sugerencias = [];
+                },
+                limpiarBusqueda() {
+                    this.busqueda = '';
+                    this.sugerencias = [];
+                    this.resultados = [];
+                    this.todosResultados = [];
+                    this.paginaActual = 1;
+                },
+                cambiarPagina(pagina) {
+                    if (pagina > 0 && pagina <= this.totalPaginas) {
+                        this.paginaActual = pagina;
+                        this.$nextTick(() => {
+                            const table = document.querySelector('.table-responsive');
+                            if (table) {
+                                table.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                            }
+                        });
+                    }
+                },
+                formatNumero(valor) {
+                    if (valor == null || valor === '' || Number(valor) === 0) return '';
+                    return Number(valor).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                },
+                mostrarPrecioConIVA(precio, tipo_imp) {
+                    if (tipo_imp === "1") {
+                        return this.formatNumero(precio * 1.16);
+                    }
+                    return '';
+                },
+                highlight(text) {
+                    if (!this.busqueda) return text;
+                    const regex = new RegExp(`(${this.busqueda})`, 'gi');
+                    return text != null
+                        ? text.toString().replace(regex, '<span class="highlight">$1</span>')
+                        : '';
+                },
+                seleccionarTodos() {
+                    this.filtrosPrecios = {
+                        precio1: true,
+                        precio2: true,
+                        precio3: true,
+                        precio4: true,
+                        precio5: true
+                    };
+                },
+                deseleccionarTodos() {
+                    this.filtrosPrecios = {
+                        precio1: false,
+                        precio2: false,
+                        precio3: false,
+                        precio4: false,
+                        precio5: false
+                    };
+                },
+                seleccionarArticulo(item) {
+                    this.busqueda = item.co_art;
+                    console.log('Articulo seleccionado:', item);
+                },
+                imprimirPDF() {
+                    const { jsPDF } = window.jspdf;
+                    const doc = new jsPDF();
+                    doc.setFontSize(18);
+                    doc.text('Reporte de Precios de Articulos', 14, 22);
+                    doc.setFontSize(12);
+                    doc.text(`Búsqueda: ${this.busqueda}`, 14, 32);
+                    doc.text(`Fecha: ${new Date().toLocaleDateString()}`, 14, 40);
+                    doc.text(`Total de articulos: ${this.resultados.length}`, 14, 48);
+                    const headers = ['Codigo', 'Nombre', 'IVA'];
+                    if (this.filtrosPrecios.precio1) {
+                        headers.push('P1');
+                        if (this.tieneIVA16) headers.push('+IVA');
+                    }
+                    if (this.filtrosPrecios.precio2) {
+                        headers.push('P2');
+                        if (this.tieneIVA16) headers.push('+IVA');
+                    }
+                    if (this.filtrosPrecios.precio3) {
+                        headers.push('P3');
+                        if (this.tieneIVA16) headers.push('+IVA');
+                    }
+                    if (this.filtrosPrecios.precio4) {
+                        headers.push('P4');
+                        if (this.tieneIVA16) headers.push('+IVA');
+                    }
+                    if (this.filtrosPrecios.precio5) {
+                        headers.push('P5');
+                        if (this.tieneIVA16) headers.push('+IVA');
+                    }
+                    const data = this.resultados.map(item => {
+                        const row = [
+                            item.co_art,
+                            item.art_des,
+                            item.iva
+                        ];
+                        if (this.filtrosPrecios.precio1) {
+                            row.push(this.formatNumero(item.precio1));
+                            if (this.tieneIVA16) row.push(this.mostrarPrecioConIVA(item.precio1, item.tipo_imp));
+                        }
+                        if (this.filtrosPrecios.precio2) {
+                            row.push(this.formatNumero(item.precio2));
+                            if (this.tieneIVA16) row.push(this.mostrarPrecioConIVA(item.precio2, item.tipo_imp));
+                        }
+                        if (this.filtrosPrecios.precio3) {
+                            row.push(this.formatNumero(item.precio3));
+                            if (this.tieneIVA16) row.push(this.mostrarPrecioConIVA(item.precio3, item.tipo_imp));
+                        }
+                        if (this.filtrosPrecios.precio4) {
+                            row.push(this.formatNumero(item.precio4));
+                            if (this.tieneIVA16) row.push(this.mostrarPrecioConIVA(item.precio4, item.tipo_imp));
+                        }
+                        if (this.filtrosPrecios.precio5) {
+                            row.push(this.formatNumero(item.precio5));
+                            if (this.tieneIVA16) row.push(this.mostrarPrecioConIVA(item.precio5, item.tipo_imp));
+                        }
+                        return row;
+                    });
+                    doc.autoTable({
+                        head: [headers],
+                        body: data,
+                        startY: 60,
+                        styles: {
+                            fontSize: 8,
+                            cellPadding: 2
+                        },
+                        headStyles: {
+                            fillColor: [21, 101, 192],
+                            textColor: 255
+                        },
+                        alternateRowStyles: {
+                            fillColor: [248, 249, 250]
+                        }
+                    });
+                    doc.save(`precios_articulos_${this.busqueda}_${new Date().toISOString().split('T')[0]}.pdf`);
+                }
+            },
+            created() {
+                this.buscarSugerenciasDebounced = debounce(this.buscarSugerencias, 300);
+            }
+        });
+    </script>
+}

@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>@ViewBag.Title - APIS Sistema de Gestión</title>
+
+    <!-- PWA Meta Tags -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="APIS">
+    <meta name="application-name" content="APIS">
+    <meta name="msapplication-TileColor" content="#007bff">
+    <meta name="msapplication-config" content="/browserconfig.xml">
+    <meta name="theme-color" content="#007bff">
+
+    <!-- iOS Specific Meta Tags -->
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-touch-fullscreen" content="yes">
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/Content/manifest.json">
+
+    <!-- Apple Touch Icons -->
+    <link rel="apple-touch-icon" href="/Content/Imagen/logo-152x152.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/Content/Imagen/logo-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/Content/Imagen/logo-180x180.png">
+
+    <!-- iOS Splash Screens -->
+    <link rel="apple-touch-startup-image" href="/Content/Imagen/splash-2048x2732.png" media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2)">
+    <link rel="apple-touch-startup-image" href="/Content/Imagen/splash-1668x2388.png" media="(device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2)">
+    <link rel="apple-touch-startup-image" href="/Content/Imagen/splash-1536x2048.png" media="(device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2)">
+    <link rel="apple-touch-startup-image" href="/Content/Imagen/splash-1125x2436.png" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3)">
+    <link rel="apple-touch-startup-image" href="/Content/Imagen/splash-1242x2688.png" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3)">
+    <link rel="apple-touch-startup-image" href="/Content/Imagen/splash-750x1334.png" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2)">
+    <link rel="apple-touch-startup-image" href="/Content/Imagen/splash-640x1136.png" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)">
+
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+    <style>
+        .navbar-custom {
+            background: #1565c0 !important;
+            box-shadow: 0 2px 12px rgba(21,101,192,0.10);
+            min-height: 60px;
+        }
+
+            .navbar-custom .navbar-brand,
+            .navbar-custom .nav-link,
+            .navbar-custom .navbar-text {
+                color: #fff !important;
+                font-weight: 600;
+                letter-spacing: 0.5px;
+            }
+
+                .navbar-custom .nav-link.active,
+                .navbar-custom .nav-link:hover {
+                    background: #0d47a1 !important;
+                    color: #ffe082 !important;
+                    border-radius: 6px;
+                }
+
+        .navbar-brand img {
+            height: 32px;
+            margin-right: 10px;
+            border-radius: 6px;
+        }
+
+        .navbar-toggler {
+            border: none;
+            background: transparent !important;
+        }
+
+        .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba%28255,255,255,0.7%29' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+        }
+
+        /* Asegurar scroll en móvil */
+        @@media (max-width: 768px) {
+            body, html {
+                overflow-x: hidden;
+                overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .body-content {
+                overflow: visible;
+            }
+        }
+    </style>
+</head>
+<body>
+    @{
+        var currentController = ViewContext.RouteData.Values["controller"] != null ? ViewContext.RouteData.Values["controller"].ToString() : "";
+        var currentAction = ViewContext.RouteData.Values["action"] != null ? ViewContext.RouteData.Values["action"].ToString() : "";
+        string navbarTitle = "Clientes";
+        if (currentController == "Precios") { navbarTitle = "Articulos"; }
+        else if (currentController == "DocumentoCP") { navbarTitle = "Proveedores"; }
+        var usuario = Session["Usuario"] as string;
+    }
+    @if (User.Identity.IsAuthenticated)
+    {
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-custom">
+            <div class="container">
+                <a class="navbar-brand" href="@Url.Action("Index", "Home")">
+                    <img src="~/Content/Zulia_log.bmp" alt="Logo" />
+                    <span id="navbar-title">@navbarTitle</span>
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar"
+                        aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse d-sm-inline-flex justify-content-between" id="mainNavbar">
+                    <ul class="navbar-nav flex-grow-1">
+                        @*<li class="nav-item">
+                                <a class="nav-link @(currentController == "Home" ? "active" : "")" href="@Url.Action("Index", "Home")" data-title="Clientes">Clientes</a>
+                            </li>*@
+
+
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle @(currentController == "Home" ? "active" : "")"
+                               href="#"
+                               id="homenDropdown"
+                               role="button"
+                               data-bs-toggle="dropdown"
+                               aria-haspopup="true"
+                               aria-expanded="false">
+                                Clientes
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="cotizacionDropdown">
+                                <li><a class="dropdown-item" href="@Url.Action("Index", "HOME")">Facturas</a></li>
+                                <li><a class="dropdown-item" href="@Url.Action("Ped", "Pedidos")">Pedidos</a></li>
+                            </ul>
+                        </li>
+
+
+                        @if (usuario == "04" || usuario == "05" || usuario == "11")
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link @(currentController == "Precios" ? "active" : "")" href="@Url.Action("Precios", "Precios")" data-title="Articulos">Articulos</a>
+                            </li>
+                        }
+                        @if (usuario == "04" || usuario == "05")
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link @(currentController == "DocumentoCP" ? "active" : "")" href="@Url.Action("Index", "DocumentoCP")" data-title="Proveedores">Proveedores</a>
+                            </li>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle @(currentController == "Cotizacion" ? "active" : "")"
+                                   href="#"
+                                   id="cotizacionDropdown"
+                                   role="button"
+                                   data-bs-toggle="dropdown"
+                                   aria-haspopup="true"
+                                   aria-expanded="false">
+                                    Cotizacion
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="cotizacionDropdown">
+                                    <li><a class="dropdown-item" href="@Url.Action("Cotizacion", "Cotizacion")">Crear</a></li>
+                                    <li><a class="dropdown-item" href="@Url.Action("Vercotizacion", "Cotizacion")">Buscar</a></li>
+                                </ul>
+                            </li>
+                        }
+                    </ul>
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            @Html.ActionLink("Cerrar sesion", "Logout", "Account", null, new { @class = "nav-link" })
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    }
+    <div class="container body-content">
+        @RenderBody()
+        <hr />
+        <footer>
+            <p>&copy; @DateTime.Now.Year - APIS WM TOOLS</p>
+        </footer>
+    </div>
+    @* Referencias directas a los archivos JavaScript *@
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.6/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+    <script>
+        // Asegurarse de que jQuery esta cargado
+        if (typeof jQuery == 'undefined') {
+            console.error('jQuery no se ha cargado correctamente');
+        } else {
+            console.log('jQuery version ' + jQuery.fn.jquery + ' cargada correctamente');
+        }
+
+        // Soluciona el colapso del menu en moviles con Bootstrap 3/4
+        $(document).ready(function() {
+            console.log('Documento listo, inicializando menu...');
+            $('.navbar-toggler').on('click', function () {
+                $('#mainNavbar').collapse('toggle');
+            });
+
+            // Función para mantener viva la sesión
+            function keepSessionAlive() {
+                console.log('Manteniendo viva la sesión...');
+                $.get('@Url.Action("Ping", "KeepAlive")')
+                    .done(function(response) {
+                        console.log('Sesión mantenida con éxito');
+                    })
+                    .fail(function(xhr, status, error) {
+                        console.error('Error al mantener viva la sesión:', status, error);
+                    });
+            }
+
+            // Configurar temporizador de keep-alive (cada 5 minutos)
+            setInterval(keepSessionAlive, 5 * 60 * 1000);
+
+            // Redirección por inactividad (60 minutos en lugar de 15)
+            var inactivityTime = 60 * 60 * 1000; // 60 minutos
+            var inactivityTimer;
+
+            function resetInactivityTimer() {
+                clearTimeout(inactivityTimer);
+                inactivityTimer = setTimeout(function () {
+                    // Antes de redirigir, hacer una última llamada para limpiar la sesión
+                    $.get('@Url.Action("Logout", "Account")')
+                        .always(function() {
+                            window.location.href = '@Url.Action("Login", "Account")';
+                        });
+                }, inactivityTime);
+            }
+
+            // Reiniciar el temporizador con eventos de interacción del usuario
+            ['click', 'mousemove', 'keydown', 'scroll', 'touchstart'].forEach(function (evt) {
+                document.addEventListener(evt, resetInactivityTimer, false);
+            });
+
+            // Iniciar el temporizador de inactividad
+            resetInactivityTimer();
+
+            // Hacer una primera llamada al cargar la página
+            keepSessionAlive();
+        });
+
+        // PWA Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/Scripts/sw.js')
+                    .then(function(registration) {
+                        console.log('Service Worker registrado con éxito:', registration.scope);
+
+                        // Solicitar permisos para notificaciones
+                        if ('Notification' in window) {
+                            Notification.requestPermission();
+                        }
+                    })
+                    .catch(function(error) {
+                        console.log('Error al registrar Service Worker:', error);
+                    });
+            });
+        }
+
+        // PWA Install Prompt
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', function(e) {
+            e.preventDefault();
+            deferredPrompt = e;
+
+            // Mostrar botón de instalación si es necesario
+            showInstallButton();
+        });
+
+        function showInstallButton() {
+            // Crear botón de instalación si no existe
+            if (!document.getElementById('installButton')) {
+                const installBtn = document.createElement('button');
+                installBtn.id = 'installButton';
+                installBtn.className = 'btn btn-primary position-fixed';
+                installBtn.style.cssText = 'bottom: 20px; right: 20px; z-index: 1000; border-radius: 50px; padding: 12px 24px; box-shadow: 0 4px 12px rgba(0,123,255,0.3);';
+                installBtn.innerHTML = 'Instalar APP ZULIA';
+                installBtn.onclick = installPWA;
+
+                document.body.appendChild(installBtn);
+            }
+        }
+
+        function installPWA() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then(function(choiceResult) {
+                    if (choiceResult.outcome === 'accepted') {
+                        console.log('Usuario aceptó instalar la PWA');
+                    }
+                    deferredPrompt = null;
+                });
+            }
+        }
+
+        // Funcionalidades móviles adicionales
+        function enableMobileFeatures() {
+            // Detectar orientación del dispositivo
+            window.addEventListener('orientationchange', function() {
+                setTimeout(function() {
+                    // Ajustar layout según orientación
+                    if (window.orientation === 0 || window.orientation === 180) {
+                        document.body.classList.add('portrait');
+                        document.body.classList.remove('landscape');
+                    } else {
+                        document.body.classList.add('landscape');
+                        document.body.classList.remove('portrait');
+                    }
+                }, 100);
+            });
+
+            // Detectar si es dispositivo móvil
+            if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+                document.body.classList.add('mobile-device');
+
+                // Detectar específicamente iOS
+                const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+                if (isIOS) {
+                    document.body.classList.add('ios-device');
+                    enableIOSFeatures();
+                }
+
+                // Agregar estilos específicos para móviles
+                const mobileStyles = document.createElement('style');
+                mobileStyles.textContent = `
+                    .mobile-device .navbar-nav .dropdown-menu {
+                        position: static !important;
+                        float: none;
+                        width: auto;
+                        margin-top: 0;
+                        background-color: transparent;
+                        border: 0;
+                        box-shadow: none;
+                    }
+                    .mobile-device .dropdown-item {
+                        color: #fff !important;
+                        padding: 8px 20px;
+                    }
+                    .mobile-device .dropdown-item:hover {
+                        background-color: rgba(255,255,255,0.1) !important;
+                    }
+
+                    /* Estilos específicos para iOS */
+                    .ios-device .navbar-nav .dropdown-menu {
+                        -webkit-overflow-scrolling: touch;
+                    }
+                    .ios-device input, .ios-device select, .ios-device textarea {
+                        -webkit-appearance: none;
+                        border-radius: 0;
+                    }
+                    .ios-device .btn {
+                        -webkit-tap-highlight-color: transparent;
+                    }
+                `;
+                document.head.appendChild(mobileStyles);
+            }
+        }
+
+        // Funcionalidades específicas para iOS
+        function enableIOSFeatures() {
+            // Prevenir zoom en inputs en iOS
+            const inputs = document.querySelectorAll('input, select, textarea');
+            inputs.forEach(input => {
+                input.addEventListener('focus', function() {
+                    if (this.type !== 'file') {
+                        this.style.fontSize = '16px';
+                    }
+                });
+                input.addEventListener('blur', function() {
+                    if (this.type !== 'file') {
+                        this.style.fontSize = '';
+                    }
+                });
+            });
+
+            // Mejorar scrolling en iOS
+            document.body.style.webkitOverflowScrolling = 'touch';
+
+            // Prevenir comportamiento de pull-to-refresh en iOS
+            document.body.addEventListener('touchmove', function(e) {
+                if (e.target.closest('.scrollable-content')) {
+                    return;
+                }
+                if (window.scrollY === 0) {
+                    e.preventDefault();
+                }
+            }, { passive: false });
+
+            // Mostrar instrucciones de instalación para iOS
+            showIOSInstallInstructions();
+        }
+
+        // Mostrar instrucciones de instalación para iOS
+        function showIOSInstallInstructions() {
+            const isStandalone = window.navigator.standalone;
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+
+            if (isIOS && !isStandalone) {
+                // Crear banner de instalación para iOS
+                const iosBanner = document.createElement('div');
+                iosBanner.id = 'iosInstallBanner';
+                iosBanner.className = 'alert alert-info alert-dismissible fade show position-fixed';
+                iosBanner.style.cssText = 'top: 0; left: 0; right: 0; z-index: 1050; margin: 0; border-radius: 0; border: none;';
+                iosBanner.innerHTML = `
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <div class="flex-grow-1">
+                            <strong>Instalar APIS en tu iPhone:</strong><br>
+                            Toca <i class="fas fa-share"></i> y selecciona "Agregar a pantalla de inicio"
+                        </div>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                `;
+
+                document.body.appendChild(iosBanner);
+
+                // Ocultar banner después de 10 segundos
+                setTimeout(() => {
+                    if (iosBanner.parentNode) {
+                        iosBanner.remove();
+                    }
+                }, 10000);
+            }
+        }
+
+        // Inicializar funcionalidades móviles
+        enableMobileFeatures();
+    </script>
+    @RenderSection("scripts", required: false)
+</body>
+</html>

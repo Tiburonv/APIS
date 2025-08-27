@@ -1,0 +1,108 @@
+@model APIS.Models.DetalleCotizacionViewModel
+@{
+    ViewBag.Title = "Detalle de Cotización";
+    var cotizacion = Model.Cotizacion;
+}
+
+<div class="container mt-4">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-2">
+        <h2 class="mb-2 mb-md-0">Detalle de Cotizacion #@cotizacion.doc_num.Trim()</h2>
+        <a href="@Url.Action("Vercotizacion")" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left"></i> Volver al listado
+        </a>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Informacion General</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-12 col-md-6">
+                    <p><strong>Cliente:</strong> @Model.DescripcionCliente</p>
+                    <p><strong>Codigo de Cliente:</strong> @cotizacion.co_cli</p>
+                </div>
+                <div class="col-12 col-md-6">
+                    <p><strong>Numero de Cotizacion:</strong> @cotizacion.doc_num.Trim()</p>
+                    <p><strong>Fecha de Emision:</strong> @cotizacion.fec_emis.ToString("dd/MM/yyyy")</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Productos</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-striped table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Codigo</th>
+                            <th>Descripcion</th>
+                            <th class="text-end">Cantidad</th>
+                            <th class="text-end">Precio Unit.</th>
+                            <th class="text-end">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.Renglones)
+                        {
+                            <tr>
+                                <td>@item.co_art</td>
+                                <td>
+                                    @if (Model.DescripcionesArticulos.ContainsKey(item.co_art.Trim()))
+                                    {
+                                        @Model.DescripcionesArticulos[item.co_art.Trim()]
+                                    }
+                                    else
+                                    {
+                                        @item.co_art
+                                    }
+                                </td>
+                                <td class="text-end">@item.total_art.ToString("N2")</td>
+                                <td class="text-end">@item.prec_vta.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("en-US"))</td>
+                                <td class="text-end">@item.reng_neto.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("en-US"))</td>
+                            </tr>
+                        }
+                    </tbody>
+                    <tfoot class="table-light">
+                        <tr>
+                            <td colspan="4" class="text-end fw-bold">Subtotal:</td>
+                            <td class="text-end fw-bold">@cotizacion.total_bruto.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("en-US"))</td>
+                        </tr>
+                        <tr>
+                            <td colspan="4" class="text-end fw-bold">Impuestos:</td>
+                            <td class="text-end fw-bold">@cotizacion.monto_imp.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("en-US"))</td>
+                        </tr>
+                        <tr class="table-active">
+                            <td colspan="4" class="text-end fw-bold">Total Neto:</td>
+                            <td class="text-end fw-bold">@cotizacion.total_neto.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("en-US"))</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .table th {
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    .table td {
+        vertical-align: middle;
+    }
+
+    .card {
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+        margin-bottom: 1.5rem;
+    }
+
+    .card-header {
+        font-weight: 600;
+    }
+</style>

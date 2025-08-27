@@ -1,0 +1,81 @@
+﻿/* Set padding to keep content from hitting the edges */
+.body-content {
+    margin-top: 15px;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+/* Override the default bootstrap behavior where horizontal description lists 
+   will truncate terms that are too long to fit in the left column 
+*/
+.dl-horizontal dt {
+    white-space: normal;
+}
+
+/* Set width on the form input elements since they're 100% wide by default */
+input,
+select,
+textarea {
+    max-width: 280px;
+}
+
+/* CORRECCIÓN DEL MENÚ DROPDOWN DE CLIENTES */
+.navbar-nav .dropdown-menu {
+    position: absolute !important;
+    z-index: 1000 !important;
+    background: #fff !important;
+    border: 1px solid rgba(0,0,0,0.15) !important;
+    box-shadow: 0 6px 12px rgba(0,0,0,0.175) !important;
+    margin-top: 0 !important;
+}
+
+.navbar-nav .dropdown-menu.show {
+    display: block !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+.navbar-nav .dropdown-item {
+    color: #333 !important;
+    background: #fff !important;
+    padding: 8px 20px !important;
+    border-bottom: 1px solid rgba(0,0,0,0.1) !important;
+}
+
+.navbar-nav .dropdown-item:hover {
+    background: #f8f9fa !important;
+    color: #333 !important;
+}
+
+.navbar-nav .dropdown-item:last-child {
+    border-bottom: none !important;
+}
+
+/* Asegurar que el dropdown funcione en móviles */
+@media (max-width: 768px) {
+    .navbar-nav .dropdown-menu {
+        position: absolute !important;
+        left: 0 !important;
+        right: auto !important;
+        width: auto !important;
+        min-width: 200px !important;
+    }
+    
+    .navbar-nav .dropdown-toggle::after {
+        display: inline-block !important;
+        margin-left: 0.255em !important;
+        vertical-align: 0.255em !important;
+        content: "" !important;
+        border-top: 0.3em solid !important;
+        border-right: 0.3em solid transparent !important;
+        border-bottom: 0 !important;
+        border-left: 0.3em solid transparent !important;
+    }
+}
+
+/* Asegurar que el menú sea visible cuando está activo */
+.navbar-nav .nav-item.dropdown.show .dropdown-menu {
+    display: block !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+}
