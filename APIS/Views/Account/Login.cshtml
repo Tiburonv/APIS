@@ -1,4 +1,4 @@
-﻿@{
+@{
     ViewBag.Title = "Iniciar Sesión";
 }
 <style>
@@ -40,6 +40,19 @@
         .btn-primary:hover {
             background: #1d4ed8;
         }
+        
+    /* Estilos para el indicador de carga */
+    .spinner-border {
+        width: 1rem;
+        height: 1rem;
+        margin-right: 0.5rem;
+        vertical-align: middle;
+    }
+    
+    .btn-loading {
+        pointer-events: none;
+        opacity: 0.8;
+    }
 </style>
 <div class="d-flex justify-content-center align-items-start" style="min-height:100vh; padding-top:40px;">
 @*<div class="d-flex justify-content-center align-items-center" style="min-height:100vh;">*@
@@ -52,7 +65,7 @@
         {
             <div class="alert alert-danger">@ViewBag.Error</div>
         }
-        <form method="post">
+        <form method="post" id="loginForm">
             <div class="form-group mb-3">
                 <label>Usuario</label>
                 <input type="text" name="username" class="form-control" required autocomplete="username" />
@@ -61,7 +74,36 @@
                 <label>Contraseña</label>
                 <input type="password" name="password" class="form-control" required autocomplete="current-password" />
             </div>
-            <button type="submit" class="btn btn-primary btn-block w-100">Entrar</button>
+            <button type="submit" class="btn btn-primary btn-block w-100" id="loginButton">
+                <span id="buttonText">Entrar</span>
+                <span id="loadingSpinner" style="display:none;">
+                    <span class="spinner-border" role="status" aria-hidden="true"></span>
+                    Iniciando sesión...
+                </span>
+            </button>
         </form>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            $('#loginForm').on('submit', function(e) {
+                // Obtener el botón
+                var button = $('#loginButton');
+                var buttonText = $('#buttonText');
+                var loadingSpinner = $('#loadingSpinner');
+                
+                // Deshabilitar el botón y agregar clase de carga
+                button.prop('disabled', true).addClass('btn-loading');
+                
+                // Ocultar el texto normal y mostrar el spinner
+                buttonText.hide();
+                loadingSpinner.show();
+                
+                // Si hay un error, el formulario se recargará y el botón volverá a estar habilitado
+                // No necesitamos preventDefault() porque queremos que el formulario se envíe
+            });
+        });
+    </script>
+}
