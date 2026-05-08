@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <title>Limpiar Service Worker - APIS</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body { font-family: Segoe UI, sans-serif; max-width: 520px; margin: 40px auto; padding: 0 16px; }
+    button { padding: 12px 20px; font-size: 1rem; cursor: pointer; }
+    #log { white-space: pre-wrap; background: #f4f4f4; padding: 12px; margin-top: 16px; border-radius: 8px; }
+  </style>
+</head>
+<body>
+  <h1>Limpiar Service Worker</h1>
+  <p>Usa esta página si la app se ve en blanco por el error de FetchEvent / redirect.</p>
+  <button id="btn" type="button">Limpiar y recargar</button>
+  <div id="log">Esperando...</div>
+  <script>
+    function log(msg) {
+      document.getElementById('log').textContent += msg + '\n';
+    }
+
+    document.getElementById('btn').onclick = async function () {
+      document.getElementById('log').textContent = '';
+      try {
+        if ('serviceWorker' in navigator) {
+          var regs = await navigator.serviceWorker.getRegistrations();
+          log('Registrados: ' + regs.length);
+          for (var i = 0; i < regs.length; i++) {
+            await regs[i].unregister();
+            log('Unregister OK: ' + (regs[i].scope || ''));
+          }
+        }
+        if (window.caches) {
+          var keys = await caches.keys();
+          for (var j = 0; j < keys.length; j++) {
+            await caches.delete(keys[j]);
+            log('Cache borrado: ' + keys[j]);
+          }
+        }
+        log('Listo. Recargando a Login...');
+        setTimeout(function () {
+          location.href = '/Account/Login';
+        }, 600);
+      } catch (e) {
+        log('Error: ' + e);
+      }
+    };
+
+    // Auto-limpiar al abrir
+    document.getElementById('btn').click();
+  </script>
+</body>
+</html>

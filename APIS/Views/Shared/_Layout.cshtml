@@ -1,10 +1,15 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>@ViewBag.Title - APIS Sistema de Gestión</title>
+
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
     <!-- PWA Meta Tags -->
     <meta name="mobile-web-app-capable" content="yes">
@@ -12,17 +17,16 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="APIS">
     <meta name="application-name" content="APIS">
-    <meta name="msapplication-TileColor" content="#007bff">
+    <meta name="msapplication-TileColor" content="#1565c0">
     <meta name="msapplication-config" content="/browserconfig.xml">
-    <meta name="theme-color" content="#007bff">
+    <meta name="theme-color" content="#0f172a">
 
     <!-- iOS Specific Meta Tags -->
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="format-detection" content="telephone=no">
     <meta name="apple-touch-fullscreen" content="yes">
 
     <!-- PWA Manifest -->
-    <link rel="manifest" href="/Content/manifest.json">
+    <link rel="manifest" href="/Content/manifest.json?v=3">
 
     <!-- Apple Touch Icons -->
     <link rel="apple-touch-icon" href="/Content/Imagen/logo-152x152.png">
@@ -38,190 +42,380 @@
     <link rel="apple-touch-startup-image" href="/Content/Imagen/splash-750x1334.png" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2)">
     <link rel="apple-touch-startup-image" href="/Content/Imagen/splash-640x1136.png" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)">
 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
+
     <style>
+        /* =============================================
+           NAVBAR v2 - Dark Gradient + Premium Feel
+           ============================================= */
         .navbar-custom {
-            background: #1565c0 !important;
-            box-shadow: 0 2px 12px rgba(21,101,192,0.10);
-            min-height: 60px;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 60%, #1a3a6e 100%);
+            box-shadow: 0 2px 16px rgba(0,0,0,0.2), 0 1px 0 rgba(255,255,255,0.04);
+            padding-top: 0.6rem;
+            padding-bottom: 0.6rem;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
         }
 
-            .navbar-custom .navbar-brand,
-            .navbar-custom .nav-link,
-            .navbar-custom .navbar-text {
-                color: #fff !important;
-                font-weight: 600;
-                letter-spacing: 0.5px;
+        .navbar-custom .navbar-brand {
+            font-weight: 800;
+            font-size: 1.25rem;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            letter-spacing: -0.03em;
+            transition: opacity 0.2s ease;
+        }
+        .navbar-custom .navbar-brand:hover { opacity: 0.85; }
+
+        .navbar-brand .brand-logo {
+            height: 34px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            background: #fff;
+            padding: 2px;
+            transition: transform 0.2s ease;
+        }
+        .navbar-custom .navbar-brand:hover .brand-logo { transform: scale(1.05); }
+
+        .brand-text-wrap { display: flex; flex-direction: column; line-height: 1.1; }
+        .brand-name { font-size: 1.1rem; font-weight: 800; color: #fff; letter-spacing: -0.02em; }
+        .brand-tagline { font-size: 0.62rem; font-weight: 400; color: rgba(255,255,255,0.45); letter-spacing: 0.12em; text-transform: uppercase; }
+
+        /* Nav Links */
+        .navbar-custom .nav-link {
+            color: rgba(255,255,255,0.78) !important;
+            font-weight: 500;
+            font-size: 0.9rem;
+            padding: 0.5rem 0.9rem !important;
+            border-radius: 8px;
+            margin: 0 2px;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+        .navbar-custom .nav-link i { margin-right: 5px; width: 16px; text-align: center; opacity: 0.8; }
+        .navbar-custom .nav-link:hover {
+            color: #fff !important;
+            background: rgba(255,255,255,0.1);
+        }
+        .navbar-custom .nav-link.active {
+            color: #fff !important;
+            background: rgba(59,130,246,0.25);
+        }
+        .navbar-custom .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px; left: 50%;
+            transform: translateX(-50%);
+            width: 24px; height: 2px;
+            background: #60a5fa;
+            border-radius: 2px;
+        }
+
+        /* Toggler */
+        .navbar-custom .navbar-toggler {
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 8px;
+            padding: 0.4rem 0.65rem;
+        }
+        .navbar-custom .navbar-toggler:focus { box-shadow: 0 0 0 3px rgba(96,165,250,0.3); }
+
+        /* User Dropdown Button */
+        .user-dropdown-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255,255,255,0.07);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 20px;
+            padding: 5px 14px 5px 7px !important;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .user-dropdown-btn:hover {
+            background: rgba(255,255,255,0.15) !important;
+            border-color: rgba(255,255,255,0.22);
+        }
+
+        .user-avatar {
+            width: 30px; height: 30px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.75rem; font-weight: 700; color: #fff;
+            flex-shrink: 0;
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+        }
+
+        .user-info { display: flex; flex-direction: column; line-height: 1.15; }
+        .user-name { font-size: 0.85rem; font-weight: 600; color: #fff; }
+        .user-role { font-size: 0.65rem; font-weight: 500; color: rgba(255,255,255,0.45); text-transform: uppercase; letter-spacing: 0.08em; }
+
+        /* Breadcrumb Bar */
+        .global-breadcrumb {
+            background: rgba(15, 23, 42, 0.65);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 6px 0;
+            position: relative;
+            z-index: 1;
+        }
+        .global-breadcrumb .breadcrumb {
+            margin-bottom: 0;
+            background: transparent;
+        }
+        .global-breadcrumb .breadcrumb-item,
+        .global-breadcrumb .breadcrumb-item a {
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 0.85rem;
+        }
+        .global-breadcrumb .breadcrumb-item a:hover {
+            color: #60a5fa;
+        }
+        .global-breadcrumb .breadcrumb-item.active {
+            color: #f1f5f9;
+            font-weight: 600;
+        }
+        .global-breadcrumb .breadcrumb-item + .breadcrumb-item::before {
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        @@media (max-width: 991px) {
+            .navbar-custom .navbar-collapse {
+                background: rgba(15,23,42,0.97);
+                border-radius: 12px;
+                margin-top: 8px;
+                padding: 12px;
+                border: 1px solid rgba(255,255,255,0.06);
             }
-
-                .navbar-custom .nav-link.active,
-                .navbar-custom .nav-link:hover {
-                    background: #0d47a1 !important;
-                    color: #ffe082 !important;
-                    border-radius: 6px;
-                }
-
-        .navbar-brand img {
-            height: 32px;
-            margin-right: 10px;
-            border-radius: 6px;
-        }
-
-        .navbar-toggler {
-            border: none;
-            background: transparent !important;
-        }
-
-        .navbar-toggler-icon {
-            background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba%28255,255,255,0.7%29' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
-        }
-
-        /* Asegurar scroll en móvil */
-        @@media (max-width: 768px) {
-            body, html {
-                overflow-x: hidden;
-                overflow-y: auto;
-                -webkit-overflow-scrolling: touch;
-            }
-
-            .body-content {
-                overflow: visible;
-            }
+            .navbar-custom .nav-link { margin: 2px 0; }
+            .user-dropdown-btn { margin-top: 8px; border-radius: 12px !important; padding: 10px 14px !important; }
+            .user-info { display: flex; }
         }
     </style>
 </head>
 <body>
+    <!-- Fondo Tecnológico Global (Rayas y destellos del Login) -->
+    <div class="app-bg-glow" aria-hidden="true"></div>
+    <div class="app-bg-grid" aria-hidden="true"></div>
+
     @{
         var currentController = ViewContext.RouteData.Values["controller"] != null ? ViewContext.RouteData.Values["controller"].ToString() : "";
         var currentAction = ViewContext.RouteData.Values["action"] != null ? ViewContext.RouteData.Values["action"].ToString() : "";
-        string navbarTitle = "Clientes";
-        if (currentController == "Precios") { navbarTitle = "Articulos"; }
-        else if (currentController == "DocumentoCP") { navbarTitle = "Proveedores"; }
-        var usuario = Session["Usuario"] as string;
+        var usuario = (Session["Usuario"] as string) ?? (User.Identity.IsAuthenticated ? User.Identity.Name : string.Empty);
+        var nombreUsuario = (Session["NombreUsuario"] as string) ?? usuario;
+        var esAdmin = usuario == "999";
+    }
+    @{
+        var displayName = string.IsNullOrEmpty(nombreUsuario) ? usuario : nombreUsuario;
+        var avatarInitials = !string.IsNullOrEmpty(displayName) && displayName.Length >= 2
+            ? displayName.Substring(0, 2).ToUpper()
+            : (!string.IsNullOrEmpty(displayName) ? displayName.Substring(0, 1).ToUpper() : "U");
+        var rolLabel = esAdmin ? "Admin" : "Vendedor";
+
+        // Breadcrumb mapping
+        var bcSection = "";
+        var bcPage = "";
+        if (currentController == "Home")           { bcSection = "Clientes"; bcPage = currentAction == "DetalleDocumento" ? "Detalle" : "Facturas"; }
+        else if (currentController == "Pedidos")   { bcSection = "Clientes"; bcPage = "Pedidos"; }
+        else if (currentController == "Precios")   { bcSection = "Artículos"; bcPage = "Lista de Precios"; }
+        else if (currentController == "ConfigEmpresa") { bcSection = "Administración"; bcPage = "Empresa"; }
+        else if (currentController == "DocumentoCP") { bcSection = "Proveedores"; bcPage = "Documentos"; }
+        else if (currentController == "Pago")      { bcSection = "Proveedores"; bcPage = "Pagos"; }
+        else if (currentController == "Cotizacion") { bcSection = "Cotización"; bcPage = currentAction == "Vercotizacion" ? "Buscar" : "Crear"; }
     }
     @if (User.Identity.IsAuthenticated)
     {
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-custom">
-            <div class="container">
+        <nav class="navbar navbar-expand-lg navbar-dark navbar-custom sticky-top">
+            <div class="container-fluid">
                 <a class="navbar-brand" href="@Url.Action("Index", "Home")">
-                    <img src="~/Content/Zulia_log.bmp" alt="Logo" />
-                    <span id="navbar-title">@navbarTitle</span>
+                    <img src="~/Content/Zulia_log.bmp" alt="Logo" class="brand-logo" />
+                    <div class="brand-text-wrap">
+                        <span class="brand-name">APIS</span>
+                        <span class="brand-tagline">Gestión Empresarial</span>
+                    </div>
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar"
                         aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="collapse navbar-collapse d-sm-inline-flex justify-content-between" id="mainNavbar">
-                    <ul class="navbar-nav flex-grow-1">
-                        @*<li class="nav-item">
-                                <a class="nav-link @(currentController == "Home" ? "active" : "")" href="@Url.Action("Index", "Home")" data-title="Clientes">Clientes</a>
-                            </li>*@
-
+                <div class="collapse navbar-collapse" id="mainNavbar">
+                    <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
 
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle @(currentController == "Home" ? "active" : "")"
-                               href="#"
-                               id="homenDropdown"
-                               role="button"
-                               data-bs-toggle="dropdown"
-                               aria-haspopup="true"
-                               aria-expanded="false">
-                                Clientes
+                            <a class="nav-link dropdown-toggle @(currentController == "Home" || currentController == "Pedidos" ? "active" : "")"
+                               href="#" id="clientsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-users"></i> Clientes
                             </a>
-                            <ul class="dropdown-menu" aria-labelledby="cotizacionDropdown">
-                                <li><a class="dropdown-item" href="@Url.Action("Index", "HOME")">Facturas</a></li>
-                                <li><a class="dropdown-item" href="@Url.Action("Ped", "Pedidos")">Pedidos</a></li>
+                            <ul class="dropdown-menu" aria-labelledby="clientsDropdown">
+                                <li><a class="dropdown-item" href="@Url.Action("Index", "Home")"><i class="fas fa-file-invoice" style="color:#1565c0"></i> Facturas</a></li>
+                                <li><a class="dropdown-item" href="@Url.Action("Ped", "Pedidos")"><i class="fas fa-shopping-cart" style="color:#059669"></i> Pedidos</a></li>
                             </ul>
                         </li>
 
-
-                        @if (usuario == "04" || usuario == "05" || usuario == "11")
+                        @if (esAdmin || usuario == "04" || usuario == "05" || usuario == "11")
                         {
                             <li class="nav-item">
-                                <a class="nav-link @(currentController == "Precios" ? "active" : "")" href="@Url.Action("Precios", "Precios")" data-title="Articulos">Articulos</a>
+                                <a class="nav-link @(currentController == "Precios" ? "active" : "")" href="@Url.Action("Precios", "Precios")">
+                                    <i class="fas fa-tags"></i> Artículos
+                                </a>
                             </li>
                         }
-                        @if (usuario == "04" || usuario == "05")
+                        @if (esAdmin)
                         {
                             <li class="nav-item">
-                                <a class="nav-link @(currentController == "DocumentoCP" ? "active" : "")" href="@Url.Action("Index", "DocumentoCP")" data-title="Proveedores">Proveedores</a>
+                                <a class="nav-link @(currentController == "ConfigEmpresa" ? "active" : "")" href="@Url.Action("Index", "ConfigEmpresa")">
+                                    <i class="fas fa-building"></i> Empresa
+                                </a>
+                            </li>
+                        }
+                        @if (esAdmin || usuario == "04" || usuario == "05")
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle @(currentController == "DocumentoCP" || currentController == "Pago" ? "active" : "")"
+                                   href="#" id="proveedoresDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fas fa-truck-moving"></i> Proveedores
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="proveedoresDropdown">
+                                    <li><a class="dropdown-item" href="@Url.Action("Index", "DocumentoCP")"><i class="fas fa-file-invoice-dollar" style="color:#1565c0"></i> Documentos</a></li>
+                                    <li><a class="dropdown-item" href="@Url.Action("Pagos", "Pago")"><i class="fas fa-money-check-alt" style="color:#059669"></i> Pagos</a></li>
+                                </ul>
                             </li>
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle @(currentController == "Cotizacion" ? "active" : "")"
-                                   href="#"
-                                   id="cotizacionDropdown"
-                                   role="button"
-                                   data-bs-toggle="dropdown"
-                                   aria-haspopup="true"
-                                   aria-expanded="false">
-                                    Cotizacion
+                                   href="#" id="quotesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fas fa-file-signature"></i> Cotización
                                 </a>
-                                <ul class="dropdown-menu" aria-labelledby="cotizacionDropdown">
-                                    <li><a class="dropdown-item" href="@Url.Action("Cotizacion", "Cotizacion")">Crear</a></li>
-                                    <li><a class="dropdown-item" href="@Url.Action("Vercotizacion", "Cotizacion")">Buscar</a></li>
+                                <ul class="dropdown-menu" aria-labelledby="quotesDropdown">
+                                    <li><a class="dropdown-item" href="@Url.Action("Cotizacion", "Cotizacion")"><i class="fas fa-plus-circle" style="color:#1565c0"></i> Crear</a></li>
+                                    <li><a class="dropdown-item" href="@Url.Action("Vercotizacion", "Cotizacion")"><i class="fas fa-search" style="color:#64748b"></i> Buscar</a></li>
                                 </ul>
                             </li>
                         }
                     </ul>
+                    <!-- User dropdown -->
                     <ul class="navbar-nav">
-                        <li class="nav-item">
-                            @Html.ActionLink("Cerrar sesion", "Logout", "Account", null, new { @class = "nav-link" })
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle user-dropdown-btn" href="#" id="userDropdown"
+                               role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <div class="user-avatar">@avatarInitials</div>
+                                <div class="user-info d-none d-lg-flex">
+                                    <span class="user-name">@displayName</span>
+                                    <span class="user-role">@rolLabel</span>
+                                </div>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                <li>
+                                    <div style="padding:10px 14px 8px; border-bottom:1px solid #f1f5f9; margin-bottom:4px;">
+                                        <div style="font-weight:700;font-size:0.9rem;color:#0f172a;">@displayName</div>
+                                        <div style="font-size:0.75rem;color:#64748b;">@rolLabel · Cód. @usuario</div>
+                                    </div>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item text-danger" href="@Url.Action("Logout", "Account")">
+                                        <i class="fas fa-sign-out-alt"></i> Cerrar sesión
+                                    </a>
+                                </li>
+                            </ul>
                         </li>
                     </ul>
                 </div>
             </div>
         </nav>
+
+        if (!string.IsNullOrEmpty(bcSection))
+        {
+            <div class="global-breadcrumb">
+                <div class="container-fluid" style="padding: 0 16px;">
+                    <nav class="breadcrumb-bar" aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")"><i class="fas fa-home" style="font-size:0.75rem;"></i> Inicio</a></li>
+                            <li class="breadcrumb-item">@bcSection</li>
+                            <li class="breadcrumb-item active" aria-current="page">@bcPage</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        }
     }
-    <div class="container body-content">
+
+    <!-- Contenedor Global de Notificaciones Toast -->
+    <div id="toast-container" aria-live="polite" aria-atomic="true"></div>
+
+    <div class="container-fluid body-content">
         @RenderBody()
-        <hr />
-        <footer>
-            <p>&copy; @DateTime.Now.Year - APIS WM TOOLS</p>
+        <footer style="text-align:center; color: #94a3b8; padding: 24px 0 16px; border-top: 1px solid rgba(255,255,255,0.08); margin-top: 32px;">
+            <strong style="color:#ffffff;">APIS</strong> · WM Tools &nbsp;·&nbsp; Sistema de Gestión Empresarial &nbsp;&copy; @DateTime.Now.Year
         </footer>
     </div>
-    @* Referencias directas a los archivos JavaScript *@
+
+    <!-- Scripts Base -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.6/umd/popper.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Asegurarse de que jQuery esta cargado
-        if (typeof jQuery == 'undefined') {
-            console.error('jQuery no se ha cargado correctamente');
-        } else {
-            console.log('jQuery version ' + jQuery.fn.jquery + ' cargada correctamente');
-        }
+        // Sistema Global de Notificaciones Toasts
+        window.mostrarNotificacion = function(tipo, mensaje, duracion = 3800) {
+            const container = document.getElementById('toast-container');
+            if (!container) return;
 
-        // Soluciona el colapso del menu en moviles con Bootstrap 3/4
+            const iconMap = {
+                'success': '<i class="fas fa-check-circle text-success fs-5"></i>',
+                'error': '<i class="fas fa-exclamation-circle text-danger fs-5"></i>',
+                'warning': '<i class="fas fa-exclamation-triangle text-warning fs-5"></i>',
+                'info': '<i class="fas fa-info-circle text-info fs-5"></i>'
+            };
+
+            const toast = document.createElement('div');
+            toast.className = `custom-toast toast-${tipo || 'info'}`;
+            toast.innerHTML = `
+                ${iconMap[tipo] || iconMap['info']}
+                <div class="flex-grow-1">${mensaje}</div>
+                <button type="button" class="btn-close btn-close-sm" style="font-size:0.75rem;"></button>
+            `;
+
+            toast.querySelector('.btn-close').onclick = function() {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(40px)';
+                setTimeout(() => toast.remove(), 250);
+            };
+
+            container.appendChild(toast);
+
+            setTimeout(function() {
+                if (toast.parentNode) {
+                    toast.style.opacity = '0';
+                    toast.style.transform = 'translateX(40px)';
+                    toast.style.transition = 'all 0.25s ease';
+                    setTimeout(() => toast.remove(), 250);
+                }
+            }, duracion);
+        };
+
         $(document).ready(function() {
-            console.log('Documento listo, inicializando menu...');
-            $('.navbar-toggler').on('click', function () {
-                $('#mainNavbar').collapse('toggle');
-            });
-
             // Función para mantener viva la sesión
             function keepSessionAlive() {
-                console.log('Manteniendo viva la sesión...');
                 $.get('@Url.Action("Ping", "KeepAlive")')
-                    .done(function(response) {
-                        console.log('Sesión mantenida con éxito');
-                    })
                     .fail(function(xhr, status, error) {
-                        console.error('Error al mantener viva la sesión:', status, error);
+                        console.warn('Keep-alive status:', status);
                     });
             }
 
-            // Configurar temporizador de keep-alive (cada 5 minutos)
+            // Temporizador de keep-alive (cada 5 minutos)
             setInterval(keepSessionAlive, 5 * 60 * 1000);
 
-            // Redirección por inactividad (60 minutos en lugar de 15)
-            var inactivityTime = 60 * 60 * 1000; // 60 minutos
+            // Redirección por inactividad (60 minutos)
+            var inactivityTime = 60 * 60 * 1000;
             var inactivityTimer;
 
             function resetInactivityTimer() {
                 clearTimeout(inactivityTimer);
                 inactivityTimer = setTimeout(function () {
-                    // Antes de redirigir, hacer una última llamada para limpiar la sesión
                     $.get('@Url.Action("Logout", "Account")')
                         .always(function() {
                             window.location.href = '@Url.Action("Login", "Account")';
@@ -229,32 +423,35 @@
                 }, inactivityTime);
             }
 
-            // Reiniciar el temporizador con eventos de interacción del usuario
             ['click', 'mousemove', 'keydown', 'scroll', 'touchstart'].forEach(function (evt) {
-                document.addEventListener(evt, resetInactivityTimer, false);
+                document.addEventListener(evt, resetInactivityTimer, { passive: true });
             });
 
-            // Iniciar el temporizador de inactividad
             resetInactivityTimer();
-
-            // Hacer una primera llamada al cargar la página
             keepSessionAlive();
         });
 
-        // PWA Service Worker Registration
+        // PWA: registro de Service Worker seguro
         if ('serviceWorker' in navigator) {
-            window.addEventListener('load', function() {
-                navigator.serviceWorker.register('/Scripts/sw.js')
-                    .then(function(registration) {
-                        console.log('Service Worker registrado con éxito:', registration.scope);
-
-                        // Solicitar permisos para notificaciones
-                        if ('Notification' in window) {
-                            Notification.requestPermission();
-                        }
+            window.addEventListener('load', function () {
+                navigator.serviceWorker.getRegistrations()
+                    .then(function (regs) {
+                        return Promise.all(regs.map(function (reg) { return reg.unregister(); }));
                     })
-                    .catch(function(error) {
-                        console.log('Error al registrar Service Worker:', error);
+                    .then(function () {
+                        if (!window.caches || !caches.keys) return;
+                        return caches.keys().then(function (keys) {
+                            return Promise.all(keys.map(function (key) { return caches.delete(key); }));
+                        });
+                    })
+                    .then(function () {
+                        return navigator.serviceWorker.register('/sw.js');
+                    })
+                    .then(function (registration) {
+                        console.log('SW activo:', registration.scope);
+                    })
+                    .catch(function (error) {
+                        console.log('SW:', error);
                     });
             });
         }
@@ -264,21 +461,17 @@
         window.addEventListener('beforeinstallprompt', function(e) {
             e.preventDefault();
             deferredPrompt = e;
-
-            // Mostrar botón de instalación si es necesario
             showInstallButton();
         });
 
         function showInstallButton() {
-            // Crear botón de instalación si no existe
             if (!document.getElementById('installButton')) {
                 const installBtn = document.createElement('button');
                 installBtn.id = 'installButton';
-                installBtn.className = 'btn btn-primary position-fixed';
-                installBtn.style.cssText = 'bottom: 20px; right: 20px; z-index: 1000; border-radius: 50px; padding: 12px 24px; box-shadow: 0 4px 12px rgba(0,123,255,0.3);';
-                installBtn.innerHTML = 'Instalar APP ZULIA';
+                installBtn.className = 'btn btn-primary position-fixed shadow-lg';
+                installBtn.style.cssText = 'bottom: 24px; right: 24px; z-index: 990; border-radius: 50px; padding: 10px 22px; font-weight:600;';
+                installBtn.innerHTML = '<i class="fas fa-download me-1"></i> Instalar APIS';
                 installBtn.onclick = installPWA;
-
                 document.body.appendChild(installBtn);
             }
         }
@@ -287,146 +480,10 @@
             if (deferredPrompt) {
                 deferredPrompt.prompt();
                 deferredPrompt.userChoice.then(function(choiceResult) {
-                    if (choiceResult.outcome === 'accepted') {
-                        console.log('Usuario aceptó instalar la PWA');
-                    }
                     deferredPrompt = null;
                 });
             }
         }
-
-        // Funcionalidades móviles adicionales
-        function enableMobileFeatures() {
-            // Detectar orientación del dispositivo
-            window.addEventListener('orientationchange', function() {
-                setTimeout(function() {
-                    // Ajustar layout según orientación
-                    if (window.orientation === 0 || window.orientation === 180) {
-                        document.body.classList.add('portrait');
-                        document.body.classList.remove('landscape');
-                    } else {
-                        document.body.classList.add('landscape');
-                        document.body.classList.remove('portrait');
-                    }
-                }, 100);
-            });
-
-            // Detectar si es dispositivo móvil
-            if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-                document.body.classList.add('mobile-device');
-
-                // Detectar específicamente iOS
-                const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-                if (isIOS) {
-                    document.body.classList.add('ios-device');
-                    enableIOSFeatures();
-                }
-
-                // Agregar estilos específicos para móviles
-                const mobileStyles = document.createElement('style');
-                mobileStyles.textContent = `
-                    .mobile-device .navbar-nav .dropdown-menu {
-                        position: static !important;
-                        float: none;
-                        width: auto;
-                        margin-top: 0;
-                        background-color: transparent;
-                        border: 0;
-                        box-shadow: none;
-                    }
-                    .mobile-device .dropdown-item {
-                        color: #fff !important;
-                        padding: 8px 20px;
-                    }
-                    .mobile-device .dropdown-item:hover {
-                        background-color: rgba(255,255,255,0.1) !important;
-                    }
-
-                    /* Estilos específicos para iOS */
-                    .ios-device .navbar-nav .dropdown-menu {
-                        -webkit-overflow-scrolling: touch;
-                    }
-                    .ios-device input, .ios-device select, .ios-device textarea {
-                        -webkit-appearance: none;
-                        border-radius: 0;
-                    }
-                    .ios-device .btn {
-                        -webkit-tap-highlight-color: transparent;
-                    }
-                `;
-                document.head.appendChild(mobileStyles);
-            }
-        }
-
-        // Funcionalidades específicas para iOS
-        function enableIOSFeatures() {
-            // Prevenir zoom en inputs en iOS
-            const inputs = document.querySelectorAll('input, select, textarea');
-            inputs.forEach(input => {
-                input.addEventListener('focus', function() {
-                    if (this.type !== 'file') {
-                        this.style.fontSize = '16px';
-                    }
-                });
-                input.addEventListener('blur', function() {
-                    if (this.type !== 'file') {
-                        this.style.fontSize = '';
-                    }
-                });
-            });
-
-            // Mejorar scrolling en iOS
-            document.body.style.webkitOverflowScrolling = 'touch';
-
-            // Prevenir comportamiento de pull-to-refresh en iOS
-            document.body.addEventListener('touchmove', function(e) {
-                if (e.target.closest('.scrollable-content')) {
-                    return;
-                }
-                if (window.scrollY === 0) {
-                    e.preventDefault();
-                }
-            }, { passive: false });
-
-            // Mostrar instrucciones de instalación para iOS
-            showIOSInstallInstructions();
-        }
-
-        // Mostrar instrucciones de instalación para iOS
-        function showIOSInstallInstructions() {
-            const isStandalone = window.navigator.standalone;
-            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-
-            if (isIOS && !isStandalone) {
-                // Crear banner de instalación para iOS
-                const iosBanner = document.createElement('div');
-                iosBanner.id = 'iosInstallBanner';
-                iosBanner.className = 'alert alert-info alert-dismissible fade show position-fixed';
-                iosBanner.style.cssText = 'top: 0; left: 0; right: 0; z-index: 1050; margin: 0; border-radius: 0; border: none;';
-                iosBanner.innerHTML = `
-                    <div class="d-flex align-items-center">
-                        <i class="fas fa-info-circle me-2"></i>
-                        <div class="flex-grow-1">
-                            <strong>Instalar APIS en tu iPhone:</strong><br>
-                            Toca <i class="fas fa-share"></i> y selecciona "Agregar a pantalla de inicio"
-                        </div>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                    </div>
-                `;
-
-                document.body.appendChild(iosBanner);
-
-                // Ocultar banner después de 10 segundos
-                setTimeout(() => {
-                    if (iosBanner.parentNode) {
-                        iosBanner.remove();
-                    }
-                }, 10000);
-            }
-        }
-
-        // Inicializar funcionalidades móviles
-        enableMobileFeatures();
     </script>
     @RenderSection("scripts", required: false)
 </body>

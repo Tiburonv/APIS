@@ -6,39 +6,39 @@
 <div class="container mt-4">
     <div class="row justify-content-center">
         <div class="col-md-8">
-            <div class="card border-danger">
+            <div class="card border-danger shadow-sm">
                 <div class="card-header bg-danger text-white">
-                    <h4 class="mb-0">
-                        <i class="fas fa-exclamation-triangle"></i> Error en la Aplicación
+                    <h4 class="mb-0 text-white">
+                        <i class="fas fa-exclamation-triangle me-2"></i> Error en la Aplicacion
                     </h4>
                 </div>
-                <div class="card-body">
+                <div class="card-body p-4">
                     <div class="alert alert-warning">
                         <h5>Ha ocurrido un error inesperado</h5>
-                        <p>Lo sentimos, ha ocurrido un error al procesar su solicitud. Por favor, intente nuevamente.</p>
+                        <p class="mb-0">Lo sentimos, ha ocurrido un error al procesar su solicitud. Por favor, intente nuevamente.</p>
                     </div>
 
                     @if (Model != null)
                     {
-                        <div class="mt-3">
+                        <div class="mt-3 p-3 bg-light rounded">
                             <h6>Detalles del Error:</h6>
-                            <ul class="list-unstyled">
+                            <ul class="list-unstyled mb-0">
                                 <li><strong>Controlador:</strong> @Model.ControllerName</li>
-                                <li><strong>Acción:</strong> @Model.ActionName</li>
+                                <li><strong>Accion:</strong> @Model.ActionName</li>
                                 @if (Model.Exception != null)
                                 {
-                                    <li><strong>Mensaje:</strong> @Model.Exception.Message</li>
+                                    <li class="text-danger mt-1"><strong>Mensaje:</strong> @Model.Exception.Message</li>
                                 }
                             </ul>
                         </div>
                     }
 
-                    <div class="mt-4">
+                    <div class="mt-4 d-flex gap-2 flex-wrap">
                         <a href="@Url.Action("Index", "Home")" class="btn btn-primary">
-                            <i class="fas fa-home"></i> Volver al Inicio
+                            <i class="fas fa-home me-1"></i> Volver al Inicio
                         </a>
                         <button onclick="history.back()" class="btn btn-secondary">
-                            <i class="fas fa-arrow-left"></i> Volver Atrás
+                            <i class="fas fa-arrow-left me-1"></i> Volver Atras
                         </button>
                     </div>
                 </div>
@@ -48,19 +48,7 @@
 </div>
 
 <style>
-    .card {
-        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-    }
-    
-    .alert {
-        border-radius: 0.375rem;
-    }
-    
-    .btn {
-        margin-right: 0.5rem;
-    }
-    
-    @media (max-width: 768px) {
+    @@media (max-width: 768px) {
         .btn {
             display: block;
             width: 100%;

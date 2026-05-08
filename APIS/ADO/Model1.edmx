@@ -11,6 +11,7 @@
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Usuario" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="Nombre" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="Clave" Type="nvarchar" MaxLength="255" Nullable="false" />
         </EntityType>
         <EntityType Name="ZCotizacionNB">
@@ -25,6 +26,7 @@
           <Property Name="total_bruto" Type="decimal" Precision="18" Scale="2" Nullable="false" />
           <Property Name="monto_imp" Type="decimal" Precision="18" Scale="2" Nullable="false" />
           <Property Name="total_neto" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="tasa" Type="decimal" Precision="18" Scale="8" Nullable="false" />
         </EntityType>
         <EntityType Name="ZCotizacionRengNB">
           <Key>
@@ -43,6 +45,9 @@
         <Function Name="buscarCliente1" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="consulta" Type="varchar" Mode="In" />
         </Function>
+        <Function Name="buscarPagosCP" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="consulta" Type="nvarchar" Mode="In" />
+        </Function>
         <Function Name="buscarPedidosActivos" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="consulta" Type="nvarchar" Mode="In" />
         </Function>
@@ -56,6 +61,9 @@
           <Parameter Name="consulta" Type="nvarchar" Mode="In" />
         </Function>
         <Function Name="buscarRengPE2" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="consulta" Type="nvarchar" Mode="In" />
+        </Function>
+        <Function Name="buscarRengPGO" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
           <Parameter Name="consulta" Type="nvarchar" Mode="In" />
         </Function>
         <Function Name="buscarVendedor" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
@@ -76,7 +84,6 @@
             <Parameter Name="cantidad" Mode="In" Type="Int32" />
             <Parameter Name="usuario" Mode="In" Type="String" />
           </FunctionImport>
-          <EntitySet Name="Usuarios" EntityType="A_ZULIA_12Model.Usuarios" />
           <FunctionImport Name="buscarPorDocumCC1" ReturnType="Collection(A_ZULIA_12Model.buscarPorDocumCC1_Result)">
             <Parameter Name="consulta" Mode="In" Type="String" />
             <Parameter Name="cantidad" Mode="In" Type="Int32" />
@@ -132,8 +139,15 @@
           <Parameter Name="consulta" Mode="In" Type="String" />
           </FunctionImport>
           <FunctionImport Name="buscarRengPE2" ReturnType="Collection(A_ZULIA_12Model.buscarRengPE2_Result)">
-            <Parameter Name="consulta" Mode="In" Type="String" />
+          <Parameter Name="consulta" Mode="In" Type="String" />
           </FunctionImport>
+          <FunctionImport Name="buscarPagosCP" ReturnType="Collection(A_ZULIA_12Model.buscarPagosCP_Result)">
+          <Parameter Name="consulta" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="buscarRengPGO" ReturnType="Collection(A_ZULIA_12Model.buscarRengPGO_Result)">
+          <Parameter Name="consulta" Mode="In" Type="String" />
+          </FunctionImport>
+          <EntitySet Name="Usuarios" EntityType="A_ZULIA_12Model.Usuarios" />
         </EntityContainer>
         <ComplexType Name="buscarPorDocumCC_Result">
           <Property Type="String" Name="co_ven" Nullable="false" MaxLength="6" />
@@ -156,14 +170,6 @@
           <Property Type="Decimal" Name="IVA25" Nullable="true" Precision="38" Scale="14" />
           <Property Type="Decimal" Name="IVA75" Nullable="true" Precision="38" Scale="12" />
         </ComplexType>
-        <EntityType Name="Usuarios">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Usuario" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="Clave" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
-        </EntityType>
         <ComplexType Name="buscarPorDocumCC1_Result">
           <Property Type="String" Name="co_ven" Nullable="false" MaxLength="6" />
           <Property Type="String" Name="co_cli" Nullable="false" MaxLength="16" />
@@ -401,6 +407,7 @@
           <Property Name="total_bruto" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
           <Property Name="monto_imp" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
           <Property Name="total_neto" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
+          <Property Name="tasa" Type="Decimal" Nullable="false" Precision="18" Scale="8" />
         </EntityType>
         <ComplexType Name="buscarRengCC_Result">
           <Property Type="String" Name="nro_doc" Nullable="true" MaxLength="20" />
@@ -489,21 +496,50 @@
           <Property Type="Decimal" Name="monto_imp" Nullable="false" Precision="18" Scale="5" />
           <Property Type="Decimal" Name="reng_neto" Nullable="false" Precision="18" Scale="2" />
         </ComplexType>
+        <ComplexType Name="buscarPagosCP_Result">
+          <Property Type="String" Name="cob_num" Nullable="false" MaxLength="20" />
+          <Property Type="String" Name="co_prov" Nullable="false" MaxLength="16" />
+          <Property Type="String" Name="prov_des" Nullable="false" MaxLength="100" />
+          <Property Type="DateTime" Name="Fecha" Nullable="false" Precision="16" />
+          <Property Type="Int32" Name="Dias" Nullable="true" />
+          <Property Type="Boolean" Name="anulado" Nullable="false" />
+          <Property Type="String" Name="co_tipo_doc" Nullable="false" MaxLength="6" />
+          <Property Type="String" Name="nro_doc" Nullable="false" MaxLength="20" />
+          <Property Type="String" Name="num_doc" Nullable="true" MaxLength="20" />
+          <Property Type="Decimal" Name="Total" Nullable="false" Precision="18" Scale="2" />
+          <Property Type="Decimal" Name="tasa" Nullable="true" Precision="21" Scale="8" />
+          <Property Type="String" Name="descrip" Nullable="true" MaxLength="60" />
+        </ComplexType>
+        <ComplexType Name="buscarRengPGO_Result">
+          <Property Type="String" Name="cob_num" Nullable="true" MaxLength="10" />
+          <Property Type="String" Name="co_prov" Nullable="false" MaxLength="16" />
+          <Property Type="String" Name="prov_des" Nullable="false" MaxLength="100" />
+          <Property Type="DateTime" Name="Fecha" Nullable="false" Precision="16" />
+          <Property Type="Int32" Name="Dias" Nullable="true" />
+          <Property Type="Boolean" Name="anulado" Nullable="false" />
+          <Property Type="String" Name="co_tipo_doc" Nullable="false" MaxLength="6" />
+          <Property Type="String" Name="nro_doc" Nullable="true" MaxLength="20" />
+          <Property Type="Decimal" Name="Total" Nullable="true" Precision="20" Scale="2" />
+          <Property Type="String" Name="forma_pag" Nullable="false" MaxLength="2" />
+          <Property Type="String" Name="cod_cta" Nullable="true" MaxLength="6" />
+          <Property Type="String" Name="num_doc" Nullable="true" MaxLength="20" />
+          <Property Type="Decimal" Name="tasa" Nullable="false" Precision="21" Scale="8" />
+        </ComplexType>
+        <EntityType Name="Usuarios">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Usuario" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Nombre" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="Clave" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
+        </EntityType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
     <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
   <EntityContainerMapping StorageEntityContainer="A_ZULIA_12ModelStoreContainer" CdmEntityContainer="A_ZULIA_12Entities">
-    <EntitySetMapping Name="Usuarios">
-      <EntityTypeMapping TypeName="IsTypeOf(A_ZULIA_12Model.Usuarios)">
-        <MappingFragment StoreEntitySet="Usuarios">
-          <ScalarProperty Name="Id" ColumnName="Id" />
-          <ScalarProperty Name="Usuario" ColumnName="Usuario" />
-          <ScalarProperty Name="Clave" ColumnName="Clave" />
-        </MappingFragment>
-      </EntityTypeMapping>
-    </EntitySetMapping>
           <FunctionImportMapping FunctionImportName="buscarPrecios1" FunctionName="A_ZULIA_12Model.Store.buscarPrecios">
             <ResultMapping>
               <ComplexTypeMapping TypeName="A_ZULIA_12Model.buscarPrecios1_Result">
@@ -560,6 +596,7 @@
                 <ScalarProperty Name="co_tran" ColumnName="co_tran" />
                 <ScalarProperty Name="co_cli" ColumnName="co_cli" />
                 <ScalarProperty Name="doc_num" ColumnName="doc_num" />
+                <ScalarProperty Name="tasa" ColumnName="tasa" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -637,6 +674,53 @@
               </ComplexTypeMapping>
             </ResultMapping>
           </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="buscarPagosCP" FunctionName="A_ZULIA_12Model.Store.buscarPagosCP">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="A_ZULIA_12Model.buscarPagosCP_Result">
+                <ScalarProperty Name="cob_num" ColumnName="cob_num" />
+                <ScalarProperty Name="co_prov" ColumnName="co_prov" />
+                <ScalarProperty Name="prov_des" ColumnName="prov_des" />
+                <ScalarProperty Name="Fecha" ColumnName="Fecha" />
+                <ScalarProperty Name="Dias" ColumnName="Dias" />
+                <ScalarProperty Name="anulado" ColumnName="anulado" />
+                <ScalarProperty Name="co_tipo_doc" ColumnName="co_tipo_doc" />
+                <ScalarProperty Name="nro_doc" ColumnName="nro_doc" />
+                <ScalarProperty Name="num_doc" ColumnName="num_doc" />
+                <ScalarProperty Name="Total" ColumnName="Total" />
+                <ScalarProperty Name="tasa" ColumnName="tasa" />
+                <ScalarProperty Name="descrip" ColumnName="descrip" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="buscarRengPGO" FunctionName="A_ZULIA_12Model.Store.buscarRengPGO">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="A_ZULIA_12Model.buscarRengPGO_Result">
+                <ScalarProperty Name="cob_num" ColumnName="cob_num" />
+                <ScalarProperty Name="co_prov" ColumnName="co_prov" />
+                <ScalarProperty Name="prov_des" ColumnName="prov_des" />
+                <ScalarProperty Name="Fecha" ColumnName="Fecha" />
+                <ScalarProperty Name="Dias" ColumnName="Dias" />
+                <ScalarProperty Name="anulado" ColumnName="anulado" />
+                <ScalarProperty Name="co_tipo_doc" ColumnName="co_tipo_doc" />
+                <ScalarProperty Name="nro_doc" ColumnName="nro_doc" />
+                <ScalarProperty Name="Total" ColumnName="Total" />
+                <ScalarProperty Name="forma_pag" ColumnName="forma_pag" />
+                <ScalarProperty Name="cod_cta" ColumnName="cod_cta" />
+                <ScalarProperty Name="num_doc" ColumnName="num_doc" />
+                <ScalarProperty Name="tasa" ColumnName="tasa" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <EntitySetMapping Name="Usuarios">
+            <EntityTypeMapping TypeName="A_ZULIA_12Model.Usuarios">
+              <MappingFragment StoreEntitySet="Usuarios">
+                <ScalarProperty Name="Clave" ColumnName="Clave" />
+                <ScalarProperty Name="Nombre" ColumnName="Nombre" />
+                <ScalarProperty Name="Usuario" ColumnName="Usuario" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           </EntityContainerMapping>
 </Mapping></edmx:Mappings>
   </edmx:Runtime>

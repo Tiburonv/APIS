@@ -22,5 +22,6 @@ namespace APIS.ADO
         public decimal total_bruto { get; set; }
         public decimal monto_imp { get; set; }
         public decimal total_neto { get; set; }
+        public decimal tasa { get; set; }
     }
 }

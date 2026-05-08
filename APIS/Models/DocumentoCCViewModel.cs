@@ -33,6 +33,7 @@ namespace APIS.Models
         public decimal monto_ret_imp_convertido { get; set; }
         public string estado_retencion { get; set; }
         public byte[] Imagen { get; set; } // Cambiado de string a byte[]
+        public int tiene_imagen { get; set; } // Indica si la factura tiene imagen (1 = sí, 0 = no)
 
 
     }

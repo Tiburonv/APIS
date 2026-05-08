@@ -14,7 +14,7 @@ namespace APIS.Controllers
         public ActionResult Cotizacion()
         {
             var usuario = Session["Usuario"] as string;
-            if (usuario != "04" && usuario != "05")
+            if (usuario != "999" && usuario != "04" && usuario != "05")
             {
                 // Redirige al inicio o muestra acceso denegado
                 return RedirectToAction("Index", "Home");
@@ -54,7 +54,7 @@ namespace APIS.Controllers
                 System.Diagnostics.Debug.WriteLine($"Error en buscarCliente1: {ex.Message}");
                 return new JsonResult
                 {
-                    Data = new { error = ex.Message },
+                    Data = new { error = "Error al buscar clientes." },
                     JsonRequestBehavior = JsonRequestBehavior.AllowGet
                 };
             }
@@ -77,9 +77,34 @@ namespace APIS.Controllers
                 System.Diagnostics.Debug.WriteLine($"Error en ObtenerTransportes: {ex.Message}");
                 return new JsonResult
                 {
-                    Data = new { error = ex.Message },
+                    Data = new { error = "Error al obtener los transportes." },
                     JsonRequestBehavior = JsonRequestBehavior.AllowGet
                 };
+            }
+        }
+
+        [HttpGet]
+        public JsonResult ObtenerTasaDia()
+        {
+            try
+            {
+                using (var db = new A_ZULIA_12Entities())
+                {
+                    var tasa = db.Database.SqlQuery<decimal?>(
+                        @"SELECT TOP 1 t.tasa_v
+                          FROM satasa t
+                          WHERE RTRIM(t.co_mone) = 'USD'
+                            AND CAST(t.fecha AS DATE) <= CAST(GETDATE() AS DATE)
+                          ORDER BY CAST(t.fecha AS DATE) DESC, t.fecha DESC"
+                    ).FirstOrDefault();
+
+                    return Json(new { tasa = tasa ?? 0m }, JsonRequestBehavior.AllowGet);
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Error en ObtenerTasaDia: {ex.ToString()}");
+                return Json(new { tasa = 0m, error = "Error al obtener la tasa del día." }, JsonRequestBehavior.AllowGet);
             }
         }
 
@@ -93,9 +118,10 @@ namespace APIS.Controllers
 
             using (var db = new A_ZULIA_12Entities())
             {
-                var param = new SqlParameter("@busqueda", busqueda);
+                var paramBusqueda = new SqlParameter("@busqueda", busqueda);
+                var paramCoCat = new SqlParameter("@co_cat", DBNull.Value);
                 resultados = db.Database.SqlQuery<PreciosViewModel>(
-                    "EXEC buscarPrecios @busqueda", param
+                    "EXEC buscarPrecios @busqueda, @co_cat", paramBusqueda, paramCoCat
                 ).ToList();
             }
 
@@ -109,13 +135,28 @@ namespace APIS.Controllers
                 precio2 = x.Precio2,
                 precio3 = x.Precio3,
                 precio4 = x.Precio4,
-                precio5 = x.Precio5
+                precio5 = x.Precio5,
+                tasa = x.tasa
             });
 
             return Json(data, JsonRequestBehavior.AllowGet);
         }
 
+        private decimal ObtenerTasaDelDia(A_ZULIA_12Entities db)
+        {
+            var tasa = db.Database.SqlQuery<decimal?>(
+                @"SELECT TOP 1 t.tasa_v
+                  FROM satasa t
+                  WHERE RTRIM(t.co_mone) = 'USD'
+                    AND CAST(t.fecha AS DATE) <= CAST(GETDATE() AS DATE)
+                  ORDER BY CAST(t.fecha AS DATE) DESC, t.fecha DESC"
+            ).FirstOrDefault();
+
+            return tasa ?? 0m;
+        }
+
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult GuardarCotizacion(ZCotizacionNBViewModel model)
         {
             using (var db = new A_ZULIA_12Entities())
@@ -135,15 +176,25 @@ namespace APIS.Controllers
                         .Select(c => c.doc_num)
                         .FirstOrDefault();
 
-                    // Si no hay registros, empieza en 1
-                    long nuevoNum = 1;
+                    // Si no hay registros, empieza en 9000000001
+                    long nuevoNum = 9000000001;
                     if (!string.IsNullOrEmpty(ultimo) && long.TryParse(ultimo, out long num))
                     {
-                        nuevoNum = num + 1;
+                        // Si el último número es menor a 9000000001, empezar desde 9000000001
+                        if (num < 9000000001)
+                        {
+                            nuevoNum = 9000000001;
+                        }
+                        else
+                        {
+                            nuevoNum = num + 1;
+                        }
                     }
 
                     // Formatea el número con ceros a la izquierda (10 dígitos)
                     string docNumGenerado = nuevoNum.ToString("D10");
+
+                    var tasaCotizacion = model.tasa > 0 ? model.tasa : ObtenerTasaDelDia(db);
 
                     // Crear la cotización
                     var cotizacion = new ZCotizacionNB
@@ -155,7 +206,8 @@ namespace APIS.Controllers
                         fec_emis = DateTime.Now,
                         total_bruto = model.total_bruto,
                         monto_imp = model.monto_imp,
-                        total_neto = model.total_neto
+                        total_neto = model.total_neto,
+                        tasa = tasaCotizacion
                     };
 
                     db.ZCotizacionNB.Add(cotizacion);
@@ -190,7 +242,7 @@ namespace APIS.Controllers
                     db.SaveChanges();
                     transaction.Commit();
 
-                    return Json(new { success = true, doc_num = docNumGenerado });
+                    return Json(new { success = true, doc_num = docNumGenerado, tasa = tasaCotizacion });
                 }
                 catch (DbEntityValidationException ex)
                 {
@@ -202,14 +254,22 @@ namespace APIS.Controllers
                 }
                 catch (Exception ex)
                 {
-                    string inner = "";
-                    Exception innerEx = ex;
-                    while (innerEx.InnerException != null)
+                    System.Diagnostics.Debug.WriteLine($"Error en GuardarCotizacion: {ex.ToString()}");
+
+                    // En modo Debug se expone el detalle tecnico para desarrollo; en produccion mensaje generico
+                    if (HttpContext != null && HttpContext.IsDebuggingEnabled)
                     {
-                        innerEx = innerEx.InnerException;
-                        inner += innerEx.Message + " ";
+                        string inner = "";
+                        Exception innerEx = ex;
+                        while (innerEx.InnerException != null)
+                        {
+                            innerEx = innerEx.InnerException;
+                            inner += innerEx.Message + " ";
+                        }
+                        return Json(new { success = false, error = ex.Message + " " + inner });
                     }
-                    return Json(new { success = false, error = ex.Message + " " + inner });
+
+                    return Json(new { success = false, error = "Error al guardar la cotización. Intente nuevamente." });
                 }
             }
         }
@@ -332,8 +392,9 @@ namespace APIS.Controllers
                         try
                         {
                             var resultado = db.Database.SqlQuery<PreciosViewModel>(
-                                "EXEC buscarPrecios @busqueda",
-                                new SqlParameter("@busqueda", renglon.co_art.Trim())
+                                "EXEC buscarPrecios @busqueda, @co_cat",
+                                new SqlParameter("@busqueda", renglon.co_art.Trim()),
+                                new SqlParameter("@co_cat", DBNull.Value)
                             ).FirstOrDefault();
 
                             if (resultado != null && !string.IsNullOrEmpty(resultado.art_des))
@@ -422,6 +483,7 @@ public class ZCotizacionNBViewModel
     public decimal total_bruto { get; set; }
     public decimal monto_imp { get; set; }
     public decimal total_neto { get; set; }
+    public decimal tasa { get; set; }
     public List<ZCotizacionRengNBViewModel> renglones { get; set; }
 }
 

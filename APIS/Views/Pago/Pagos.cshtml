@@ -1,0 +1,2481 @@
+@{
+    ViewBag.Title = "Documentos Pagados a Proveedores";
+    var co_prov = ViewBag.co_prov as string;
+    var prov_des = ViewBag.prov_des as string;
+}
+
+<style>
+    /* En Index.cshtml (Clientes) */
+    body {
+        /* Mejoras para scroll móvil */
+        -webkit-overflow-scrolling: touch;
+        scroll-behavior: smooth;
+    }
+
+    /* Contenedor principal con scroll optimizado para móvil */
+    .container {
+        overflow-x: hidden;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* Scroll personalizado para móviles */
+    ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: #1565c0;
+        border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: #0d47a1;
+    }
+
+    /* Scroll horizontal para tablas en móvil */
+    .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: thin;
+        scrollbar-color: #1565c0 #f1f1f1;
+    }
+
+    /* Indicador de scroll para móviles */
+    .scroll-indicator {
+        position: fixed;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: rgba(21, 101, 192, 0.8);
+        color: white;
+        padding: 8px 4px;
+        border-radius: 20px;
+        font-size: 12px;
+        z-index: 1000;
+        opacity: 0;
+        transition: opacity 0.3s;
+        pointer-events: none;
+    }
+
+    .scroll-indicator.show {
+        opacity: 1;
+    }
+
+    /* Mejoras para navegacion tactil */
+    .table tbody tr {
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    .btn {
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    /* Scroll suave para secciones */
+    .scroll-smooth {
+        scroll-behavior: smooth;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    h4 {
+        color: #1565c0;
+    }
+
+    .search-container {
+        margin: 32px auto 24px auto;
+        max-width: 520px;
+        background: #fff;
+        border-radius: 10px;
+        box-shadow: 0 2px 16px rgba(21,101,192,0.10);
+        padding: 28px 36px 20px 36px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .search-flex {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        max-width: 400px;
+    }
+
+    .search-flex .form-control {
+        width: 100%;
+    }
+
+        .search-flex img {
+            height: 38px;
+            margin-right: 14px;
+            border-radius: 6px;
+        }
+
+    .cabecera-azul-claro {
+        background-color: #1565c0 !important;
+        color: #fff;
+        border-radius: 6px 6px 0 0;
+        font-size: 1.1rem;
+        letter-spacing: 0.5px;
+    }
+
+    .row-seleccionada, .table-active {
+        background-color: #ffe082 !important;
+        font-weight: bold;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: #e3f2fd !important;
+        transition: background 0.2s;
+    }
+
+    .table-striped tbody tr:nth-of-type(odd) {
+        background-color: #f8f9fa;
+    }
+
+    .table-striped tbody tr:nth-of-type(even) {
+        background-color: #ffffff;
+    }
+
+    /* Diferenciación más clara de renglones */
+    .table tbody tr {
+        border-bottom: 1px solid #e9ecef;
+        transition: all 0.2s ease;
+    }
+
+    .table tbody tr:nth-of-type(odd) {
+        background-color: #f8f9fa;
+        border-left: 3px solid #e3f2fd;
+    }
+
+    .table tbody tr:nth-of-type(even) {
+        background-color: #ffffff;
+        border-left: 3px solid #f0f8ff;
+    }
+
+    /* Efecto hover mejorado */
+    .table tbody tr:hover {
+        background-color: #e3f2fd !important;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(21, 101, 192, 0.15);
+        border-left-color: #1565c0;
+    }
+
+    /* Estilos para las tablas dentro de las tarjetas por día - DEPRECADO, los estilos ahora son específicos por sección */
+    .dia-card .table tbody tr:nth-of-type(odd) {
+        background-color: #f8f9fa;
+        border-left: 3px solid #e3f2fd;
+    }
+
+    .dia-card .table tbody tr:nth-of-type(even) {
+        background-color: #ffffff;
+        border-left: 3px solid #f0f8ff;
+    }
+
+    .dia-card .table tbody tr:hover {
+        background-color: #e3f2fd !important;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(21, 101, 192, 0.15);
+        border-left-color: #1565c0;
+    }
+
+    .truncate {
+        max-width: 120px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .highlight {
+        background-color: #ffff66;
+        padding: 0 2px;
+        border-radius: 2px;
+    }
+
+    .autocomplete-list {
+        position: absolute;
+        z-index: 1000;
+        width: 100%;
+        max-height: 200px;
+        overflow-y: auto;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        border-radius: 0 0 6px 6px;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .autocomplete-item {
+        cursor: pointer;
+        transition: background 0.2s;
+        touch-action: manipulation;
+    }
+
+        .autocomplete-item:hover {
+            background: #e3f2fd;
+        }
+
+    .table-responsive {
+        margin-top: 24px;
+        border-radius: 8px;
+        box-shadow: 0 2px 12px rgba(21,101,192,0.08);
+        background: #fff;
+        padding: 16px;
+    }
+
+    .pagination {
+        margin-top: 20px;
+    }
+
+    .alert-info {
+        margin-top: 24px;
+        border-radius: 6px;
+    }
+
+    h4, h5 {
+        color: #1565c0;
+        font-weight: 600;
+        margin-bottom: 18px;
+    }
+
+    /* Mejoras para el card de resultados seleccionados */
+    .card.border-primary {
+        border: 1.5px solid #1565c0 !important;
+    }
+
+    .card-header.bg-primary {
+        background: #1565c0 !important;
+        color: #fff !important;
+        font-weight: 600;
+        font-size: 1.15rem;
+        letter-spacing: 0.5px;
+        border-radius: 8px 8px 0 0;
+    }
+
+    .card {
+        border-radius: 8px;
+        box-shadow: 0 2px 12px rgba(21,101,192,0.10);
+    }
+
+    .table tfoot tr {
+        background: #e3f2fd !important;
+    }
+
+    /* Estilos para enlaces de documentos */
+    .document-link {
+        color: #1565c0 !important;
+        text-decoration: none;
+        font-weight: 600;
+        transition: color 0.2s ease;
+    }
+
+        .document-link:hover {
+            color: #0d47a1 !important;
+            text-decoration: underline;
+        }
+
+        .document-link:focus {
+            outline: 2px solid #1565c0;
+            outline-offset: 2px;
+        }
+
+        /* Indicador de que es clickeable */
+        .document-link::after {
+            content: " 🔗";
+            font-size: 0.8em;
+            opacity: 0.7;
+        }
+
+        .document-link:hover::after {
+            opacity: 1;
+        }
+
+    /* Estilos para filas clickeables */
+    .table tbody tr {
+        transition: all 0.2s ease;
+        position: relative;
+    }
+
+    .table tbody tr:hover {
+        background-color: #e3f2fd !important;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(21, 101, 192, 0.15);
+    }
+
+
+    /* Boton de scroll hacia arriba para móviles */
+    .scroll-to-top {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: #1565c0;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+        font-size: 20px;
+        cursor: pointer;
+        opacity: 0;
+        transition: opacity 0.3s, transform 0.3s;
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 12px rgba(21, 101, 192, 0.3);
+    }
+
+    .scroll-to-top.show {
+        opacity: 1;
+    }
+
+    .scroll-to-top:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(21, 101, 192, 0.4);
+    }
+    
+    /* Estilos para el indicador de carga */
+    .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 9999;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .loading-spinner {
+        background: white;
+        padding: 20px 40px;
+        border-radius: 8px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    }
+    
+    .spinner-border-custom {
+        width: 3rem;
+        height: 3rem;
+        border-width: 0.3em;
+    }
+    
+    .loading-text {
+        margin-top: 10px;
+        font-weight: 600;
+        color: #1565c0;
+    }
+    
+    /* Animación de búsqueda */
+    .search-loading {
+        position: relative;
+        pointer-events: none;
+        opacity: 0.7;
+    }
+    
+    .search-loading::after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        right: 15px;
+        transform: translateY(-50%);
+        width: 20px;
+        height: 20px;
+        border: 3px solid #f3f3f3;
+        border-top: 3px solid #1565c0;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+    
+    @@keyframes spin {
+        0% { transform: translateY(-50%) rotate(0deg); }
+        100% { transform: translateY(-50%) rotate(360deg); }
+    }
+
+    /* Estilos para el boton de proveedores con saldo */
+    .proveedores-saldo-btn {
+        background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+        border: none;
+        color: white;
+        font-weight: 700;
+        font-size: 0.95rem;
+        padding: 10px 20px;
+        border-radius: 8px;
+        box-shadow: 0 3px 10px rgba(255, 107, 53, 0.4);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        text-transform: uppercase;
+        letter-spacing: 0.3px;
+        min-width: 80px;
+        height: 45px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .proveedores-saldo-btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: left 0.5s;
+    }
+
+    .proveedores-saldo-btn:hover::before {
+        left: 100%;
+    }
+
+    .proveedores-saldo-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(255, 107, 53, 0.6);
+        background: linear-gradient(135deg, #ff5722 0%, #ff9800 100%);
+    }
+
+    .proveedores-saldo-btn:active {
+        transform: translateY(0);
+        box-shadow: 0 2px 10px rgba(255, 107, 53, 0.4);
+    }
+
+    .proveedores-saldo-btn:disabled,
+    .proveedores-saldo-btn.btn-loading {
+        opacity: 0.7;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: 0 2px 8px rgba(255, 107, 53, 0.3);
+    }
+
+    .proveedores-saldo-btn:disabled:hover,
+    .proveedores-saldo-btn.btn-loading:hover {
+        transform: none;
+        box-shadow: 0 2px 8px rgba(255, 107, 53, 0.3);
+    }
+
+    /* Efecto de pulso para el boton cuando esta cargando */
+    .proveedores-saldo-btn.btn-loading {
+        animation: pulse 2s infinite;
+    }
+
+    @@keyframes pulse {
+        0% {
+            box-shadow: 0 4px 15px rgba(255, 107, 53, 0.4);
+        }
+        50% {
+            box-shadow: 0 4px 20px rgba(255, 107, 53, 0.8);
+        }
+        100% {
+            box-shadow: 0 4px 15px rgba(255, 107, 53, 0.4);
+        }
+    }
+
+    /* Mejoras para móviles */
+    @@media (max-width: 768px) {
+        /* Scroll horizontal mejorado para móviles */
+        .table-responsive {
+            margin: 16px -16px;
+            padding: 16px;
+            border-radius: 0;
+        }
+
+        /* Indicador de scroll visible en móviles */
+        .scroll-indicator {
+            opacity: 1;
+            right: 5px;
+            padding: 6px 3px;
+            font-size: 10px;
+        }
+
+        /* Mejoras para tablas en móvil */
+        .table {
+            font-size: 0.875rem;
+        }
+
+        .table td, .table th {
+            padding: 0.5rem 0.25rem;
+            white-space: nowrap;
+        }
+
+        /* Scroll suave para navegacion móvil */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        .scroll-to-top {
+            bottom: 15px;
+            right: 15px;
+            width: 45px;
+            height: 45px;
+            font-size: 18px;
+        }
+
+        /* Boton responsivo para móviles */
+        .proveedores-saldo-btn {
+            min-width: 70px;
+            font-size: 0.85rem;
+            padding: 8px 16px;
+            height: 40px;
+        }
+    }
+
+    /* Estilos para cuadros por dia */
+    .pagos-por-dia {
+        margin-top: 20px;
+    }
+
+    .dia-card {
+        transition: all 0.3s ease;
+    }
+
+    .dia-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(21, 101, 192, 0.15) !important;
+    }
+
+    .dia-card .card-header {
+        background: linear-gradient(135deg, #1565c0 0%, #1976d2 100%) !important;
+        border-bottom: none;
+        padding: 15px 20px;
+    }
+
+    .dia-card .card-header h5 {
+        margin: 0;
+        font-size: 1.1rem;
+        font-weight: 600;
+    }
+
+    .dia-card .card-header small {
+        opacity: 0.9;
+        font-size: 0.85rem;
+    }
+
+    .dia-card .table {
+        margin-bottom: 0;
+    }
+
+    .dia-card .table thead th {
+        background-color: #f8f9fa;
+        border-bottom: 2px solid #dee2e6;
+        font-weight: 600;
+        font-size: 0.9rem;
+        padding: 12px 8px;
+        color: #495057;
+    }
+
+    .dia-card .table tbody tr {
+        transition: background-color 0.2s ease;
+    }
+
+    .dia-card .table tbody tr:hover {
+        background-color: #e3f2fd !important;
+    }
+
+    .dia-card .table tbody td {
+        padding: 10px 8px;
+        font-size: 0.9rem;
+        vertical-align: middle;
+    }
+
+    /* Anchos fijos para columnas específicas */
+    .table th:nth-child(4), /* Dias */
+    .table td:nth-child(4) {
+        width: 80px;
+        min-width: 80px;
+        max-width: 80px;
+        text-align: center;
+    }
+
+    .table th:nth-child(6), /* Tipo Doc */
+    .table td:nth-child(6) {
+        width: 100px;
+        min-width: 100px;
+        max-width: 100px;
+        text-align: center;
+    }
+
+    .table th:nth-child(7), /* Nro Doc */
+    .table td:nth-child(7) {
+        width: 130px;
+        min-width: 130px;
+        max-width: 130px;
+        text-align: center;
+        white-space: nowrap;
+    }
+
+    .table th:nth-child(8), /* N/CR */
+    .table td:nth-child(8) {
+        width: 120px;
+        min-width: 120px;
+        max-width: 120px;
+        text-align: right;
+        white-space: nowrap;
+    }
+
+    .table th:nth-child(9), /* ADEL */
+    .table td:nth-child(9) {
+        width: 120px;
+        min-width: 120px;
+        max-width: 120px;
+        text-align: right;
+        white-space: nowrap;
+    }
+
+    .table th:nth-child(10), /* FACT */
+    .table td:nth-child(10) {
+        width: 120px;
+        min-width: 120px;
+        max-width: 120px;
+        text-align: right;
+        white-space: nowrap;
+    }
+
+    /* Anchos fijos para las tarjetas por dia */
+    .dia-card .table th:nth-child(4), /* Dias */
+    .dia-card .table td:nth-child(4) {
+        width: 60px;
+        min-width: 60px;
+        max-width: 60px;
+        text-align: center;
+    }
+
+    .dia-card .table th:nth-child(5), /* Tipo Doc */
+    .dia-card .table td:nth-child(5) {
+        width: 90px;
+        min-width: 90px;
+        max-width: 90px;
+        text-align: center;
+    }
+
+    .dia-card .table th:nth-child(6), /* Nro Doc */
+    .dia-card .table td:nth-child(6) {
+        width: 120px;
+        min-width: 120px;
+        max-width: 120px;
+        text-align: center;
+        white-space: nowrap;
+    }
+
+    .dia-card .table th:nth-child(7), /* N/CR */
+    .dia-card .table td:nth-child(7) {
+        width: 100px;
+        min-width: 100px;
+        max-width: 100px;
+        text-align: right;
+        white-space: nowrap;
+    }
+
+    .dia-card .table th:nth-child(8), /* ADEL */
+    .dia-card .table td:nth-child(8) {
+        width: 100px;
+        min-width: 100px;
+        max-width: 100px;
+        text-align: right;
+        white-space: nowrap;
+    }
+
+    .dia-card .table th:nth-child(9), /* FACT */
+    .dia-card .table td:nth-child(9) {
+        width: 100px;
+        min-width: 100px;
+        max-width: 100px;
+        text-align: right;
+        white-space: nowrap;
+    }
+
+
+    /* Responsive para cuadros por dia */
+    @@media (max-width: 768px) {
+        .dia-card .card-header {
+            padding: 12px 15px;
+        }
+        
+        .dia-card .card-header h5 {
+            font-size: 1rem;
+        }
+        
+        .dia-card .table thead th,
+        .dia-card .table tbody td {
+            padding: 8px 4px;
+            font-size: 0.8rem;
+        }
+        
+        .dia-card .table thead th:first-child,
+        .dia-card .table tbody td:first-child {
+            padding-left: 8px;
+        }
+        
+        .dia-card .table thead th:last-child,
+        .dia-card .table tbody td:last-child {
+            padding-right: 8px;
+        }
+
+        /* Ajustar anchos fijos en móviles */
+        .dia-card .table th:nth-child(4),
+        .dia-card .table td:nth-child(4) {
+            width: 50px;
+            min-width: 50px;
+            max-width: 50px;
+        }
+
+        .dia-card .table th:nth-child(5),
+        .dia-card .table td:nth-child(5) {
+            width: 80px;
+            min-width: 80px;
+            max-width: 80px;
+        }
+
+        .dia-card .table th:nth-child(6),
+        .dia-card .table td:nth-child(6) {
+            width: 100px;
+            min-width: 100px;
+            max-width: 100px;
+        }
+
+        .dia-card .table th:nth-child(7),
+        .dia-card .table td:nth-child(7) {
+            width: 90px;
+            min-width: 90px;
+            max-width: 90px;
+        }
+
+        .dia-card .table th:nth-child(8),
+        .dia-card .table td:nth-child(8) {
+            width: 90px;
+            min-width: 90px;
+            max-width: 90px;
+        }
+
+        .dia-card .table th:nth-child(9),
+        .dia-card .table td:nth-child(9) {
+            width: 90px;
+            min-width: 90px;
+            max-width: 90px;
+        }
+
+        /* Estilos responsive para los encabezados de secciones ADEL y FACT */
+        .alert-success .d-flex,
+        .alert-danger .d-flex {
+            flex-direction: column;
+            align-items: flex-start !important;
+            gap: 8px;
+        }
+
+        .alert-success .badge,
+        .alert-danger .badge {
+            font-size: 0.85rem !important;
+            padding: 6px 10px !important;
+        }
+
+        /* Ajustar footer en móviles */
+        .table tfoot tr.table-success td,
+        .table tfoot tr.table-danger td {
+            font-size: 0.9rem;
+            padding: 8px 4px;
+        }
+
+    }
+
+    /* Estilos para el modal de filtro de fechas */
+    .modal-content {
+        border-radius: 8px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .modal-header {
+        background: linear-gradient(135deg, #1565c0 0%, #1976d2 100%);
+        color: white;
+        border-bottom: none;
+        border-radius: 8px 8px 0 0;
+    }
+
+    .modal-title {
+        font-weight: 600;
+        font-size: 1.1rem;
+    }
+
+    .btn-close {
+        filter: invert(1);
+        opacity: 0.8;
+    }
+
+    .btn-close:hover {
+        opacity: 1;
+    }
+
+    .modal-body .form-label {
+        font-weight: 600;
+        color: #495057;
+        margin-bottom: 8px;
+    }
+
+    .modal-body .form-control {
+        border: 2px solid #e9ecef;
+        border-radius: 6px;
+        padding: 10px 12px;
+        transition: all 0.3s ease;
+    }
+
+    .modal-body .form-control:focus {
+        border-color: #1565c0;
+        box-shadow: 0 0 0 0.2rem rgba(21, 101, 192, 0.25);
+    }
+
+    .modal-footer .btn {
+        border-radius: 6px;
+        padding: 10px 20px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .modal-footer .btn-primary {
+        background: linear-gradient(135deg, #1565c0 0%, #1976d2 100%);
+        border: none;
+    }
+
+    .modal-footer .btn-primary:hover {
+        background: linear-gradient(135deg, #0d47a1 0%, #1565c0 100%);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(21, 101, 192, 0.3);
+    }
+
+    .modal-footer .btn-secondary {
+        background: #6c757d;
+        border: none;
+    }
+
+    .modal-footer .btn-secondary:hover {
+        background: #5a6268;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3);
+    }
+
+    .modal-footer .btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none !important;
+        box-shadow: none !important;
+    }
+
+    /* Estilos para el icono de imagen */
+    .icono-imagen {
+        transition: all 0.3s ease;
+        border: 1px solid transparent;
+    }
+
+    .icono-imagen:hover {
+        transform: scale(1.1);
+        box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
+    }
+
+    /* Estilos para los botones debajo del cuadro de busqueda */
+    .search-container .d-flex.gap-3 {
+        gap: 1rem !important;
+    }
+
+    .search-container .btn {
+        min-width: 140px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .search-container .btn:hover {
+        transform: translateY(-2px);
+    }
+
+    /* Estilos específicos para las columnas de tipos de documentos */
+    .documento-adel {
+        color: #4caf50 !important;
+        font-weight: 600;
+    }
+
+    .documento-fact {
+        color: #f44336 !important;
+        font-weight: 600;
+    }
+
+    .documento-ncr {
+        color: #9c27b0 !important;
+        font-weight: 600;
+    }
+
+    /* Estilos para la fila de sumatoria */
+    .table tfoot tr.table-info {
+        background-color: #e3f2fd !important;
+        border-top: 2px solid #1565c0;
+    }
+
+    .table tfoot tr.table-info td {
+        border-top: 2px solid #1565c0;
+        font-weight: 700;
+        font-size: 1.05rem;
+    }
+
+    /* Estilos para las filas de sumatoria de ADEL y FACT */
+    .table tfoot tr.table-success {
+        background-color: #c8e6c9 !important;
+        border-top: 2px solid #4caf50;
+    }
+
+    .table tfoot tr.table-success td {
+        border-top: 2px solid #4caf50;
+        font-weight: 700;
+        font-size: 1.05rem;
+    }
+
+    .table tfoot tr.table-danger {
+        background-color: #ffcdd2 !important;
+        border-top: 2px solid #f44336;
+    }
+
+    .table tfoot tr.table-danger td {
+        border-top: 2px solid #f44336;
+        font-weight: 700;
+        font-size: 1.05rem;
+    }
+
+    /* Estilos para los encabezados de secciones ADEL y FACT */
+    .alert-success, .alert-danger {
+        color: white !important;
+    }
+
+    .alert-success .badge, .alert-danger .badge {
+        font-weight: 600;
+    }
+
+    /* Estilos específicos para las filas de ADEL - fondo verde claro */
+    .dia-card .seccion-adel .table-striped tbody tr:nth-of-type(odd),
+    .dia-card .seccion-adel .table tbody tr:nth-of-type(odd) {
+        background-color: #e8f5e9 !important;
+        border-left: 3px solid #c8e6c9 !important;
+    }
+
+    .dia-card .seccion-adel .table-striped tbody tr:nth-of-type(even),
+    .dia-card .seccion-adel .table tbody tr:nth-of-type(even) {
+        background-color: #f1f8e9 !important;
+        border-left: 3px solid #dcedc8 !important;
+    }
+
+    .dia-card .seccion-adel .table tbody tr:hover {
+        background-color: #c8e6c9 !important;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(76, 175, 80, 0.25) !important;
+        border-left-color: #4caf50 !important;
+    }
+
+    /* Estilos específicos para las filas de FACT - fondo naranja/rojizo claro */
+    .dia-card .seccion-fact .table-striped tbody tr:nth-of-type(odd),
+    .dia-card .seccion-fact .table tbody tr:nth-of-type(odd) {
+        background-color: #ffebee !important;
+        border-left: 3px solid #ffcdd2 !important;
+    }
+
+    .dia-card .seccion-fact .table-striped tbody tr:nth-of-type(even),
+    .dia-card .seccion-fact .table tbody tr:nth-of-type(even) {
+        background-color: #fff3e0 !important;
+        border-left: 3px solid #ffe0b2 !important;
+    }
+
+    .dia-card .seccion-fact .table tbody tr:hover {
+        background-color: #ffcdd2 !important;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(244, 67, 54, 0.25) !important;
+        border-left-color: #f44336 !important;
+    }
+
+    /* Asegurar que las columnas Tasa y Total $ tengan el mismo tamaño de fuente que el resto */
+    .table tbody td.font-weight-bold {
+        font-size: inherit !important;
+    }
+
+    .dia-card .table tbody td.font-weight-bold {
+        font-size: inherit !important;
+    }
+
+    /* Específicamente para las columnas Tasa y Total $ */
+    .table tbody td[style*="color: #2e7d32"],
+    .table tbody td[style*="color: #e65100"] {
+        font-size: inherit !important;
+    }
+
+    .dia-card .table tbody td[style*="color: #2e7d32"],
+    .dia-card .table tbody td[style*="color: #e65100"] {
+        font-size: inherit !important;
+    }
+
+    .table tfoot tr.table-info td:first-child {
+        background-color: #1565c0 !important;
+        color: white !important;
+        font-size: 1.1rem;
+        letter-spacing: 0.5px;
+    }
+
+    /* Responsive para los botones */
+    @@media (max-width: 768px) {
+        .search-container .d-flex.gap-3 {
+            flex-direction: column;
+            gap: 0.75rem !important;
+        }
+        
+        .search-container .btn {
+            width: 100%;
+            min-width: auto;
+        }
+
+        /* Estilos responsivos para la fila de sumatoria */
+        .table tfoot tr.table-info td {
+            font-size: 0.9rem;
+            padding: 8px 4px;
+        }
+
+        .table tfoot tr.table-info td:first-child {
+            font-size: 0.95rem;
+        }
+    }
+</style>
+
+<script>
+    var initialCoCli = '@(co_prov ?? "")';
+    var initialCliDes = '@(prov_des ?? "")';
+</script>
+
+<div class="container" id="root">
+    <!-- Indicador de carga global -->
+    <div v-if="cargando" class="loading-overlay">
+        <div class="loading-spinner">
+            <div class="spinner-border spinner-border-custom text-primary" role="status">
+                <span class="sr-only">Cargando...</span>
+            </div>
+            <div class="loading-text">[[ textoCargar ]]</div>
+        </div>
+    </div>
+    
+    <div class="search-container">
+        <h4><i class="fa fa-search"></i> Buscar Documentos Pagados</h4>
+        <div style="position:relative;">
+            <div class="search-flex">
+                <input type="text"
+                       :class="['form-control', {'search-loading': buscando}]"
+                       v-model="txtBusqueda"
+                       v-on:focus="limpiarBusqueda"
+                       v-on:input="buscarSugerenciasDebounced"
+                       v-on:keyup.enter="getBsuqueda()"
+                       placeholder="Buscar por código o nombre de proveedor..."
+                       autocomplete="off"
+                       v-bind:disabled="buscando || cargando" />
+            </div>
+            <ul v-if="sugerencias.length > 0" class="list-group autocomplete-list">
+                <li class="list-group-item autocomplete-item"
+                    v-for="(s, i) in sugerencias"
+                    :key="i"
+                    v-on:click="seleccionarSugerencia(s)">
+                    <i class="fa fa-user"></i> [[ s ]]
+                </li>
+            </ul>
+        </div>
+        
+        <!-- Botones debajo del cuadro de busqueda -->
+        <div class="d-flex justify-content-center gap-3 mt-3">
+            <button type="button" 
+                    class="btn proveedores-saldo-btn"
+                    v-on:click="cargarTodosLosPagos"
+                    v-bind:disabled="cargando || buscando"
+                    v-bind:class="{'btn-loading': cargando || buscando}"
+                    title="Mostrar todos los pagos">
+                <i class="fa fa-calendar mr-1" v-if="!cargando && !buscando"></i>
+                <i class="fa fa-spinner fa-spin mr-1" v-if="cargando || buscando"></i>
+                <span v-if="!cargando && !buscando">Todos</span>
+                <span v-if="cargando || buscando">...</span>
+            </button>
+            
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#filtroFechasModal">
+                <i class="fas fa-calendar-alt me-1"></i> Filtrar por Fechas
+            </button>
+        </div>
+
+        <!-- Modal para el filtro de fechas -->
+        <div class="modal fade" id="filtroFechasModal" tabindex="-1" aria-labelledby="filtroFechasModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="filtroFechasModalLabel"><i class="fas fa-calendar-alt me-2 text-primary"></i>Filtrar por Rango de Fechas</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="fechaInicio" class="form-label">Fecha de Inicio</label>
+                            <input type="date" class="form-control" id="fechaInicio" v-model="fechaDesde" v-bind:disabled="cargando || buscando">
+                        </div>
+                        <div class="mb-3">
+                            <label for="fechaFin" class="form-label">Fecha de Fin</label>
+                            <input type="date" class="form-control" id="fechaFin" v-model="fechaHasta" v-bind:disabled="cargando || buscando">
+                        </div>
+                        <div class="mb-2">
+                            <label for="filtroProveedorModalInput" class="form-label">
+                                <i class="fas fa-user-tag text-primary me-1"></i> Filtrar Proveedor (Opcional)
+                            </label>
+                            <input type="text" 
+                                   class="form-control" 
+                                   id="filtroProveedorModalInput" 
+                                   v-model="filtroProveedorModal" 
+                                   placeholder="Código o nombre (ej: 04, Norberto)..." 
+                                   v-bind:disabled="cargando || buscando" />
+                            <small class="text-muted">Si lo deja vacío, se mostrarán todos los proveedores de las fechas seleccionadas.</small>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary me-2" v-on:click="limpiarFiltroFechas" v-bind:disabled="cargando || buscando">
+                            <i class="fas fa-times me-1"></i> Limpiar Filtros
+                        </button>
+                        <button type="button" class="btn btn-primary" v-on:click="filtrarPorFechas" v-bind:disabled="cargando || buscando || !fechaDesde || !fechaHasta" data-bs-dismiss="modal">
+                            <i class="fas fa-search me-1"></i> Aplicar Filtro
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Panel de Búsqueda Combinada (Activo cuando hay fechas o "Todos") -->
+    <div v-if="filtrandoPorFechas || mostrarPorDias" class="card shadow-sm border-0 my-3" style="border-radius: 12px; background: #ffffff; border: 1.5px solid #bbdefb !important;">
+        <div class="card-header py-2 px-3 d-flex flex-wrap justify-content-between align-items-center gap-2" style="background: linear-gradient(135deg, #1565c0 0%, #1e88e5 100%); color: white; border-top-left-radius: 10px; border-top-right-radius: 10px;">
+            <div class="d-flex align-items-center gap-2 flex-wrap">
+                <span class="badge bg-white text-primary px-3 py-2 fs-6 fw-bold">
+                    <i class="fas fa-calendar-check me-1"></i> [[ textoRangoFechasActivo ]]
+                </span>
+                <span class="badge bg-light text-dark px-2 py-2" v-if="todosLosPagosRango.length > 0">
+                    <i class="fas fa-receipt me-1"></i> [[ todosLosPagosRango.length ]] pagos en total
+                </span>
+                <span class="badge bg-warning text-dark px-2 py-2" v-if="filtroProveedorEnRango">
+                    <i class="fas fa-filter me-1"></i> Proveedor: "[[ filtroProveedorEnRango ]]" ([[ resultadosFiltrados.length ]] encontrados)
+                </span>
+            </div>
+            <div class="d-flex gap-2">
+                <button type="button" class="btn btn-sm btn-light text-primary fw-semibold" data-bs-toggle="modal" data-bs-target="#filtroFechasModal">
+                    <i class="fas fa-calendar-alt me-1"></i> Cambiar fechas
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-light" v-on:click="limpiarFiltroFechas">
+                    <i class="fas fa-times me-1"></i> Quitar filtros
+                </button>
+            </div>
+        </div>
+        <div class="card-body p-3 bg-light">
+            <div class="row g-2 align-items-center">
+                <div class="col-12 col-md-6">
+                    <label class="form-label mb-1 text-secondary small fw-bold">
+                        <i class="fas fa-search me-1 text-primary"></i> Filtrar por Proveedor en este rango:
+                    </label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-white text-primary"><i class="fas fa-user-tag"></i></span>
+                        <input type="text"
+                               class="form-control"
+                               v-model="filtroProveedorEnRango"
+                               v-on:input="filtrarResultadosPorProveedor"
+                               placeholder="Escriba código o nombre de proveedor..."
+                               autocomplete="off" />
+                        <button class="btn btn-outline-secondary" type="button" v-if="filtroProveedorEnRango" v-on:click="limpiarFiltroProveedorEnRango" title="Ver todos los proveedores de estas fechas">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6">
+                    <label class="form-label mb-1 text-secondary small fw-bold">
+                        <i class="fas fa-list-ul me-1 text-primary"></i> O seleccionar de los disponibles ([[ proveedoresDisponiblesEnRango.length ]]):
+                    </label>
+                    <select class="form-select" v-model="filtroProveedorSeleccionado" v-on:change="seleccionarProveedorDeLista">
+                        <option value="">-- Todos los proveedores del rango ([[ proveedoresDisponiblesEnRango.length ]]) --</option>
+                        <option v-for="prov in proveedoresDisponiblesEnRango" :key="prov.co_prov" :value="prov.co_prov">
+                            [[ prov.nombreCompleto ]] ([[ prov.cantidad ]] pago(s) - $[[ formatNumero(prov.total) ]])
+                        </option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mensaje cuando no hay resultados en la búsqueda combinada -->
+    <div v-if="(mostrarPorDias || filtrandoPorFechas) && resultadosFiltrados.length === 0 && !cargando && !buscando" class="alert alert-warning text-center my-4 shadow-sm" style="border-radius: 12px;">
+        <i class="fas fa-search fa-2x mb-2 d-block text-warning"></i>
+        <h5 class="mb-1">No se encontraron pagos para los criterios seleccionados</h5>
+        <p class="mb-2 text-muted" v-if="filtroProveedorEnRango">
+            No hay registros para el proveedor <strong>"[[ filtroProveedorEnRango ]]"</strong> en el rango de fechas seleccionado.
+        </p>
+        <p class="mb-2 text-muted" v-else>
+            No hay registros de pagos en el rango de fechas seleccionado.
+        </p>
+        <div class="d-flex justify-content-center gap-2 mt-3">
+            <button class="btn btn-sm btn-outline-primary" v-if="filtroProveedorEnRango" v-on:click="limpiarFiltroProveedorEnRango">
+                <i class="fas fa-users me-1"></i> Ver todos los proveedores del rango
+            </button>
+            <button class="btn btn-sm btn-outline-secondary" v-on:click="limpiarFiltroFechas">
+                <i class="fas fa-times me-1"></i> Limpiar todos los filtros
+            </button>
+        </div>
+    </div>
+
+    <!-- Vista por dias (cuando se presiona "Todos" o se filtra por fechas) -->
+    <div v-if="mostrarPorDias && pagosAgrupadosPorDia.length > 0" class="pagos-por-dia">
+        <!-- Mensaje informativo -->
+        <div class="alert alert-info mb-3" style="margin-top: 24px;">
+            <i class="fa fa-info-circle mr-2"></i>
+            <strong>Pagos agrupados por dia</strong> - Haga clic en cualquier fila para ver el detalle completo del pago.
+        </div>
+        
+        <div v-for="(grupo, index) in pagosAgrupadosPorDia" :key="grupo.fecha" class="dia-card mb-4">
+            <div class="card border-primary shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <div class="text-center">
+                        <i class="fa fa-calendar mr-2"></i>
+                        <strong>[[ formatFechaCompleta(grupo.fecha) ]]</strong>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <!-- Seccion ADEL -->
+                    <div v-if="grupo.pagosADEL.length > 0" class="mb-3 seccion-adel">
+                        <div class="alert alert-success mb-0" style="border-radius: 0; background: linear-gradient(135deg, #4caf50 0%, #66bb6a 100%); border: none;">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <i class="fa fa-forward mr-2"></i>
+                                    <strong>ADELANTOS (ADEL)</strong>
+                                </div>
+                                <div>
+                                    <span class="badge bg-white text-success" style="font-size: 1rem; padding: 8px 12px;">
+                                        [[ grupo.cantidadADEL ]] pago(s) | Total: [[ formatNumero(grupo.totalADEL) ]]
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-sm table-hover table-striped mb-0">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th class="text-center">Nro. Pago</th>
+                                        <th class="text-center">Codigo</th>
+                                        <th class="text-center">Proveedor</th>
+                                        <th class="text-center">Dias</th>
+                                                        <th class="text-center">Nro Doc</th>
+                                        <th class="text-end">Total</th>
+                                        <th class="text-center">Tasa</th>
+                                        <th class="text-end" style="width: 100px;">Total $</th>
+                                        <th class="text-center">Img</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="(pago, pagoIndex) in grupo.pagosADEL"
+                                        :key="pago.cob_num + '-adel-' + pagoIndex"
+                                        style="cursor:pointer;"
+                                        v-on:click="verDetallePago(pago)">
+                                        <td class="text-center" v-html="highlight(pago.cob_num)"></td>
+                                        <td v-html="highlight(pago.co_prov)"></td>
+                                        <td v-html="highlight(pago.prov_des)"></td>
+                                        <td class="text-center" v-html="highlight(pago.Dias)"></td>
+                                        <td class="text-center" v-html="mostrarValorOpcional(pago.num_doc)"></td>
+                                        <td class="text-end documento-adel">
+                                            [[ formatNumero(pago.Total) ]]
+                                        </td>
+                                        <td class="text-center font-weight-bold" style="color: #2e7d32;">
+                                            [[ formatNumero(pago.tasa) ]]
+                                        </td>
+                                        <td class="text-end font-weight-bold" style="color: #e65100; width: 100px;">
+                                            [[ formatNumero(calcularTotalTasa(pago.Total, pago.tasa)) ]]
+                                        </td>
+                                        <td class="text-center">
+                                            <span v-if="pago.tiene_imagen" 
+                                                  v-on:click.stop="verImagenPago(pago.cob_num)"
+                                                  style="cursor: pointer; color: #28a745; font-size: 18px; padding: 5px; border-radius: 4px; background-color: #e8f5e8;"
+                                                  title="Ver imagen del pago">
+                                                <i class="fa fa-image icono-imagen"></i>
+                                            </span>
+                                            <span v-else style="color: #ccc;">
+                                                <i class="fa fa-image"></i>
+                                            </span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                                <tfoot>
+                                    <tr class="table-success">
+                                        <td colspan="5" class="text-end font-weight-bold">
+                                            <i class="fa fa-calculator"></i> TOTAL ADELANTOS:
+                                        </td>
+                                        <td class="text-end font-weight-bold documento-adel">
+                                            [[ formatNumero(grupo.totalADEL) ]]
+                                        </td>
+                                        <td colspan="3"></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Seccion FACT -->
+                    <div v-if="grupo.pagosFACT.length > 0" class="seccion-fact">
+                        <div class="alert alert-danger mb-0" style="border-radius: 0; background: linear-gradient(135deg, #f44336 0%, #ef5350 100%); border: none;">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <i class="fa fa-file-invoice mr-2"></i>
+                                    <strong>FACTURAS (FACT)</strong>
+                                </div>
+                                <div>
+                                    <span class="badge bg-white text-danger" style="font-size: 1rem; padding: 8px 12px;">
+                                        [[ grupo.cantidadFACT ]] pago(s) | Total: [[ formatNumero(grupo.totalFACT) ]]
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-sm table-hover table-striped mb-0">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th class="text-center">Nro. Pago</th>
+                                        <th class="text-center">Codigo</th>
+                                        <th class="text-center">Proveedor</th>
+                                        <th class="text-center">Dias</th>
+                                        <th class="text-center">Nro Doc</th>
+                                        <th class="text-end">Total</th>
+                                        <th class="text-center">Tasa</th>
+                                        <th class="text-end" style="width: 100px;">Total $</th>
+                                        <th class="text-center">Img</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="(pago, pagoIndex) in grupo.pagosFACT" 
+                                        :key="pago.cob_num + '-fact-' + pagoIndex"
+                                        style="cursor:pointer;"
+                                        v-on:click="verDetallePago(pago)">
+                                        <td class="text-center" v-html="highlight(pago.cob_num)"></td>
+                                        <td v-html="highlight(pago.co_prov)"></td>
+                                        <td v-html="highlight(pago.prov_des)"></td>
+                                        <td class="text-center" v-html="highlight(pago.Dias)"></td>
+                                        <td class="text-center" v-html="mostrarValorOpcional(pago.num_doc)"></td>
+                                        <td class="text-end documento-fact">
+                                            [[ formatNumero(pago.Total) ]]
+                                        </td>
+                                        <td class="text-center font-weight-bold" style="color: #2e7d32;">
+                                            [[ formatNumero(pago.tasa) ]]
+                                        </td>
+                                        <td class="text-end font-weight-bold" style="color: #e65100; width: 100px;">
+                                            [[ formatNumero(calcularTotalTasa(pago.Total, pago.tasa)) ]]
+                                        </td>
+                                        <td class="text-center">
+                                            <span v-if="pago.tiene_imagen" 
+                                                  v-on:click.stop="verImagenPago(pago.cob_num)"
+                                                  style="cursor: pointer; color: #28a745; font-size: 18px; padding: 5px; border-radius: 4px; background-color: #e8f5e8;"
+                                                  title="Ver imagen del pago">
+                                                <i class="fa fa-image icono-imagen"></i>
+                                            </span>
+                                            <span v-else style="color: #ccc;">
+                                                <i class="fa fa-image"></i>
+                                            </span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                                <tfoot>
+                                    <tr class="table-danger">
+                                        <td colspan="5" class="text-end font-weight-bold">
+                                            <i class="fa fa-calculator"></i> TOTAL FACTURAS:
+                                        </td>
+                                        <td class="text-end font-weight-bold documento-fact">
+                                            [[ formatNumero(grupo.totalFACT) ]]
+                                        </td>
+                                        <td colspan="3"></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+    <!-- Tabla de resultados normal (búsquedas específicas) -->
+    <div v-if="!mostrarPorDias && resultadosPaginados.length > 0" class="table-responsive">
+        <!-- Mensaje informativo -->
+        <div class="alert alert-info mb-3" style="margin-top: 24px;">
+            <i class="fa fa-info-circle mr-2"></i>
+            <strong>Haga clic en cualquier fila</strong> para ver el detalle completo del pago.
+        </div>
+        <table class="table table-bordered table-striped mt-3">
+            <thead>
+                <tr>
+                    <th class="cabecera-azul-claro" v-on:click="ordenarPor('cob_num')" style="cursor:pointer;">
+                        <i class="fa fa-hashtag"></i> Nro. Pago
+                        <span v-if="columnaOrden==='cob_num'">
+                            <span v-if="ordenAscendente">&#9650;</span>
+                            <span v-else>&#9660;</span>
+                        </span>
+                    </th>
+                    <th class="cabecera-azul-claro" v-on:click="ordenarPor('co_prov')" style="cursor:pointer;">
+                        <i class="fa fa-id-card"></i> Codigo
+                        <span v-if="columnaOrden==='co_prov'">
+                            <span v-if="ordenAscendente">&#9650;</span>
+                            <span v-else>&#9660;</span>
+                        </span>
+                    </th>
+                    <th class="cabecera-azul-claro" v-on:click="ordenarPor('prov_des')" style="cursor:pointer;">
+                        <i class="fa fa-user"></i> Proveedor
+                        <span v-if="columnaOrden==='prov_des'">
+                            <span v-if="ordenAscendente">&#9650;</span>
+                            <span v-else>&#9660;</span>
+                        </span>
+                    </th>
+                    <th class="cabecera-azul-claro" v-on:click="ordenarPor('Fecha')" style="cursor:pointer;">
+                        <i class="fa fa-calendar"></i> Fecha
+                        <span v-if="columnaOrden==='Fecha'">
+                            <span v-if="ordenAscendente">&#9650;</span>
+                            <span v-else>&#9660;</span>
+                        </span>
+                    </th>
+                    <th class="cabecera-azul-claro text-center">
+                        <i class="fa fa-clock"></i> Dias
+                    </th>
+                    <th class="cabecera-azul-claro text-center">
+                        <i class="fa fa-file-text"></i> Tipo Doc
+                    </th>
+                    <th class="cabecera-azul-claro text-center">
+                        <i class="fa fa-hashtag"></i> Nro. Doc
+                    </th>
+                    <th class="cabecera-azul-claro text-end">
+                        <i class="fa fa-file-invoice-dollar"></i> N/CR
+                    </th>
+                    <th class="cabecera-azul-claro text-end">
+                        <i class="fa fa-forward"></i> ADEL
+                    </th>
+                    <th class="cabecera-azul-claro text-end">
+                        <i class="fa fa-file-invoice"></i> FACT
+                    </th>
+                    <th class="cabecera-azul-claro text-center">
+                        <i class="fa fa-exchange-alt"></i> Tasa
+                    </th>
+                    <th class="cabecera-azul-claro text-center" style="width: 100px;">
+                        <i class="fa fa-calculator"></i> Total $
+                    </th>
+                    <th class="cabecera-azul-claro text-center">
+                        <i class="fa fa-image"></i> Img
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="(item, index) in resultadosPaginados"
+                    :key="item.cob_num + '-' + index"
+                    :class="{
+                        'table-active': pagoSeleccionado
+                            && pagoSeleccionado.cob_num === item.cob_num,
+                        'row-seleccionada': pagoSeleccionado
+                            && pagoSeleccionado.cob_num === item.cob_num
+                    }"
+                    style="cursor:pointer;"
+                    v-on:click="verDetallePago(item)">
+                    <td class="text-center" v-html="highlight(item.cob_num)"></td>
+                    <td v-html="highlight(item.co_prov)"></td>
+                    <td v-html="highlight(item.prov_des)"></td>
+                    <td class="text-center">[[ formatFecha(item.Fecha) ]]</td>
+                    <td class="text-center" v-html="highlight(item.Dias)"></td>
+                    <td class="text-center" v-html="highlight(item.co_tipo_doc)"></td>
+                    <td class="text-center" v-html="mostrarValorOpcional(item.num_doc)"></td>
+                    <td class="text-end" v-html="mostrarDocumentoPorTipo(item, 'N/CR')"></td>
+                    <td class="text-end" v-html="mostrarDocumentoPorTipo(item, 'ADEL')"></td>
+                    <td class="text-end" v-html="mostrarDocumentoPorTipo(item, 'FACT')"></td>
+                    <td class="text-center font-weight-bold" style="color: #2e7d32;">
+                        [[ formatNumero(item.tasa) ]]
+                    </td>
+                    <td class="text-end font-weight-bold" style="color: #e65100; width: 100px;">
+                        [[ formatNumero(calcularTotalTasa(item.Total, item.tasa)) ]]
+                    </td>
+                    <td class="text-center">
+                        <span v-if="item.tiene_imagen" 
+                              v-on:click.stop="verImagenPago(item.cob_num)"
+                              style="cursor: pointer; color: #28a745; font-size: 18px; padding: 5px; border-radius: 4px; background-color: #e8f5e8;"
+                              title="Ver imagen del pago">
+                            <i class="fa fa-image icono-imagen"></i>
+                        </span>
+                        <span v-else style="color: #ccc;">
+                            <i class="fa fa-image"></i>
+                        </span>
+                    </td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr class="table-info">
+                    <td colspan="7" class="text-center font-weight-bold">
+                        <i class="fa fa-calculator"></i> TOTALES POR TIPO
+                    </td>
+                    <td class="text-end font-weight-bold documento-ncr">
+                        [[ calcularTotalPorTipo('N/CR') ]]
+                    </td>
+                    <td class="text-end font-weight-bold documento-adel">
+                        [[ calcularTotalPorTipo('ADEL') ]]
+                    </td>
+                    <td class="text-end font-weight-bold documento-fact">
+                        [[ calcularTotalPorTipo('FACT') ]]
+                    </td>
+                    <td colspan="2"></td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+
+    <!-- RESUMEN DE PAGOS -->
+    <div v-if="resultadosFiltrados.length > 0" class="mt-3">
+        <div class="card border-success">
+            <div class="card-header bg-success text-white d-flex align-items-center justify-content-between">
+                <div>
+                    <i class="fa fa-calculator mr-2"></i>
+                    <strong>Resumen de Pagos</strong>
+                </div>
+                <div class="text-right">
+                    <span class="h4 mb-0">[[ formatNumero(sumaTotalPagos()) ]]</span>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <p class="mb-1"><strong>Total de Pagos:</strong> [[ resultadosFiltrados.length ]]</p>
+                        <p class="mb-1"><strong>Proveedores unicos:</strong> [[ proveedoresUnicos() ]]</p>
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <p class="mb-1"><strong>Total $ General:</strong></p>
+                        <span class="h5 text-warning font-weight-bold">[[ formatNumero(sumaTotalPagosDolar()) ]]</span>
+                    </div>
+                    <div class="col-md-4 text-right">
+                        <p class="mb-1"><strong>Promedio por Pago:</strong></p>
+                        <span class="h5 text-primary">[[ formatNumero(promedioPagos()) ]]</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Paginación solo para resultados normales (no agrupados por dia) -->
+    <nav v-if="!mostrarPorDias && totalPaginas > 1">
+        <ul class="pagination justify-content-center">
+            <li :class="['page-item', {disabled: paginaActual === 1}]">
+                <a class="page-link" href="#" v-on:click.prevent="cambiarPagina(paginaActual - 1)">Anterior</a>
+            </li>
+            <li v-for="n in totalPaginas" :key="n" :class="['page-item', {active: paginaActual === n}]">
+                <a class="page-link" href="#" v-on:click.prevent="cambiarPagina(n)">[[ n ]]</a>
+            </li>
+            <li :class="['page-item', {disabled: paginaActual === totalPaginas}]">
+                <a class="page-link" href="#" v-on:click.prevent="cambiarPagina(paginaActual + 1)">Siguiente</a>
+            </li>
+        </ul>
+    </nav>
+
+    <div v-if="resultadosFiltrados.length === 0 && txtBusqueda" class="alert alert-info mt-3">
+        <i class="fa fa-info-circle"></i> No se encontraron pagos para el proveedor.
+    </div>
+
+    <div v-if="mostrarPorDias && resultadosFiltrados.length === 0" class="alert alert-warning mt-3">
+        <i class="fa fa-calendar-times mr-2"></i>
+        <strong>No se encontraron pagos</strong> - No hay pagos registrados en el período seleccionado.
+    </div>
+
+    <!-- Modal para mostrar imagen del pago -->
+    <div class="modal fade" id="modalImagenPago" tabindex="-1" aria-labelledby="modalImagenPagoLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content" style="border-radius: 16px; overflow: hidden; border: 1px solid rgba(255,255,255,0.15); box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);">
+                <div class="modal-header bg-primary text-white" style="padding: 14px 20px;">
+                    <h5 class="modal-title d-flex align-items-center gap-2 m-0" id="modalImagenPagoLabel" style="font-size: 1.05rem; font-weight: 700;">
+                        <i class="fa fa-receipt mr-2"></i>Comprobante del Pago: [[ imagenPago.cob_num ]]
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body text-center p-3" style="background: #0f172a; max-height: calc(100vh - 180px); overflow-y: auto;">
+                    <div v-if="cargandoImagen" class="py-5">
+                        <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+                            <span class="sr-only">Cargando imagen...</span>
+                        </div>
+                        <p class="mt-3 text-muted">Cargando imagen...</p>
+                    </div>
+                    <div v-else-if="imagenPago.picture">
+                        <p v-if="imagenPago.des_imag" class="text-white-50 mb-2" style="font-size: 0.88rem;">
+                            <i class="fa fa-info-circle mr-1 text-primary"></i>[[ imagenPago.des_imag ]]
+                        </p>
+                        <img :src="'data:image/jpeg;base64,' + imagenPago.picture" 
+                             class="img-fluid rounded"
+                             alt="Comprobante del pago"
+                             style="max-height: 68vh; width: auto; max-width: 100%; object-fit: contain; box-shadow: 0 8px 30px rgba(0,0,0,0.5);">
+                    </div>
+                    <div v-else class="py-5">
+                        <i class="fa fa-exclamation-triangle text-warning" style="font-size: 48px;"></i>
+                        <p class="mt-3 text-muted">No se pudo cargar la imagen</p>
+                    </div>
+                </div>
+                <div class="modal-footer" style="padding: 10px 20px; background: #1e293b; border-top: 1px solid rgba(255,255,255,0.08);">
+                    <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal" style="border-radius: 8px;">
+                        <i class="fa fa-times mr-1"></i> Cerrar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- INFORMACIÓN DEL PAGO SELECCIONADO -->
+    <!--<div v-if="pagoSeleccionado" class="mt-4">
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead>
+                    <tr class="cabecera-azul-claro">
+                        <th class="text-center">
+                            <i class="fa fa-hashtag"></i> Nro. Pago
+                        </th>
+                        <th class="text-center">
+                            <i class="fa fa-id-card"></i> Código Proveedor
+                        </th>
+                        <th class="text-center">
+                            <i class="fa fa-user"></i> Nombre Proveedor
+                        </th>
+                        <th class="text-center">
+                            <i class="fa fa-calendar"></i> Fecha
+                        </th>
+                        <th class="text-center">
+                            <i class="fa fa-dollar"></i> Total
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="row-seleccionada">
+                        <td class="text-center" v-html="highlight(pagoSeleccionado.cob_num)"></td>
+                        <td class="text-center" v-html="highlight(pagoSeleccionado.co_prov)"></td>
+                        <td class="text-center" v-html="highlight(pagoSeleccionado.prov_des)"></td>
+                        <td class="text-center">[[ formatFecha(pagoSeleccionado.Fecha) ]]</td>
+                        <td class="text-center font-weight-bold" style="color: #28a745;">
+                            [[ formatNumero(pagoSeleccionado.Total) ]]
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>-->
+
+</div>
+
+<!-- Boton de scroll hacia arriba -->
+<button class="scroll-to-top" id="scrollToTop" title="Ir arriba">
+    <i class="fa fa-arrow-up"></i>
+</button>
+
+<!-- Indicador de scroll -->
+<div class="scroll-indicator" id="scrollIndicator">
+    <i class="fa fa-chevron-up"></i><br>
+    <i class="fa fa-chevron-down"></i>
+</div>
+
+@section scripts{
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.9.0/axios.min.js"></script>
+
+    <script>
+        function debounce(func, wait) {
+            let timeout;
+            return function (...args) {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func.apply(this, args), wait);
+            };
+        }
+
+        var app = new Vue({
+            el: "#root",
+            delimiters: ['[[', ']]'],
+            data: {
+                txtBusqueda: '',
+                sugerencias: [],
+                resultadosFiltrados: [],
+                todosLosPagosRango: [],
+                filtroProveedorEnRango: '',
+                filtroProveedorSeleccionado: '',
+                filtroProveedorModal: '',
+                pagoSeleccionado: null,
+                paginaActual: 1,
+                resultadosPorPagina: 20,
+                totalRecords: 0,
+                columnaOrden: '',
+                ordenAscendente: true,
+                cargando: false,
+                buscando: false,
+                textoCargar: 'Cargando...',
+                mostrarPorDias: false,
+                fechaDesde: '',
+                fechaHasta: new Date().toISOString().split('T')[0], // Fecha actual como predeterminado
+                filtrandoPorFechas: false,
+                fechaActual: new Date().toISOString().split('T')[0], // Fecha actual en formato YYYY-MM-DD
+                imagenPago: {
+                    cob_num: '',
+                    des_imag: '',
+                    picture: null
+                },
+                cargandoImagen: false
+            },
+            computed: {
+                resultadosPaginados() {
+                    return this.resultadosFiltrados; // Simplified
+                },
+                totalPaginas() {
+                    return Math.ceil(this.totalRecords / this.resultadosPorPagina); // Calculated from totalRecords
+                },
+                proveedoresDisponiblesEnRango() {
+                    if (!this.todosLosPagosRango || !this.todosLosPagosRango.length) return [];
+                    const provMap = new Map();
+                    this.todosLosPagosRango.forEach(pago => {
+                        const coProv = (pago.co_prov || '').trim();
+                        const provDes = (pago.prov_des || '').trim();
+                        const monto = parseFloat((pago.Total || 0).toString().replace(/[^\d.,-]/g, '').replace(',', '.')) || 0;
+                        if (coProv || provDes) {
+                            if (!provMap.has(coProv)) {
+                                provMap.set(coProv, {
+                                    co_prov: coProv,
+                                    prov_des: provDes,
+                                    nombreCompleto: (coProv ? coProv + ' - ' : '') + provDes,
+                                    cantidad: 0,
+                                    total: 0
+                                });
+                            }
+                            const p = provMap.get(coProv);
+                            p.cantidad += 1;
+                            p.total += monto;
+                        }
+                    });
+                    return Array.from(provMap.values()).sort((a, b) => a.prov_des.localeCompare(b.prov_des));
+                },
+                textoRangoFechasActivo() {
+                    if (!this.filtrandoPorFechas) {
+                        return 'Últimos 7 días';
+                    }
+                    if (this.fechaDesde && this.fechaHasta) {
+                        if (this.fechaDesde === this.fechaHasta) {
+                            return 'Fecha: ' + this.formatFecha(this.fechaDesde);
+                        }
+                        return 'Desde ' + this.formatFecha(this.fechaDesde) + ' hasta ' + this.formatFecha(this.fechaHasta);
+                    }
+                    return 'Rango de fechas';
+                },
+                pagosAgrupadosPorDia() {
+                    if (!this.mostrarPorDias || !this.resultadosFiltrados.length) {
+                        return [];
+                    }
+                    
+                    const agrupados = {};
+                    
+                    this.resultadosFiltrados.forEach(pago => {
+                        const fecha = pago.Fecha;
+                        if (!agrupados[fecha]) {
+                            agrupados[fecha] = {
+                                ADEL: [],
+                                FACT: [],
+                                otros: []
+                            };
+                        }
+                        
+                        // Clasificar por tipo de documento
+                        const tipoDoc = (pago.co_tipo_doc || '').trim().toUpperCase();
+                        if (tipoDoc === 'ADEL') {
+                            agrupados[fecha].ADEL.push(pago);
+                        } else if (tipoDoc === 'FACT') {
+                            agrupados[fecha].FACT.push(pago);
+                        } else {
+                            agrupados[fecha].otros.push(pago);
+                        }
+                    });
+                    
+                    // Convertir a array y ordenar por fecha descendente
+                    return Object.keys(agrupados)
+                        .sort((a, b) => new Date(b) - new Date(a))
+                        .map(fecha => ({
+                            fecha: fecha,
+                            pagosADEL: agrupados[fecha].ADEL,
+                            pagosFACT: agrupados[fecha].FACT,
+                            pagosOtros: agrupados[fecha].otros,
+                            cantidadADEL: agrupados[fecha].ADEL.length,
+                            cantidadFACT: agrupados[fecha].FACT.length,
+                            totalADEL: agrupados[fecha].ADEL.reduce((sum, pago) => sum + (Number(pago.Total) || 0), 0),
+                            totalFACT: agrupados[fecha].FACT.reduce((sum, pago) => sum + (Number(pago.Total) || 0), 0)
+                        }));
+                }
+            },
+            methods: {
+                getBsuqueda(page) {
+                    if (this.txtBusqueda.trim() !== '') {
+                        let cadena = this.txtBusqueda.trim();
+                        
+                        this.buscando = true;
+                        this.cargando = true;
+                        this.textoCargar = 'Buscando pagos...';
+                        this.mostrarPorDias = false; // Desactivar vista por dias en búsquedas específicas
+                        this.filtrandoPorFechas = false;
+                        this.todosLosPagosRango = [];
+                        this.filtroProveedorEnRango = '';
+                        this.filtroProveedorSeleccionado = '';
+                        this.filtroProveedorModal = '';
+
+                        axios.get('/DocumentoCP/buscarPagosCP', {
+                            params: {
+                                nombre: cadena,
+                                page: page || this.paginaActual,
+                                pageSize: this.resultadosPorPagina
+                            }
+                        })
+                            .then((response) => {
+                                this.resultadosFiltrados = response.data.datos || [];
+                                this.totalRecords = response.data.totalRecords || 0;
+                                this.pagoSeleccionado = null;
+                                this.sugerencias = [];
+
+                                if (initialCoCli && initialCliDes) {
+                                    const pago = this.resultadosFiltrados.find(x => {
+                                        const xCoProv = x.co_prov || '';
+                                        const xProvDes = x.prov_des || '';
+                                        return xCoProv === initialCoCli && xProvDes === initialCliDes;
+                                    });
+                                    if (pago) {
+                                        this.seleccionarPago(pago);
+                                    }
+                                }
+                                this.buscando = false;
+                                this.cargando = false;
+                            })
+                            .catch(() => {
+                                this.resultadosFiltrados = [];
+                                this.totalRecords = 0;
+                                this.pagoSeleccionado = null;
+                                this.sugerencias = [];
+                                this.buscando = false;
+                                this.cargando = false;
+                            });
+                    } else {
+                        this.resultadosFiltrados = [];
+                        this.totalRecords = 0;
+                        this.pagoSeleccionado = null;
+                        this.sugerencias = [];
+                        this.buscando = false;
+                        this.cargando = false;
+                    }
+                },
+                buscarSugerencias() {
+                    if (this.txtBusqueda.length < 2) {
+                        this.sugerencias = [];
+                        return;
+                    }
+                    const texto = this.txtBusqueda.toLowerCase();
+                    const sugerenciasSet = new Set();
+                    this.resultadosFiltrados.forEach(item => {
+                        const provDes = item.prov_des || '';
+                        const coProv = item.co_prov || '';
+
+                        if (provDes && provDes.toLowerCase().includes(texto)) {
+                            sugerenciasSet.add(provDes);
+                        }
+                        if (coProv && coProv.toLowerCase().includes(texto)) {
+                            sugerenciasSet.add(coProv);
+                        }
+                    });
+                    this.sugerencias = Array.from(sugerenciasSet).slice(0, 10);
+                },
+                seleccionarSugerencia(s) {
+                    this.txtBusqueda = s;
+                    this.sugerencias = [];
+                    this.paginaActual = 1;
+                    this.getBsuqueda();
+                },
+                seleccionarPago(item) {
+                    this.pagoSeleccionado = item;
+                    this.txtBusqueda = '';
+                    this.sugerencias = [];
+                    this.paginaActual = 1;
+                },
+                verDetallePago(item) {
+                    // Redirigir a la página de detalle del pago
+                    window.location.href = '/Pago/DetallePago?cob_num=' + encodeURIComponent(item.cob_num);
+                },
+                cargarTodosLosPagos() {
+                    this.cargando = true;
+                    this.textoCargar = 'Cargando pagos de los ultimos 7 dias...';
+                    this.buscando = true;
+                    this.filtrandoPorFechas = false;
+                    this.filtroProveedorEnRango = '';
+                    this.filtroProveedorSeleccionado = '';
+                    this.filtroProveedorModal = '';
+                    
+                    axios.get('/DocumentoCP/buscarPagosCP', {
+                        params: {
+                            nombre: '', // Busqueda vacia para obtener todos
+                            page: 1,
+                            pageSize: 8000 // Obtener todos los registros
+                        }
+                    })
+                    .then((response) => {
+                        const todosLosPagos = response.data.datos || [];
+                        
+                        // Calcular fecha de hace 7 dias
+                        const fechaHace7Dias = new Date();
+                        fechaHace7Dias.setDate(fechaHace7Dias.getDate() - 7);
+                        fechaHace7Dias.setHours(0, 0, 0, 0);
+                        
+                        // Filtrar solo los pagos de los ultimos 7 dias
+                        const pagosUltimos7Dias = todosLosPagos.filter(pago => {
+                            const fechaPago = new Date(pago.Fecha);
+                            fechaPago.setHours(0, 0, 0, 0);
+                            return fechaPago >= fechaHace7Dias;
+                        });
+                        
+                        this.todosLosPagosRango = pagosUltimos7Dias;
+                        this.resultadosFiltrados = pagosUltimos7Dias;
+                        this.totalRecords = pagosUltimos7Dias.length;
+                        this.pagoSeleccionado = null;
+                        this.sugerencias = [];
+                        this.txtBusqueda = '';
+                        this.paginaActual = 1;
+                        this.mostrarPorDias = true; // Activar vista por dias
+                        this.cargando = false;
+                        this.buscando = false;
+                    })
+                    .catch(() => {
+                        this.todosLosPagosRango = [];
+                        this.resultadosFiltrados = [];
+                        this.totalRecords = 0;
+                        this.pagoSeleccionado = null;
+                        this.sugerencias = [];
+                        this.paginaActual = 1;
+                        this.txtBusqueda = '';
+                        this.mostrarPorDias = false;
+                        this.cargando = false;
+                        this.buscando = false;
+                    });
+                },
+                cambiarPagina(pagina) {
+                    if (pagina > 0 && pagina <= this.totalPaginas) {
+                        this.paginaActual = pagina;
+                        this.getBsuqueda(pagina);
+                    }
+                },
+                ordenarPor(columna) {
+                    if (this.columnaOrden === columna) {
+                        this.ordenAscendente = !this.ordenAscendente;
+                    } else {
+                        this.columnaOrden = columna;
+                        this.ordenAscendente = true;
+                    }
+                    this.resultadosFiltrados.sort((a, b) => {
+                        if (a[columna] < b[columna]) return this.ordenAscendente ? -1 : 1;
+                        if (a[columna] > b[columna]) return this.ordenAscendente ? 1 : -1;
+                        return 0;
+                    });
+                },
+                formatNumero(valor) {
+                    if (valor == null || valor === '') return '0.00';
+                    
+                    // Convertir a numero
+                    let num;
+                    if (typeof valor === 'string') {
+                        const cleaned = valor.toString().replace(/[^\d.,-]/g, '');
+                        num = parseFloat(cleaned.replace(',', '.'));
+                    } else {
+                        num = Number(valor);
+                    }
+                    
+                    if (isNaN(num)) {
+                        return '0.00';
+                    }
+                    
+                    try {
+                        return num.toLocaleString('en-US', { 
+                            minimumFractionDigits: 2, 
+                            maximumFractionDigits: 2 
+                        });
+                    } catch (e) {
+                        return num.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+                    }
+                },
+                calcularTotalTasa(total, tasa) {
+                    if (!total || !tasa || tasa === 0) {
+                        return 0;
+                    }
+                    
+                    const totalNum = typeof total === 'string' 
+                        ? parseFloat(total.replace(/[^\d.,-]/g, '').replace(',', '.')) 
+                        : Number(total);
+                    const tasaNum = typeof tasa === 'string' 
+                        ? parseFloat(tasa.replace(/[^\d.,-]/g, '').replace(',', '.')) 
+                        : Number(tasa);
+                    
+                    if (isNaN(totalNum) || isNaN(tasaNum) || tasaNum === 0) {
+                        return 0;
+                    }
+                    
+                    return totalNum / tasaNum;
+                },
+                formatFecha(valor) {
+                    if (!valor) return '';
+                    let fecha;
+
+                    if (typeof valor === 'string' && valor.match(/\/Date\((\d+)\)\//)) {
+                        const ms = parseInt(valor.match(/\/Date\((\d+)\)\//)[1], 10);
+                        fecha = new Date(ms);
+                    } else if (typeof valor === 'string' && valor.length === 10 && valor.match(/^\d{4}-\d{2}-\d{2}$/)) {
+                        const [anio, mes, dia] = valor.split('-');
+                        fecha = new Date(Number(anio), Number(mes) - 1, Number(dia));
+                    } else {
+                        fecha = new Date(valor);
+                    }
+
+                    if (isNaN(fecha)) return valor;
+
+                    const dia = ('0' + fecha.getDate()).slice(-2);
+                    const mes = ('0' + (fecha.getMonth() + 1)).slice(-2);
+                    const anio = fecha.getFullYear();
+                    return `${dia}/${mes}/${anio}`;
+                },
+                formatFechaCompleta(valor) {
+                    if (!valor) return '';
+                    let fecha;
+
+                    if (typeof valor === 'string' && valor.match(/\/Date\((\d+)\)\//)) {
+                        const ms = parseInt(valor.match(/\/Date\((\d+)\)\//)[1], 10);
+                        fecha = new Date(ms);
+                    } else if (typeof valor === 'string' && valor.length === 10 && valor.match(/^\d{4}-\d{2}-\d{2}$/)) {
+                        const [anio, mes, dia] = valor.split('-');
+                        fecha = new Date(Number(anio), Number(mes) - 1, Number(dia));
+                    } else {
+                        fecha = new Date(valor);
+                    }
+
+                    if (isNaN(fecha)) return valor;
+
+                    const diasSemana = ['Domingo', 'Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado'];
+                    const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 
+                                 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+                    
+                    const diaSemana = diasSemana[fecha.getDay()];
+                    const dia = fecha.getDate();
+                    const mes = meses[fecha.getMonth()];
+                    const anio = fecha.getFullYear();
+                    
+                    return `${diaSemana}, ${dia} de ${mes} de ${anio}`;
+                },
+                limpiarBusqueda() {
+                    this.txtBusqueda = '';
+                    this.sugerencias = [];
+                    this.resultadosFiltrados = [];
+                    this.todosLosPagosRango = [];
+                    this.filtroProveedorEnRango = '';
+                    this.filtroProveedorSeleccionado = '';
+                    this.filtroProveedorModal = '';
+                    this.totalRecords = 0;
+                    this.pagoSeleccionado = null;
+                    this.paginaActual = 1;
+                    this.resultadosPorPagina = 20;
+                    this.buscando = false;
+                    this.cargando = false;
+                },
+                sumaTotalPagos() {
+                    if (!this.resultadosFiltrados || this.resultadosFiltrados.length === 0) return 0;
+                    const total = this.resultadosFiltrados.reduce((acc, item) => {
+                        let val = 0;
+                        if (item.Total !== null && item.Total !== undefined) {
+                            if (typeof item.Total === 'string') {
+                                val = parseFloat(item.Total.replace(/[^\d.,-]/g, '').replace(',', '.')) || 0;
+                            } else {
+                                val = Number(item.Total) || 0;
+                            }
+                        }
+                        return acc + val;
+                    }, 0);
+                    return total;
+                },
+                proveedoresUnicos() {
+                    if (!this.resultadosFiltrados || this.resultadosFiltrados.length === 0) return 0;
+                    const unique = new Set();
+                    this.resultadosFiltrados.forEach(item => {
+                        const key = (item.co_prov || '') + '|' + (item.prov_des || '');
+                        unique.add(key);
+                    });
+                    return unique.size;
+                },
+                promedioPagos() {
+                    if (!this.resultadosFiltrados || this.resultadosFiltrados.length === 0) return 0;
+                    const totalPagos = this.sumaTotalPagos();
+                    return totalPagos / this.resultadosFiltrados.length;
+                },
+                calcularTotalDiaTotalDolar(pagos) {
+                    if (!pagos || pagos.length === 0) return 0;
+                    
+                    const total = pagos.reduce((sum, pago) => {
+                        const totalDolar = this.calcularTotalTasa(pago.Total, pago.tasa);
+                        return sum + totalDolar;
+                    }, 0);
+                    
+                    return total;
+                },
+                sumaTotalPagosDolar() {
+                    if (!this.resultadosFiltrados || this.resultadosFiltrados.length === 0) return 0;
+                    
+                    const total = this.resultadosFiltrados.reduce((sum, item) => {
+                        const totalDolar = this.calcularTotalTasa(item.Total, item.tasa);
+                        return sum + totalDolar;
+                    }, 0);
+                    
+                    return total;
+                },
+                // Escapa caracteres HTML para evitar XSS al usar v-html con datos del servidor
+                escaparHtml(texto) {
+                    if (texto == null || texto === undefined) return '';
+                    return String(texto)
+                        .replace(/&/g, '&amp;')
+                        .replace(/</g, '&lt;')
+                        .replace(/>/g, '&gt;')
+                        .replace(/"/g, '&quot;')
+                        .replace(/'/g, '&#39;');
+                },
+                highlight(text) {
+                    if (text == null || text === undefined) return '';
+
+                    // Escapar SIEMPRE el contenido antes de insertarlo con v-html (mitiga XSS)
+                    const texto = this.escaparHtml(text);
+
+                    const termino = this.txtBusqueda || this.filtroProveedorEnRango;
+                    if (!termino) return texto;
+
+                    const escapedTerm = termino.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+                    const regex = new RegExp(`(${escapedTerm})`, 'gi');
+                    return texto.toString().replace(regex, '<span class="highlight">$1</span>');
+                },
+                mostrarValorOpcional(valor) {
+                    if (valor == null || valor === undefined || valor === '') {
+                        return '<span style="color: #6c757d; font-style: italic;">-</span>';
+                    }
+                    // Escapar el valor (puede venir del servidor) antes de usarlo con v-html
+                    return this.escaparHtml(valor);
+                },
+                mostrarDocumentoPorTipo(item, tipoDocumento) {
+                    // Verificar si el tipo de documento coincide con el tipo solicitado
+                    if (item.co_tipo_doc && item.co_tipo_doc.trim().toUpperCase() === tipoDocumento.trim().toUpperCase()) {
+                        const monto = item.Total;
+                        if (!monto || monto === '') {
+                            return '<span style="color: #6c757d; font-style: italic;">-</span>';
+                        }
+                        
+                        let claseColor = '';
+                        switch (tipoDocumento.trim().toUpperCase()) {
+                            case 'ADEL':
+                                claseColor = 'documento-adel';
+                                break;
+                            case 'FACT':
+                                claseColor = 'documento-fact';
+                                break;
+                            case 'N/CR':
+                                claseColor = 'documento-ncr';
+                                break;
+                        }
+                        
+                        const montoFormateado = this.formatNumero(monto);
+                        return `<span class="${claseColor}">${montoFormateado}</span>`;
+                    }
+                    return '<span style="color: #6c757d; font-style: italic;">-</span>';
+                },
+                scrollToResults() {
+                    const resultsSection = document.querySelector('.card.border-primary');
+                    if (resultsSection) {
+                        resultsSection.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                },
+                setupMobileScroll() {
+                    const scrollToTopBtn = document.getElementById('scrollToTop');
+                    const scrollIndicator = document.getElementById('scrollIndicator');
+                    let scrollTimeout;
+
+                    window.addEventListener('scroll', () => {
+                        if (window.pageYOffset > 300) {
+                            scrollToTopBtn.classList.add('show');
+                        } else {
+                            scrollToTopBtn.classList.remove('show');
+                        }
+
+                        clearTimeout(scrollTimeout);
+                        scrollIndicator.classList.add('show');
+                        
+                        scrollTimeout = setTimeout(() => {
+                            scrollIndicator.classList.remove('show');
+                        }, 2000);
+                    });
+
+                    scrollToTopBtn.addEventListener('click', () => {
+                        window.scrollTo({
+                            top: 0,
+                            behavior: 'smooth'
+                        });
+                    });
+
+                    const tables = document.querySelectorAll('.table-responsive');
+                    tables.forEach(table => {
+                        let isScrolling = false;
+                        let startX, startScrollLeft;
+
+                        table.addEventListener('touchstart', (e) => {
+                            isScrolling = true;
+                            startX = e.touches[0].pageX - table.offsetLeft;
+                            startScrollLeft = table.scrollLeft;
+                        });
+
+                        table.addEventListener('touchmove', (e) => {
+                            if (!isScrolling) return;
+                            e.preventDefault();
+                            const x = e.touches[0].pageX - table.offsetLeft;
+                            const walk = (x - startX) * 2;
+                            table.scrollLeft = startScrollLeft - walk;
+                        });
+
+                        table.addEventListener('touchend', () => {
+                            isScrolling = false;
+                        });
+                    });
+                },
+                filtrarPorFechas() {
+                    if (!this.fechaDesde || !this.fechaHasta) {
+                        alert('Por favor seleccione ambas fechas (desde y hasta)');
+                        return;
+                    }
+
+                    if (new Date(this.fechaDesde) > new Date(this.fechaHasta)) {
+                        alert('La fecha "desde" no puede ser mayor que la fecha "hasta"');
+                        return;
+                    }
+
+                    this.cargando = true;
+                    this.textoCargar = 'Filtrando pagos por fechas...';
+                    this.buscando = true;
+                    this.filtrandoPorFechas = true;
+                    this.mostrarPorDias = true; // Activar vista por dias igual que el boton "Todos"
+
+                    axios.get('/DocumentoCP/buscarPagosCP', {
+                        params: {
+                            nombre: '', // Busqueda vacia para obtener todos
+                            page: 1,
+                            pageSize: 8000 // Obtener todos los registros
+                        }
+                    })
+                    .then((response) => {
+                        const todosLosPagos = response.data.datos || [];
+                        
+                        const fechaDesde = new Date(this.fechaDesde);
+                        const fechaHasta = new Date(this.fechaHasta);
+                        fechaDesde.setHours(0, 0, 0, 0);
+                        fechaHasta.setHours(23, 59, 59, 999);
+
+                        // Filtrar por rango de fechas
+                        const pagosFiltrados = todosLosPagos.filter(pago => {
+                            const fechaPago = new Date(pago.Fecha);
+                            fechaPago.setHours(0, 0, 0, 0);
+                            return fechaPago >= fechaDesde && fechaPago <= fechaHasta;
+                        });
+
+                        this.todosLosPagosRango = pagosFiltrados;
+                        
+                        // Si se indicó un proveedor en el modal, prellenarlo y filtrar
+                        if (this.filtroProveedorModal && this.filtroProveedorModal.trim() !== '') {
+                            this.filtroProveedorEnRango = this.filtroProveedorModal.trim();
+                        } else {
+                            this.filtroProveedorEnRango = '';
+                            this.filtroProveedorSeleccionado = '';
+                        }
+                        
+                        this.filtrarResultadosPorProveedor();
+
+                        this.pagoSeleccionado = null;
+                        this.sugerencias = [];
+                        this.txtBusqueda = '';
+                        this.paginaActual = 1;
+                        this.cargando = false;
+                        this.buscando = false;
+                    })
+                    .catch(() => {
+                        this.todosLosPagosRango = [];
+                        this.resultadosFiltrados = [];
+                        this.totalRecords = 0;
+                        this.pagoSeleccionado = null;
+                        this.sugerencias = [];
+                        this.paginaActual = 1;
+                        this.txtBusqueda = '';
+                        this.filtrandoPorFechas = false;
+                        this.mostrarPorDias = false;
+                        this.cargando = false;
+                        this.buscando = false;
+                    });
+                },
+                filtrarResultadosPorProveedor() {
+                    if (!this.todosLosPagosRango) {
+                        this.resultadosFiltrados = [];
+                        this.totalRecords = 0;
+                        return;
+                    }
+                    
+                    const texto = (this.filtroProveedorEnRango || '').toLowerCase().trim();
+                    if (!texto) {
+                        this.resultadosFiltrados = [...this.todosLosPagosRango];
+                        this.filtroProveedorSeleccionado = '';
+                    } else {
+                        this.resultadosFiltrados = this.todosLosPagosRango.filter(pago => {
+                            const coProv = (pago.co_prov || '').toLowerCase();
+                            const provDes = (pago.prov_des || '').toLowerCase();
+                            const cobNum = (pago.cob_num || '').toLowerCase();
+                            const numDoc = (pago.num_doc || '').toLowerCase();
+                            return coProv.includes(texto) || provDes.includes(texto) || cobNum.includes(texto) || numDoc.includes(texto);
+                        });
+                        
+                        // Si el texto coincide con un código de proveedor, sincronizar el select
+                        const provExacto = this.proveedoresDisponiblesEnRango.find(p => p.co_prov.toLowerCase() === texto);
+                        if (provExacto) {
+                            this.filtroProveedorSeleccionado = provExacto.co_prov;
+                        } else {
+                            this.filtroProveedorSeleccionado = '';
+                        }
+                    }
+                    this.totalRecords = this.resultadosFiltrados.length;
+                },
+                seleccionarProveedorDeLista() {
+                    if (!this.filtroProveedorSeleccionado) {
+                        this.filtroProveedorEnRango = '';
+                    } else {
+                        const prov = this.proveedoresDisponiblesEnRango.find(p => p.co_prov === this.filtroProveedorSeleccionado);
+                        if (prov) {
+                            this.filtroProveedorEnRango = prov.prov_des || prov.co_prov;
+                        } else {
+                            this.filtroProveedorEnRango = this.filtroProveedorSeleccionado;
+                        }
+                    }
+                    this.filtrarResultadosPorProveedor();
+                },
+                limpiarFiltroProveedorEnRango() {
+                    this.filtroProveedorEnRango = '';
+                    this.filtroProveedorSeleccionado = '';
+                    this.filtroProveedorModal = '';
+                    this.filtrarResultadosPorProveedor();
+                },
+                limpiarFiltroFechas() {
+                    this.fechaDesde = '';
+                    this.fechaHasta = this.fechaActual; // Restaurar fecha actual como predeterminado
+                    this.filtrandoPorFechas = false;
+                    this.filtroProveedorEnRango = '';
+                    this.filtroProveedorSeleccionado = '';
+                    this.filtroProveedorModal = '';
+                    this.todosLosPagosRango = [];
+                    this.resultadosFiltrados = [];
+                    this.totalRecords = 0;
+                    this.pagoSeleccionado = null;
+                    this.sugerencias = [];
+                    this.paginaActual = 1;
+                    this.mostrarPorDias = false;
+                    
+                    // Cerrar el modal si esta abierto
+                    const modal = document.getElementById('filtroFechasModal');
+                    if (modal) {
+                        const modalInstance = bootstrap.Modal.getInstance(modal);
+                        if (modalInstance) {
+                            modalInstance.hide();
+                        }
+                    }
+                },
+                calcularTotalPorTipo(tipoDocumento) {
+                    if (!this.resultadosFiltrados || this.resultadosFiltrados.length === 0) {
+                        return this.formatNumero(0);
+                    }
+                    
+                    const total = this.resultadosFiltrados.reduce((sum, item) => {
+                        if (item.co_tipo_doc && item.co_tipo_doc.trim().toUpperCase() === tipoDocumento.trim().toUpperCase()) {
+                            let monto = 0;
+                            if (item.Total !== null && item.Total !== undefined) {
+                                if (typeof item.Total === 'string') {
+                                    monto = parseFloat(item.Total.replace(/[^\d.,-]/g, '').replace(',', '.')) || 0;
+                                } else {
+                                    monto = Number(item.Total) || 0;
+                                }
+                            }
+                            return sum + monto;
+                        }
+                        return sum;
+                    }, 0);
+                    
+                    return this.formatNumero(total);
+                },
+                calcularTotalPorTipoEnGrupo(pagos, tipoDocumento) {
+                    if (!pagos || pagos.length === 0) {
+                        return this.formatNumero(0);
+                    }
+                    
+                    const total = pagos.reduce((sum, pago) => {
+                        if (pago.co_tipo_doc && pago.co_tipo_doc.trim().toUpperCase() === tipoDocumento.trim().toUpperCase()) {
+                            let monto = 0;
+                            if (pago.Total !== null && pago.Total !== undefined) {
+                                if (typeof pago.Total === 'string') {
+                                    monto = parseFloat(pago.Total.replace(/[^\d.,-]/g, '').replace(',', '.')) || 0;
+                                } else {
+                                    monto = Number(pago.Total) || 0;
+                                }
+                            }
+                            return sum + monto;
+                        }
+                        return sum;
+                    }, 0);
+                    
+                    return this.formatNumero(total);
+                },
+                verImagenPago(cob_num) {
+                    // Limpiar datos previos
+                    this.imagenPago = {
+                        cob_num: cob_num,
+                        des_imag: '',
+                        picture: null
+                    };
+                    this.cargandoImagen = true;
+                    
+                    // Abrir modal
+                    const modal = new bootstrap.Modal(document.getElementById('modalImagenPago'));
+                    modal.show();
+                    
+                    // Cargar imagen bajo demanda (solo cuando se hace clic)
+                    axios.get('/DocumentoCP/ObtenerImagenPago', {
+                        params: { cob_num: cob_num }
+                    })
+                    .then((response) => {
+                        if (response.data.success) {
+                            this.imagenPago.des_imag = response.data.des_imag || 'Imagen del pago';
+                            this.imagenPago.picture = response.data.picture;
+                        } else {
+                            alert('No se pudo cargar la imagen: ' + (response.data.message || 'Error desconocido'));
+                            this.imagenPago.picture = null;
+                        }
+                        this.cargandoImagen = false;
+                    })
+                    .catch((error) => {
+                        console.error('Error al cargar imagen:', error);
+                        alert('Error al cargar la imagen del pago');
+                        this.imagenPago.picture = null;
+                        this.cargandoImagen = false;
+                    });
+                }
+            },
+            created() {
+                this.buscarSugerenciasDebounced = debounce(this.buscarSugerencias, 300);
+                if (initialCoCli && initialCliDes) {
+                    this.txtBusqueda = initialCliDes;
+                    this.getBsuqueda();
+                }
+            },
+            mounted() {
+                this.setupMobileScroll();
+            }
+        });
+    </script>
+}

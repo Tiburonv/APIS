@@ -13,6 +13,11 @@ namespace APIS.Controllers
         protected override void OnActionExecuting(ActionExecutingContext filterContext)
         {
             var usuario = Session["Usuario"] as string;
+            if (usuario == "999")
+            {
+                base.OnActionExecuting(filterContext);
+                return;
+            }
             if (usuario != "04" && usuario != "05" && usuario != "11")
             {
                 filterContext.Result = RedirectToAction("Index", "Home");
@@ -37,18 +42,43 @@ namespace APIS.Controllers
         }
 
         [HttpGet]
-        public JsonResult Buscar(string busqueda)
+        public JsonResult ListarCategorias()
+        {
+            using (var db = new A_ZULIA_12Entities())
+            {
+                var categorias = db.Database.SqlQuery<CategoriaViewModel>(
+                    "SELECT RTRIM(co_cat) AS co_cat, RTRIM(cat_des) AS cat_des " +
+                    "FROM saCatArticulo " +
+                    "ORDER BY cat_des"
+                ).ToList();
+
+                return Json(categorias, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        [HttpGet]
+        public JsonResult Buscar(string busqueda, string co_cat = null)
         {
             var resultados = new List<PreciosViewModel>();
 
-            if (string.IsNullOrWhiteSpace(busqueda))
+            if (string.IsNullOrWhiteSpace(busqueda) && string.IsNullOrWhiteSpace(co_cat))
                 return Json(resultados, JsonRequestBehavior.AllowGet);
+
+            var busquedaLimpia = string.IsNullOrWhiteSpace(busqueda) ? null : busqueda.Trim();
+            var coCatLimpia = string.IsNullOrWhiteSpace(co_cat) ? null : co_cat.Trim();
+
+            // Si hay texto de búsqueda, ignorar la categoría
+            if (!string.IsNullOrEmpty(busquedaLimpia))
+            {
+                coCatLimpia = null;
+            }
 
             using (var db = new A_ZULIA_12Entities())
             {
-                var param = new SqlParameter("@busqueda", busqueda);
+                var paramBusqueda = new SqlParameter("@busqueda", (object)busquedaLimpia ?? DBNull.Value);
+                var paramCoCat = new SqlParameter("@co_cat", (object)coCatLimpia ?? DBNull.Value);
                 resultados = db.Database.SqlQuery<PreciosViewModel>(
-                    "EXEC buscarPrecios @busqueda", param
+                    "EXEC buscarPrecios @busqueda, @co_cat", paramBusqueda, paramCoCat
                 ).ToList();
             }
 
@@ -56,13 +86,16 @@ namespace APIS.Controllers
             {
                 co_art = x.co_art,
                 art_des = x.art_des,
+                co_cat = x.co_cat,
+                cat_des = x.cat_des,
                 tipo_imp = x.tipo_imp,
                 iva = x.iva,
                 precio1 = x.Precio1,
                 precio2 = x.Precio2,
                 precio3 = x.Precio3,
                 precio4 = x.Precio4,
-                precio5 = x.Precio5
+                precio5 = x.Precio5,
+                tasa = x.tasa
             });
 
             return Json(data, JsonRequestBehavior.AllowGet);

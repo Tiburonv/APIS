@@ -5,9 +5,9 @@
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
       <Diagram DiagramId="961c10e130e447b0a4ab02b9061d5ad4" Name="Diagram1" >
-        <EntityTypeShape EntityType="A_ZULIA_12Model.Usuarios" Width="1.5" PointX="0.75" PointY="0.75" />
         <EntityTypeShape EntityType="A_ZULIA_12Model.ZCotizacionRengNB" Width="1.5" PointX="0.75" PointY="4" />
         <EntityTypeShape EntityType="A_ZULIA_12Model.ZCotizacionNB" Width="1.5" PointX="3.375" PointY="0.75" />
+        <EntityTypeShape EntityType="A_ZULIA_12Model.Usuarios" Width="1.5" PointX="0.75" PointY="0.75" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

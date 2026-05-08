@@ -1,602 +1,393 @@
 @{
-    ViewBag.Title = "Cotizacion";
+    ViewBag.Title = "Cotización";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <style>
-    body {
-        background: #f8f9fa;
-        font-family: 'Segoe UI', Arial, sans-serif;
-        color: #222;
+    /* Cotizacion v2.0 */
+
+    /* Wizard Steps */
+    .wizard-steps {
+        display: flex; gap: 0; margin-bottom: 24px;
+        background: #fff; border-radius: 14px;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 2px 8px rgba(15,23,42,0.06);
+        overflow: hidden;
+    }
+    .wizard-step {
+        flex: 1; display: flex; align-items: center; gap: 10px;
+        padding: 14px 18px; position: relative;
+        color: #94a3b8; font-size: 0.88rem; font-weight: 600;
+        border-right: 1px solid #e2e8f0; transition: all 0.2s;
+    }
+    .wizard-step:last-child { border-right: none; }
+    .wizard-step.active { color: #1565c0; background: #eff6ff; }
+    .wizard-step.done   { color: #059669; background: #f0fdf4; }
+    .wizard-step__num {
+        width: 28px; height: 28px; border-radius: 50%;
+        background: #e2e8f0; color: #94a3b8;
+        display: inline-flex; align-items: center; justify-content: center;
+        font-size: 0.82rem; font-weight: 700; flex-shrink: 0;
+        transition: all 0.2s;
+    }
+    .wizard-step.active .wizard-step__num { background: #1565c0; color: #fff; }
+    .wizard-step.done   .wizard-step__num { background: #059669; color: #fff; }
+    @@media (max-width: 576px) {
+        .wizard-step span:not(.wizard-step__num) { display: none; }
+        .wizard-step { justify-content: center; padding: 12px 8px; }
     }
 
-    h2 {
-        font-size: 20px;
-        color: #1565c0;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        margin-bottom: 24px;
-        text-align: left;
+    /* Tasa BCV hero */
+    .tasa-hero {
+        display: inline-flex; align-items: center; gap: 10px;
+        background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+        color: #fff; border-radius: 12px; padding: 8px 18px;
+        box-shadow: 0 3px 12px rgba(2,132,199,0.35);
     }
+    .tasa-hero__label { font-size: 0.75rem; opacity: 0.8; font-weight: 500; }
+    .tasa-hero__value { font-size: 1.1rem; font-weight: 800; font-variant-numeric: tabular-nums; }
 
+    /* Cards v2.0 */
     .card {
-        background: #fff;
-        border-radius: 10px;
-        border: 1px solid #ececec;
-        box-shadow: none;
-        margin-bottom: 24px;
+        position: relative;
+        overflow: visible !important;
+        border-radius: 14px;
+        box-shadow: 0 4px 14px rgba(15,23,42,0.07);
+        border: 1px solid #e2e8f0 !important;
+        margin-bottom: 20px;
     }
+    .card.card-paso-1 { z-index: 30; }
+    .card.card-paso-2 { z-index: 20; }
+    .card.card-paso-3 { z-index: 10; }
+    .card.card-paso-1:focus-within { z-index: 45 !important; }
+    .card.card-paso-2:focus-within { z-index: 40 !important; }
 
     .card-header {
-        background: none;
-        color: #1565c0;
+        background: linear-gradient(135deg, #1565c0 0%, #1e88e5 100%) !important;
+        color: #fff !important;
         font-weight: 600;
-        font-size: 16px;
-        border-bottom: 1px solid #ececec;
-        padding: 16px 20px 8px 20px;
+        font-size: 1rem;
+        letter-spacing: -0.01em;
+        border-radius: 13px 13px 0 0 !important;
+        padding: 13px 18px;
+        border-bottom: none !important;
     }
-
     .card-body {
-        padding: 20px;
+        position: relative;
+        overflow: visible !important;
+        padding: 18px;
+        background: #fff;
+        border-radius: 0 0 13px 13px;
     }
 
     .form-label {
-        color: #1565c0;
-        font-weight: 500;
-        font-size: 14px;
-        margin-bottom: 4px;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
+        color: #475569; font-weight: 600; font-size: 0.8rem;
+        text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 5px;
     }
-
-    .form-control {
-        border: 1px solid #e0e0e0;
-        border-radius: 6px;
-        padding: 10px 14px;
-        font-size: 15px;
-        background: #fff;
-        color: #222;
-        box-shadow: none;
-        transition: border-color 0.2s;
+    .form-control, .form-select {
+        border-radius: 9px; border: 1.5px solid #e2e8f0;
+        padding: 9px 12px; font-size: 0.93rem;
+        transition: all 0.2s ease;
     }
-
-        .form-control:focus {
-            border-color: #1565c0;
-            outline: none;
-        }
-
-    .btn {
-        border-radius: 6px;
-        font-weight: 500;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        padding: 10px 20px;
-        background: #1565c0;
-        color: #fff;
-        border: none;
-        box-shadow: none;
-        transition: background 0.2s;
+    .form-control:focus, .form-select:focus {
+        border-color: #1565c0; box-shadow: 0 0 0 3px rgba(21,101,192,0.1); outline: none;
     }
+    .form-control[readonly] { background: #f8fafc; color: #64748b; }
 
-        .btn:hover {
-            background: #0d47a1;
-        }
-
-    .table {
-        width: 100%;
-        border-collapse: collapse;
-        background: #fff;
-        font-size: 15px;
+    /* Dropdowns de Búsqueda de Clientes y Artículos */
+    #tablaClientesContainer, #tablaArticulosContainer {
+        position: absolute !important;
+        top: calc(100% + 4px) !important;
+        left: 0 !important;
+        right: 0 !important;
+        width: 100% !important;
+        max-height: 280px !important;
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+        z-index: 99999 !important;
+        box-shadow: 0 16px 36px rgba(15,23,42,0.28) !important;
+        border-radius: 10px !important;
+        background: #ffffff !important;
+        border: 2px solid #3b82f6 !important;
+        animation: fadeInDrop 0.15s ease;
     }
-
-        .table thead th {
-            background: #f4f6fb;
-            color: #1565c0;
-            font-weight: 600;
-            border-bottom: 1px solid #ececec;
-            padding: 10px 6px;
-            text-align: left;
-        }
-
-        .table tbody td {
-            border-bottom: 1px solid #f0f0f0;
-            padding: 10px 6px;
-        }
-
-        .table tbody tr:hover {
-            background: #f0f4fa;
-        }
-
-    .input-group {
-        display: flex;
-        gap: 8px;
-    }
-
-        .input-group .form-control {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .input-group .btn {
-            white-space: nowrap;
-            flex-shrink: 0;
-        }
-
-    #clienteSeleccionado, #searchArticulo {
-        font-size: 15px;
-        font-weight: 500;
-        background: #f8f9fa;
-        border: 1px solid #e0e0e0;
-        color: #1565c0;
-        border-radius: 6px;
-        box-shadow: none;
-        width: 100%;
-        min-width: 100%;
-        white-space: nowrap;
-        overflow-x: auto;
-        text-overflow: ellipsis;
-    }
-
-    #codigo, #vendedor, #Transporte {
-        font-size: 15px;
-        font-weight: 500;
-        background: #f8f9fa;
-        border: 1px solid #e0e0e0;
-        color: #1565c0;
-        border-radius: 6px;
-        box-shadow: none;
-        width: 50%;
-        min-width: 0;
-        white-space: nowrap;
-        overflow-x: auto;
-        text-overflow: ellipsis;
-    }
-
-    #codigoArticulo {
-        width: 75px;
-        min-width: 50px;
-        max-width: 100%;
-    }
-
-    #descripcionArticulo {
-        width: 600px;
-        min-width: 50px;
-        max-width: 100%;
-    }
-
-    #ivaArticulo {
-        width: 70px;
-        min-width: 50px;
-        max-width: 100%;
-    }
-
-    #precio1Articulo {
-        width: 90px;
-        min-width: 50px;
-        max-width: 100%;
-    }
-
-
-
-    /*configurara colores de tarjetas*/
-    .resaltado-cotizacion {
-        background: #e3f2fd;
-        border: 2px solid #1565c0;
-        box-shadow: 0 2px 8px rgba(21, 101, 192, 0.08);
-    }
-
-    .busqueda-articulos {
-        background: #e3f2fd;
-        border: 2px solid #1565c0;
-        box-shadow: 0 2px 8px rgba(21, 101, 192, 0.08);
-    }
-
-    .resaltado-cliente {
-        background: #e3f2fd;
-        border: 2px solid #1565c0;
-        box-shadow: 0 2px 8px rgba(21, 101, 192, 0.08);
-    }
-
-    /* NUEVO: Clases para resaltar selección */
-    .resaltado-seleccion {
-        border: 2px solid #00bcd4 !important;
-        background: #e0f7fa !important;
-        transition: border 0.3s, background 0.3s;
-    }
-
-    .resaltado-transporte {
-        border: 2px solid #ff9800 !important;
-        background: #fff3e0 !important;
-        transition: border 0.3s, background 0.3s;
-    }
-
-    .completado {
-        border: 2px solid #4caf50 !important;
-        background: #e8f5e9 !important;
-        transition: border 0.3s, background 0.3s;
-    }
-
-    /* Asegura que el input-group y el botón se vean bien en todos los tamaños */
-    .input-group {
-        width: 100%;
-    }
-
-    #btnLimpiarCliente {
-        min-width: 90px;
-        height: 48px;
-        margin-left: 8px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    /* Estilo para resaltar los resultados de búsqueda de clientes */
-    #tablaClientesContainer table {
-        background: #fffbe7;
-        border: 1.5px solid #ffe082;
-    }
-
-    #tablaClientesContainer tbody tr {
-        background: #fffbe7;
-        transition: background 0.2s;
-    }
-
-        #tablaClientesContainer tbody tr:hover {
-            background: #ffe082;
-        }
-
-    /* Estilo para resaltar los resultados de búsqueda de artículos */
-    #tablaArticulosContainer table {
-        background: #e7f7ff;
-        border: 1.5px solid #82cfff;
-    }
-
-    #tablaArticulosContainer tbody tr {
-        background: #e7f7ff;
-        transition: background 0.2s;
-    }
-
-        #tablaArticulosContainer tbody tr:hover {
-            background: #b3e5fc;
-        }
-
-    /* Estilos para móvil - Mejoras implementadas */
-    @@media (max-width: 768px) {
-        /* Aumentar tamaño de botones para mejor interacción táctil */
-        .btn {
-            min-height: 50px;
-            padding: 12px 24px;
-            font-size: 1.1em;
-            border-radius: 8px;
-        }
-        /* Aumentar tamaño de campos de entrada */
-        .form-control {
-            min-height: 50px;
-            padding: 14px 18px;
-            font-size: 16px;
-            border-radius: 8px;
-            margin-bottom: 10px;
-        }
-        /* Mejorar espaciado general */
-        .input-group {
-            gap: 16px;
-            margin-bottom: 20px;
-        }
-        /* Aumentar tamaño de iconos */
-        .fas {
-            font-size: 1.4em;
-        }
-        /* Mejorar visibilidad de estados de resaltado */
-        .resaltado-seleccion, .resaltado-transporte {
-            padding: 16px;
-            margin-bottom: 12px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        /* Mejorar tabla en modo móvil */
-        .table-responsive {
-            overflow-x: auto;
-            margin: 12px 0;
-            border-radius: 8px;
-            background: #fff;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .table {
-            font-size: 14px;
-            border-collapse: separate;
-            border-spacing: 0;
-        }
-
-            .table thead th,
-            .table tbody td {
-                padding: 12px 8px;
-                min-width: 100px;
-            }
-        /* Ajustes específicos para botón de limpiar cliente */
-        #btnLimpiarCliente {
-            width: 60px !important;
-            min-width: 50px !important;
-            max-width: 60px !important;
-            height: 60px !important;
-            font-size: 1.8rem !important;
-            border-radius: 50% !important;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        /* Mejorar campos de búsqueda */
-        #searchArticulo {
-            font-size: 18px;
-            padding: 16px 20px;
-            width: 100%;
-            margin-bottom: 15px;
-        }
-        /* Ajustes para la tabla de resultados */
-        #tablaArticulosContainer table {
-            border-radius: 8px;
-            overflow: hidden;
-            width: 100%;
-        }
-
-        #tablaArticulosContainer tbody tr {
-            transition: all 0.3s ease;
-        }
-
-            #tablaArticulosContainer tbody tr:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            }
-        /* Mejoras en la estructura de la página */
-        .container-fluid {
-            padding: 10px;
-        }
-
-        .card {
-            margin-bottom: 15px !important;
-        }
-        /* Optimizar espaciado de títulos */
-        h2 {
-            font-size: 18px;
-            margin-bottom: 15px;
-        }
-        /* Ajustes para formularios */
-        .form-group {
-            margin-bottom: 15px;
-        }
-        /* Mejorar interacción táctil */
-        .form-control:focus {
-            background-color: #1565c0 !important; /* Azul corporativo */
-            border-color: #1565c0 !important;
-            color: #fff !important;
-            border-color: #1565c0;
-            box-shadow: 0 0 0 0.2rem rgba(21, 101, 192, 0.25);
-        }
-        /* Ajustes para botones de acción */
-        .btn-primary {
-            background-color: #1565c0 !important; /* Azul corporativo */
-            border-color: #1565c0 !important;
-            color: #fff !important;
-            padding: 12px 20px;
-            font-weight: 500;
-            text-transform: uppercase;
-        }
-        /* Optimizar menús desplegables */
-        .dropdown-menu {
-            min-width: 200px;
-            padding: 8px;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-        }
-
-        .dropdown-item {
-            padding: 8px 16px;
-            font-size: 14px;
-        }
-    }
-
-    #btnAgregarArticulo {
-        background-color: #1565c0 !important;
-        border-color: #1565c0 !important;
+    @@keyframes fadeInDrop { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+    #tablaClientesContainer table, #tablaArticulosContainer table { margin-bottom: 0 !important; background: #fff !important; width: 100% !important; }
+    #tablaClientesContainer thead th, #tablaArticulosContainer thead th {
+        position: sticky !important;
+        top: 0 !important;
+        z-index: 10 !important;
+        background: #1565c0 !important;
         color: #fff !important;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        padding: 8px 12px !important;
+        font-size: 0.8rem;
     }
+    #tablaClientesContainer tbody tr, #tablaArticulosContainer tbody tr { background: #fff !important; color: #1e293b !important; cursor: pointer; transition: background 0.15s ease; }
+    #tablaClientesContainer tbody tr:hover, #tablaArticulosContainer tbody tr:hover { background: #eff6ff !important; color: #1565c0 !important; }
+    #tablaClientesContainer tbody td, #tablaArticulosContainer tbody td { background: transparent !important; color: inherit !important; border: none !important; border-bottom: 1px solid #f1f5f9 !important; padding: 9px 12px !important; }
 
-        #btnAgregarArticulo:hover, #btnAgregarArticulo:focus {
-            background-color: #0d47a1 !important;
-            border-color: #0d47a1 !important;
-            color: #fff !important;
-        }
-
-   #bloqueoOverlay {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        background: rgba(180, 180, 180, 0.5); /* Gris semitransparente */
-        z-index: 9999;
-        pointer-events: all;
+    /* Selected article panel */
+    #articuloSeleccionadoRow {
+        display: none !important;
+        background: #f8fafc; border-radius: 10px;
+        border: 1.5px solid #bfdbfe; padding: 14px 16px;
+        gap: 10px; margin-top: 12px;
     }
+    #articuloSeleccionadoRow.mostrar { display: flex !important; }
 
-   
+    /* Articles table */
+    .table thead th { background: #1565c0 !important; color: #fff !important; font-weight: 600; border-bottom: 0; font-size: 0.83rem; }
+    .table tfoot td { background: #eff6ff; font-weight: 700; color: #1e293b; }
+    .table tfoot tr:last-child td { color: #059669; font-size: 1.02rem; }
+
+    /* Empty state for articles table */
+    .table-empty-state {
+        text-align: center; padding: 36px 20px; color: #94a3b8;
+    }
+    .table-empty-state i { font-size: 2rem; margin-bottom: 10px; display: block; color: #cbd5e1; }
+    .table-empty-state p { font-size: 0.88rem; margin: 0; }
+
+    /* Action buttons */
+    .btn-save-cot {
+        background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+        border: none; color: #fff; font-weight: 700; font-size: 1rem;
+        padding: 13px 32px; border-radius: 12px;
+        box-shadow: 0 4px 14px rgba(5,150,105,0.4);
+        transition: all 0.2s ease; display: inline-flex; align-items: center; gap: 8px;
+    }
+    .btn-save-cot:hover:not(:disabled) {
+        transform: translateY(-2px); box-shadow: 0 7px 20px rgba(5,150,105,0.5);
+        background: linear-gradient(135deg, #047857 0%, #059669 100%); color: #fff;
+    }
+    .btn-save-cot:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
     #btnNuevaCotizacion {
-        position: fixed !important;
-        bottom: 40px;
-        right: 40px;
-        z-index: 10000 !important;
-        display: none;
+        position: fixed !important; bottom: 40px; right: 40px;
+        z-index: 10000 !important; display: none;
+        background: linear-gradient(135deg, #0284c7 0%, #0ea5e9 100%);
+        border: none; color: #fff; font-weight: 700; padding: 13px 28px;
+        border-radius: 12px; box-shadow: 0 4px 14px rgba(2,132,199,0.45);
     }
 
+    #bloqueoOverlay {
+        display: none; position: fixed; top: 0; left: 0;
+        width: 100vw; height: 100vh;
+        background: rgba(15,23,42,0.35);
+        backdrop-filter: blur(2px); z-index: 9999;
+    }
 
+    #descripcionArticulo { width: 100% !important; min-width: 100% !important; display: block; }
 </style>
 
+
 <div class="container-fluid">
-    <h2 class="mb-4">Cotizacion</h2>
+    @Html.AntiForgeryToken()
 
+    <!-- Page Header -->
+    <div class="page-header" style="margin-bottom:20px;">
+        <div>
+            <h1 class="page-header__title">
+                <span class="ph-icon"><i class="fas fa-file-signature"></i></span>
+                Nueva Cotización
+            </h1>
+            <p class="page-header__subtitle">Complete los 3 pasos para generar una cotización</p>
+        </div>
+        <div class="tasa-hero" id="tasaHeroContainer">
+            <div>
+                <div class="tasa-hero__label"><i class="fas fa-exchange-alt me-1"></i> Tasa BCV (USD)</div>
+                <div class="tasa-hero__value" id="tasaDia">0.00000</div>
+            </div>
+        </div>
+    </div>
+    <input type="hidden" id="tasaCotizacion" value="0" />
 
-    <!-- Búsqueda de Cliente -->
-    <div class="card mb-4 resaltado-cliente">
+    <!-- Wizard Steps -->
+    <div class="wizard-steps">
+        <div class="wizard-step active" id="wStep1">
+            <span class="wizard-step__num">1</span>
+            <span>Cliente y Transporte</span>
+        </div>
+        <div class="wizard-step" id="wStep2">
+            <span class="wizard-step__num">2</span>
+            <span>Búsqueda de Artículos</span>
+        </div>
+        <div class="wizard-step" id="wStep3">
+            <span class="wizard-step__num">3</span>
+            <span>Artículos y Totales</span>
+        </div>
+    </div>
+
+    <!-- PASO 1: Cliente y Transporte -->
+    <div class="card card-paso-1">
         <div class="card-header">
-            <i class="fas fa-user me-1"></i>
-            Datos del Cliente
+            <i class="fas fa-user me-2"></i>Paso 1: Datos del Cliente y Transporte
         </div>
         <div class="card-body">
-            <div class="cliente-container">
-                <div class="input-group mb-3">
-                    <input type="text" id="clienteSeleccionado" class="form-control form-control-lg" autocomplete="off" autocorrect="off" autocapitalize="off" placeholder="BUSCAR CLIENTE POR NOMBRE O CODIGO">
+            <div class="row g-3">
+                <div class="col-md-6 position-relative">
+                    <label class="form-label">Buscar Cliente</label>
+                    <input type="text" id="clienteSeleccionado" class="form-control" autocomplete="off"
+                           placeholder="Nombre o código del cliente...">
+                    <div class="table-responsive" id="tablaClientesContainer" style="display:none;">
+                        <table class="table table-hover mb-0" id="clientesTable">
+                            <thead>
+                                <tr>
+                                    <th>Código</th><th>Cliente</th><th>Ven</th><th>Tipo</th>
+                                </tr>
+                            </thead>
+                            <tbody id="clientesBody"></tbody>
+                        </table>
+                    </div>
                 </div>
-                <input type="hidden" id="codigoCliente">
-                <input type="hidden" id="tipCli">
-
-                <div class="table-responsive" id="tablaClientesContainer" style="display:none; position:absolute; z-index:10; width:100%;">
-                    <table class="table table-bordered table-hover mb-0" id="clientesTable" width="100%" cellspacing="0" style="font-size: 0.9rem;">
-                        <thead>
-                            <tr>
-                                <th>Codigo</th>
-                                <th>Cliente</th>
-                                <th>Ven</th>
-                                <th>Tipo</th>
-                            </tr>
-                        </thead>
-                        <tbody id="clientesBody">
-                            <!-- Los resultados se cargarán aquí dinámicamente -->
-                        </tbody>
-                    </table>
+                <div class="col-md-3">
+                    <label class="form-label">Vendedor</label>
+                    <input type="text" id="vendedor" class="form-control" readonly
+                           placeholder="Auto-completado">
                 </div>
-            </div>
-
-            <div id="camposCliente" style="display:none;">
-                <div class="row g-4 mb-4">
-                    <div class="col-6 col-md-3">
-                        <label class="form-label fw-bold">Codigo:</label>
-                        <input type="text" id="codigo" class="form-control form-control-lg" readonly>
-                    </div>
-
-                    <div class="col-6 col-md-2">
-                        <label class="form-label fw-bold">Vendedor:</label>
-                        <input type="text" id="vendedor" class="form-control form-control-lg text-center" readonly>
-                    </div>
-
-                    <div class="col-6 col-md-3">
-                        <label class="form-label fw-bold">Transporte:</label>
-                        <select id="transporteSelect" class="form-control form-control-lg">
-                            <option value="">Seleccionar Transporte</option>
-                        </select>
-                    </div>
+                <div class="col-md-3">
+                    <label class="form-label">Transporte</label>
+                    <select id="transporteSelect" class="form-control"></select>
                 </div>
             </div>
+            <input type="hidden" id="codigoCliente">
+            <input type="hidden" id="tipCli">
         </div>
     </div>
 
-    <!-- Búsqueda de Artículo -->
-    <div class="card mb-4 busqueda-articulos">
+    <!-- PASO 2: Búsqueda de Artículos -->
+    <div class="card card-paso-2">
         <div class="card-header">
-            <i class="fas fa-search me-1"></i>
-            Buscar Articulo
+            <i class="fas fa-search me-2"></i>Paso 2: Búsqueda de Artículos
         </div>
         <div class="card-body">
-            <div class="input-group mb-3">
-                <input type="text" id="searchArticulo" class="form-control form-control-lg" placeholder="BUSCAR ARTICULO..." autocomplete="off" autocorrect="off" autocapitalize="off">
-                <!-- Botón de buscar eliminado -->
+            <div class="row g-3 align-items-end">
+                <div class="col-md-5 position-relative">
+                    <label class="form-label">Buscar Artículo</label>
+                    <input type="text" id="searchArticulo" class="form-control"
+                           placeholder="Código o descripción..." autocomplete="off">
+                    <div class="table-responsive" id="tablaArticulosContainer" style="display:none;">
+                        <table class="table table-hover mb-0" id="articulosTable">
+                            <thead>
+                                <tr>
+                                    <th style="width:110px;">Código</th>
+                                    <th>Descripción</th>
+                                    <th style="width:70px;" class="text-center">IVA</th>
+                                </tr>
+                            </thead>
+                            <tbody id="articulosBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Tipo Precio</label>
+                    <select id="tipoPrecioArticulo" class="form-control">
+                        <option value="1">Precio 1</option>
+                        <option value="2">Precio 2</option>
+                        <option value="3">Precio 3</option>
+                        <option value="4">Precio 4</option>
+                        <option value="5">Precio 5</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Precio Unit.</label>
+                    <input type="text" id="precioArticulo" class="form-control text-end" readonly>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">IVA %</label>
+                    <input type="text" id="ivaArticulo" class="form-control text-center" readonly>
+                </div>
             </div>
 
-            <div class="table-responsive" id="tablaArticulosContainer" style="display:none; position:absolute; z-index:10; width:100%;">
-                <table class="table table-bordered table-hover mb-0" id="articulosTable" width="100%" cellspacing="0" style="font-size: 0.9rem;">
-                    <thead>
-                        <tr>
-                            <th>Codigo</th>
-                            <th>Descripcion</th>
-                            <th>IVA</th>
-                        </tr>
-                    </thead>
-                    <tbody id="articulosBody">
-                        <!-- Los resultados se cargarán aquí dinámicamente -->
-                    </tbody>
-                </table>
+            <!-- Panel artículo seleccionado -->
+            <div class="align-items-end gap-2 mt-3 flex-wrap flex-lg-nowrap w-100" id="articuloSeleccionadoRow">
+                <div style="width:75px;flex-shrink:0;">
+                    <label class="form-label">Código</label>
+                    <input type="text" id="codigoArticulo" class="form-control text-center" maxlength="6" readonly>
+                </div>
+                <div class="flex-grow-1" style="max-width:560px;min-width:200px;">
+                    <label class="form-label">Descripción</label>
+                    <input type="text" id="descripcionArticulo" class="form-control" maxlength="240" readonly
+                           style="font-weight:500;font-size:0.9rem;" placeholder="Descripción...">
+                </div>
+                <div style="width:88px;flex-shrink:0;">
+                    <label class="form-label">Cantidad</label>
+                    <input type="number" id="cantidadArticulo" class="form-control text-center" min="0" value="0">
+                </div>
+                <div style="width:110px;flex-shrink:0;">
+                    <label class="form-label">Total</label>
+                    <input type="text" id="calcularTotalArticulo" class="form-control text-end fw-bold" readonly>
+                </div>
+                <div style="width:70px;flex-shrink:0;">
+                    <label class="form-label">Unid <span class="text-danger">*</span></label>
+                    <input type="text" id="unidadArticulo" class="form-control text-center" maxlength="4"
+                           placeholder="Unid" required>
+                </div>
+                <div style="flex-shrink:0;padding-top:22px;">
+                    <button type="button" id="btnAgregarArticulo" class="btn btn-primary">
+                        <i class="fas fa-plus me-1"></i> Agregar
+                    </button>
+                </div>
             </div>
-        </div>
-    </div>
-    <!-- Mostrar artículo seleccionado -->
-    <div class="row g-3 mb-3" id="articuloSeleccionadoRow" style="display:none;">
-        <div class="col-6 col-md-1">
-            <label class="form-label fw-bold">Codigo:</label>
-            <input type="text" id="codigoArticulo" class="form-control form-control-lg" readonly>
-        </div>
-        <div class="col-6 col-md-5">
-            <label class="form-label fw-bold">Articulo:</label>
-            <input type="text" id="descripcionArticulo" class="form-control form-control-lg" readonly>
-        </div>
-        <div class="col-6 col-md-1">
-            <label class="form-label fw-bold">IVA:</label>
-            <input type="text" id="ivaArticulo" class="form-control form-control-lg" readonly>
-        </div>
-        <div class="col-6 col-md-1">
-            <label class="form-label fw-bold">Precio:</label>
-            <input type="text" id="precio1Articulo" class="form-control form-control-lg" readonly>
-        </div>
-        <div class="col-6 col-md-1">
-            <label class="form-label fw-bold">Cantidad:</label>
-            <input type="number" id="cantidadArticulo" class="form-control form-control-lg resaltado-transporte" min="1" value="1">
-        </div>
-        <div class="col-6 col-md-1">
-            <label class="form-label fw-bold">Total:</label>
-            <input type="text" id="calcularTotalArticulo" class="form-control form-control-lg" readonly>
-        </div>
-        <div class="col-12 col-md-2 d-flex align-items-end">
-            <button type="button" id="btnAgregarArticulo" class="btn btn-primary w-100">
-                <i class="fas fa-plus me-1"></i> Agregar
-            </button>
+            <input type="hidden" id="precio1Articulo">
+            <input type="hidden" id="precio2Articulo">
+            <input type="hidden" id="precio3Articulo">
+            <input type="hidden" id="precio4Articulo">
+            <input type="hidden" id="precio5Articulo">
         </div>
     </div>
 
-
-    <!-- Tabla de Artículos Agregados -->
-    <div class="card mb-4 resaltado-cotizacion">
+    <!-- PASO 3: Artículos y Totales -->
+    <div class="card card-paso-3">
         <div class="card-header d-flex justify-content-between align-items-center">
-            <span>
-                <i class="fas fa-shopping-cart me-1"></i>
-                ARTICULOS SELECIONADOS
-            </span>
-            <span id="cotizacionNumero" class="alert alert-info py-1 px-2 mb-0" style="display:none; font-size:14px;">
-                Cotizacion generada: <span id="nroCotizacion"></span>
+            <span><i class="fas fa-shopping-cart me-2"></i>Paso 3: Artículos Seleccionados</span>
+            <span id="cotizacionNumero" class="badge"
+                  style="background:rgba(255,255,255,0.25);font-size:0.88rem;display:none;padding:6px 12px;">
+                ✅ Cotización <strong>#<span id="nroCotizacion"></span></strong> guardada
             </span>
         </div>
-        <div class="card-body">
-
+        <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-bordered table-hover" id="tablaArticulosCotizacion" width="100%" cellspacing="0">
+                <table class="table table-hover mb-0" id="tablaArticulosCotizacion">
                     <thead>
-
                         <tr>
-                            <th style="width: 5%;">#</th>
-                            <th style="width: 10%;">Codigo</th>
-                            <th style="width: 40%;">Descripcion</th>
-                            <th style="width: 10%;">Cantidad</th>
-                            <th style="width: 10%;">Precio</th>
-                            <th style="width: 10%;">IVA</th>
-                            <th style="width: 10%;">Total</th>
-                            <th style="width: 5%;">Acciones</th>
+                            <th class="text-center" style="width:36px;">#</th>
+                            <th>Código</th>
+                            <th>Descripción</th>
+                            <th class="text-center">Tipo</th>
+                            <th class="text-end">Cantidad</th>
+                            <th class="text-end">Precio</th>
+                            <th class="text-end">IVA</th>
+                            <th class="text-end">Total</th>
+                            <th class="text-center">Unidad</th>
+                            <th class="text-center">Acciones</th>
                         </tr>
                     </thead>
                     <tbody id="cuerpoTablaArticulos">
-
-                        <!-- Los artículos se agregarán aquí dinámicamente -->
+                        <tr id="emptyStateRow">
+                            <td colspan="10">
+                                <div class="table-empty-state">
+                                    <i class="fas fa-box-open"></i>
+                                    <p>Sin artículos — busque y seleccione en el Paso 2</p>
+                                </div>
+                            </td>
+                        </tr>
                     </tbody>
                     <tfoot>
                         <tr>
-                            <td colspan="6" class="text-end fw-bold">Subtotal:</td>
-                            <td id="subtotal" class="text-end fw-bold">0.00</td>
-                            <td></td>
+                            <td colspan="7" class="text-end fw-bold">Subtotal:</td>
+                            <td id="subtotal" class="text-end">$0.00</td>
+                            <td colspan="2"></td>
                         </tr>
                         <tr>
-                            <td colspan="6" class="text-end fw-bold">IVA (12%):</td>
-                            <td id="iva" class="text-end fw-bold">0.00</td>
-                            <td></td>
+                            <td colspan="7" class="text-end fw-bold">IVA:</td>
+                            <td id="iva" class="text-end">$0.00</td>
+                            <td colspan="2"></td>
                         </tr>
                         <tr>
-                            <td colspan="6" class="text-end fw-bold">Total General:</td>
-                            <td id="totalGeneral" class="text-end fw-bold">0.00</td>
-                            <td></td>
+                            <td colspan="7" class="text-end fw-bold">Total General:</td>
+                            <td id="totalGeneral" class="text-end">$0.00</td>
+                            <td colspan="2"></td>
                         </tr>
                     </tfoot>
                 </table>
@@ -604,24 +395,58 @@
         </div>
     </div>
 
-    <div class="text-end mb-4">
-        <button id="btnGuardarCotizacion" class="btn btn-success">
-            <i class="fas fa-save"></i> Guardar Cotizacion
+    <!-- Action Bar -->
+    <div class="d-flex justify-content-end align-items-center gap-3 mb-5 flex-wrap">
+        <button id="btnGuardarCotizacion" class="btn-save-cot">
+            <i class="fas fa-save"></i> Guardar Cotización
         </button>
-        <button id="btnNuevaCotizacion" class="btn btn-primary" style="display:none;">
-            <i class="fas fa-plus"></i> Nueva Cotizacion
+        <button id="btnNuevaCotizacion" class="btn btn-info btn-lg" style="display:none;">
+            <i class="fas fa-plus me-1"></i> Nueva Cotización
         </button>
     </div>
+
     <div id="bloqueoOverlay"></div>
 </div>
 
 @section Scripts {
     <script>
+    var tasaDelDia = 0;
+
+    function formatearTasa(valor) {
+        var n = parseFloat(valor);
+        if (isNaN(n) || n <= 0) return '0.00000';
+        return n.toFixed(5);
+    }
+
+    function actualizarTasaDelDia(valor) {
+        tasaDelDia = parseFloat(valor) || 0;
+        $('#tasaDia').text(formatearTasa(tasaDelDia));
+        $('#tasaCotizacion').val(tasaDelDia);
+    }
+
+    function cargarTasaDelDia() {
+        $.ajax({
+            url: '@Url.Action("ObtenerTasaDia", "Cotizacion")',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                if (data && data.tasa != null) {
+                    actualizarTasaDelDia(data.tasa);
+                }
+            },
+            error: function () {
+                console.error('No se pudo cargar la tasa del dia');
+            }
+        });
+    }
+
     $(document).ready(function() {
-        // Al cargar, oculta y deshabilita el botón LIMPIAR
+        cargarTasaDelDia();
+
+        // Al cargar, oculta y deshabilita el boton LIMPIAR
         $('#btnLimpiarCliente').hide().prop('disabled', true);
 
-        // NUEVO: Búsqueda de cliente desde el input dentro del cuerpo de cotización
+        // NUEVO: Busqueda de cliente desde el input dentro del cuerpo de cotizacion
         function buscarClientes(consulta) {
             if (consulta.length < 2) {
                 $('#clientesBody').empty();
@@ -668,7 +493,7 @@
             });
         }
 
-        // Evento de búsqueda al escribir en el input de cliente
+        // Evento de busqueda al escribir en el input de cliente
         $('#clienteSeleccionado').off('input').on('input', function() {
             var consulta = $(this).val().trim();
             buscarClientes(consulta);
@@ -691,31 +516,31 @@
         function seleccionarCliente(cliente) {
             $('#codigoCliente').val(cliente.co_cli);
             $('#clienteSeleccionado').val(cliente.cli_des);
-            $('#codigo').val(cliente.co_cli ? cliente.co_cli.substring(0, 12) : '');
+            // Campo codigo no existe, se usa codigoCliente
             $('#vendedor').val(cliente.co_ven ? cliente.co_ven.substring(0, 2) : '');
-            $('#transporteSelect').val(cliente.co_tran || ''); // Asegúrate de que co_tran esté en el cliente
+            $('#transporteSelect').val(cliente.co_tran || ''); // Asegurate de que co_tran este en el cliente
             $('#tipCli').val(cliente.tip_cli || '');
             $('#transporteSelect').focus();
-            // Resaltado visual: cliente, código y vendedor azul, transporte naranja
-            $('#clienteSeleccionado, #codigo, #vendedor').addClass('resaltado-seleccion').removeClass('completado');
+            // Resaltado visual: cliente, codigo y vendedor azul, transporte naranja
+            $('#clienteSeleccionado, #vendedor').addClass('resaltado-seleccion').removeClass('completado');
             $('#transporteSelect').addClass('resaltado-transporte').removeClass('completado resaltado-seleccion');
-            // Mostrar botón LIMPIAR
+            // Mostrar boton LIMPIAR
             $('#btnLimpiarCliente').show().prop('disabled', false);
-            // Mostrar los campos de código, vendedor y transporte
+            // Mostrar los campos de codigo, vendedor y transporte
             $('#camposCliente').show();
             // OCULTAR EL LISTADO DE CLIENTES
             $('#tablaClientesContainer').hide();
         }
 
-        // Eliminar el evento anterior y asegurar que el botón de limpiar a la derecha de transporte limpie los datos del cliente
+        // Eliminar el evento anterior y asegurar que el boton de limpiar a la derecha de transporte limpie los datos del cliente
         $('#btnLimpiarCliente').on('click', function() {
-            $('#clienteSeleccionado, #codigo, #vendedor, #transporteSelect, #codigoCliente').val('');
-            $('#clienteSeleccionado, #codigo, #vendedor, #transporteSelect').removeClass('resaltado-seleccion resaltado-transporte completado');
+            $('#clienteSeleccionado, #vendedor, #transporteSelect, #codigoCliente').val('');
+            $('#clienteSeleccionado, #vendedor, #transporteSelect').removeClass('resaltado-seleccion resaltado-transporte completado');
             $('#tablaClientesContainer').hide();
             $('#clientesBody').empty();
-            // Ocultar botón LIMPIAR
+            // Ocultar boton LIMPIAR
             $('#btnLimpiarCliente').hide().prop('disabled', true);
-            // Ocultar los campos de código, vendedor y transporte
+            // Ocultar los campos de codigo, vendedor y transporte
             $('#camposCliente').hide();
         });
 
@@ -730,8 +555,8 @@
                 select.append('<option value="">Seleccione transporte...</option>');
                 $.each(data, function(i, transporte) {
                     select.append($('<option>', {
-                        value: transporte.co_tran, // Cambia por 'Id' si tu modelo lo tiene así
-                        text: transporte.des_tran  // Cambia por 'Nombre' si tu modelo lo tiene así
+                        value: transporte.co_tran, // Cambia por 'Id' si tu modelo lo tiene asi
+                        text: transporte.des_tran  // Cambia por 'Nombre' si tu modelo lo tiene asi
                     }));
                 });
             },
@@ -744,14 +569,14 @@
         // NUEVO: Resaltar transporte al seleccionar
         $('#transporteSelect').on('change', function() {
             if ($(this).val()) {
-                $('#transporteSelect, #clienteSeleccionado, #codigo, #vendedor').removeClass('resaltado-seleccion resaltado-transporte').addClass('completado');
+                $('#transporteSelect, #clienteSeleccionado, #vendedor').removeClass('resaltado-seleccion resaltado-transporte').addClass('completado');
             } else {
                 $('#transporteSelect').removeClass('completado resaltado-seleccion').addClass('resaltado-transporte');
-                $('#clienteSeleccionado, #codigo, #vendedor').removeClass('completado resaltado-transporte').addClass('resaltado-seleccion');
+                $('#clienteSeleccionado, #vendedor').removeClass('completado resaltado-transporte').addClass('resaltado-seleccion');
             }
         });
 
-        // Función para buscar artículos
+        // Funcion para buscar articulos
         function buscarPrecios(consulta) {
             if (consulta.length < 2) {
                 $('#articulosBody').empty();
@@ -774,6 +599,10 @@
                         return;
                     }
 
+                    if (data.length > 0 && data[0].tasa != null) {
+                        actualizarTasaDelDia(data[0].tasa);
+                    }
+
                     $.each(data, function(index, articulo) {
                         var row = $('<tr>');
                         row.append($('<td>').text(articulo.co_art));
@@ -787,8 +616,8 @@
                     });
                 },
                 error: function(xhr, status, error) {
-                    console.error('Error al buscar artículos:', error);
-                    $('#articulosBody').html('<tr><td colspan="3" class="text-center text-danger">Error al cargar los artículos</td></tr>');
+                    console.error('Error al buscar articulos:', error);
+                    $('#articulosBody').html('<tr><td colspan="3" class="text-center text-danger">Error al cargar los articulos</td></tr>');
                 }
             });
         }
@@ -796,48 +625,60 @@
             // Calcular el total cuando cambia la cantidad o el precio
             function calcularTotalArticulo() {
                 var cantidad = parseFloat($('#cantidadArticulo').val()) || 0;
-                var precio = parseFloat($('#precio1Articulo').val()) || 0;
+                var precio = parseFloat($('#precioArticulo').val()) || 0;
                 var total = cantidad * precio;
                 $('#calcularTotalArticulo').val(total.toFixed(2));
             }
 
-        // Reemplaza la función seleccionarArticulo por esta versión mejorada
+        // Reemplaza la funcion seleccionarArticulo por esta version mejorada
         function seleccionarArticulo(articulo) {
-            $('#codigoArticulo').val(articulo.co_art);
-            $('#descripcionArticulo').val(articulo.art_des);
+            var desc = (articulo.art_des || '').trim().substring(0, 240);
+            $('#codigoArticulo').val((articulo.co_art || '').trim().substring(0, 6));
+            $('#descripcionArticulo').val(desc).attr('title', desc);
             $('#ivaArticulo').val(articulo.iva || '0');
+            $('#unidadArticulo').val((articulo.co_uni || articulo.unidad || '').trim().substring(0, 4));
 
-            // Obtener el tipo de cliente seleccionado
-            var tipCli = $('#tipCli').val().toString().padStart(2, '0');
-
-            // Mostrar el precio según el tipo de cliente
-            if (tipCli === '01') {
-                $('#precio1Articulo').val(articulo.precio1 || '0');
-            } else if (tipCli === '02') {
-                $('#precio1Articulo').val(articulo.precio2 || '0');
-            } else if (tipCli === '03') {
-                $('#precio1Articulo').val(articulo.precio3 || '0');
-            } else if (tipCli === '04') {
-                $('#precio1Articulo').val(articulo.precio4 || '0');
-            } else if (tipCli === '05') {
-                $('#precio1Articulo').val(articulo.precio5 || '0');
-            } else {
-                $('#precio1Articulo').val(articulo.precio1 || '0'); // Por defecto precio1
-            }
-
+            // Guardar los 5 precios en campos ocultos
+            $('#precio1Articulo').val(articulo.precio1 || '0');
             $('#precio2Articulo').val(articulo.precio2 || '0');
             $('#precio3Articulo').val(articulo.precio3 || '0');
             $('#precio4Articulo').val(articulo.precio4 || '0');
             $('#precio5Articulo').val(articulo.precio5 || '0');
-            $('#cantidadArticulo').val(1);
+
+            // Obtener el tipo de cliente seleccionado
+            var tipCli = ($('#tipCli').val() || '').toString().padStart(2, '0');
+            var tipoPrecioDefault = '1'; // Por defecto Precio 1
+
+            // Preseleccionar el tipo de precio segun el tipo de cliente
+            if (tipCli === '01') {
+                tipoPrecioDefault = '1';
+            } else if (tipCli === '02') {
+                tipoPrecioDefault = '2';
+            } else if (tipCli === '03') {
+                tipoPrecioDefault = '3';
+            } else if (tipCli === '04') {
+                tipoPrecioDefault = '4';
+            } else if (tipCli === '05') {
+                tipoPrecioDefault = '5';
+            }
+
+            // Seleccionar el tipo de precio en el dropdown
+            $('#tipoPrecioArticulo').val(tipoPrecioDefault);
+
+            // Mostrar el precio correspondiente
+            var precioSeleccionado = $('#precio' + tipoPrecioDefault + 'Articulo').val();
+            $('#precioArticulo').val(precioSeleccionado);
+
+            $('#cantidadArticulo').val(0);
             calcularTotalArticulo();
-            $('#articuloSeleccionadoRow').show();
+            $('#articuloSeleccionadoRow').addClass('mostrar');
             $('#articulosBody').empty();
             $('#searchArticulo').val('');
             $('#tablaArticulosContainer').hide();
 
-            // Resaltar campos de artículo
-            $('#codigoArticulo, #descripcionArticulo, #ivaArticulo, #precio1Articulo, #cantidadArticulo,#calcularTotalArticulo, #btnAgregarArticulo').addClass('resaltado-seleccion').removeClass('completado');
+            // Resaltar campos de articulo
+            $('#codigoArticulo, #descripcionArticulo, #ivaArticulo, #precioArticulo, #tipoPrecioArticulo, #cantidadArticulo, #calcularTotalArticulo, #unidadArticulo, #btnAgregarArticulo').addClass('resaltado-seleccion').removeClass('completado');
+            $('#cantidadArticulo').focus().select();
         }
 
             // Evento: recalcular total al cambiar cantidad
@@ -845,7 +686,15 @@
                 calcularTotalArticulo();
             });
 
-        // Evento de búsqueda al escribir en el input de artículo
+            // Evento: cambiar precio al seleccionar tipo de precio
+            $('#tipoPrecioArticulo').on('change', function () {
+                var tipoSeleccionado = $(this).val();
+                var precioSeleccionado = $('#precio' + tipoSeleccionado + 'Articulo').val();
+                $('#precioArticulo').val(precioSeleccionado);
+                calcularTotalArticulo();
+            });
+
+        // Evento de busqueda al escribir en el input de articulo
         $('#searchArticulo').off('input').on('input', function() {
             var consulta = $(this).val().trim();
             buscarPrecios(consulta);
@@ -863,17 +712,17 @@
                 $('#tablaArticulosContainer').hide();
             }
         });
-        // Evento de búsqueda al hacer clic en el botón eliminado
+        // Evento de busqueda al hacer clic en el boton eliminado
 
             let articulos = [];
             let contadorArticulos = 0;
 
-            // Función para formatear moneda
+            // Funcion para formatear moneda
             function formatearMoneda(valor) {
                 return parseFloat(valor).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
             }
 
-            // Función para calcular totales
+            // Funcion para calcular totales
             function calcularTotales() {
                 let subtotal = 0;
                 let ivaTotal = 0;
@@ -892,7 +741,7 @@
                 $('#totalGeneral').text('$' + formatearMoneda(totalGeneral));
             }
 
-            // Función para agregar artículo a la tabla
+            // Funcion para agregar articulo a la tabla
             function agregarArticulo(articulo) {
                 const totalLinea = articulo.cantidad * articulo.precio;
                 const ivaLinea = totalLinea * (articulo.iva / 100);
@@ -902,10 +751,12 @@
                         <td>${++contadorArticulos}</td>
                         <td>${articulo.codigo}</td>
                         <td>${articulo.descripcion}</td>
+                        <td class="text-center">P${articulo.tipoPrecio}</td>
                         <td class="text-end">${articulo.cantidad}</td>
                         <td class="text-end">$${formatearMoneda(articulo.precio)}</td>
                         <td class="text-end">${articulo.iva}%</td>
                         <td class="text-end">$${formatearMoneda(totalLinea)}</td>
+                        <td class="text-center">${articulo.unidad || '-'}</td>
                         <td class="text-center">
                             <button class="btn btn-sm btn-warning btn-editar" title="Editar">
                                 <i class="fas fa-edit"></i>
@@ -921,16 +772,42 @@
                 calcularTotales();
             }
 
-            // Evento para agregar artículo
+            // Evento para agregar articulo
             $('#btnAgregarArticulo').on('click', function() {
-                const codigo = $('#codigoArticulo').val();
-                const descripcion = $('#descripcionArticulo').val();
-                const cantidad = parseFloat($('#cantidadArticulo').val()) || 1;
-                const precio = parseFloat($('#precio1Articulo').val().replace(/[^0-9.-]+/g,"")) || 0;
+                const codigo = ($('#codigoArticulo').val() || '').trim().substring(0, 6);
+                const descripcion = ($('#descripcionArticulo').val() || '').trim().substring(0, 240);
+                const cantidad = parseFloat($('#cantidadArticulo').val());
+                const precio = parseFloat($('#precioArticulo').val().replace(/[^0-9.-]+/g,"")) || 0;
                 const iva = parseFloat($('#ivaArticulo').val()) || 0;
+                const tipoPrecio = $('#tipoPrecioArticulo').val();
+                const unidad = ($('#unidadArticulo').val() || '').trim().substring(0, 4);
 
                 if (!codigo || !descripcion) {
-                    alert('Por favor seleccione un artículo válido');
+                    if (window.mostrarNotificacion) {
+                        window.mostrarNotificacion('warning', 'Por favor seleccione un artículo válido antes de agregar.');
+                    } else {
+                        alert('Por favor seleccione un artículo válido');
+                    }
+                    return;
+                }
+
+                if (isNaN(cantidad) || cantidad <= 0) {
+                    if (window.mostrarNotificacion) {
+                        window.mostrarNotificacion('warning', 'La cantidad debe ser mayor a 0 para agregar el artículo.');
+                    } else {
+                        alert('La cantidad debe ser mayor a 0 para agregar el artículo.');
+                    }
+                    $('#cantidadArticulo').focus().select();
+                    return;
+                }
+
+                if (!unidad) {
+                    if (window.mostrarNotificacion) {
+                        window.mostrarNotificacion('warning', 'El campo Unidad es obligatorio para agregar el artículo.');
+                    } else {
+                        alert('El campo Unidad es obligatorio para agregar el artículo.');
+                    }
+                    $('#unidadArticulo').focus().select();
                     return;
                 }
 
@@ -940,28 +817,37 @@
                     descripcion: descripcion,
                     cantidad: cantidad,
                     precio: precio,
-                    iva: iva
+                    iva: iva,
+                    tipoPrecio: tipoPrecio,
+                    unidad: unidad,
+                    // Guardar los 5 precios para poder editarlos después
+                    precio1: parseFloat($('#precio1Articulo').val()) || 0,
+                    precio2: parseFloat($('#precio2Articulo').val()) || 0,
+                    precio3: parseFloat($('#precio3Articulo').val()) || 0,
+                    precio4: parseFloat($('#precio4Articulo').val()) || 0,
+                    precio5: parseFloat($('#precio5Articulo').val()) || 0
                 };
 
                 articulos.push(articulo);
                 agregarArticulo(articulo);
 
                 // NUEVO: Marcar campos como completados
-                $('#codigoArticulo, #descripcionArticulo, #ivaArticulo, #precio1Articulo, #cantidadArticulo, #btnAgregarArticulo')
+                $('#codigoArticulo, #descripcionArticulo, #ivaArticulo, #precioArticulo, #tipoPrecioArticulo, #cantidadArticulo, #unidadArticulo, #btnAgregarArticulo')
                     .removeClass('resaltado-seleccion')
                     .addClass('completado');
                 setTimeout(function() {
-                    $('#codigoArticulo, #descripcionArticulo, #ivaArticulo, #precio1Articulo, #cantidadArticulo, #btnAgregarArticulo')
+                    $('#codigoArticulo, #descripcionArticulo, #ivaArticulo, #precioArticulo, #tipoPrecioArticulo, #cantidadArticulo, #unidadArticulo, #btnAgregarArticulo')
                         .removeClass('completado');
                 }, 800);
 
                 // Limpiar campos
-                $('#codigoArticulo, #descripcionArticulo, #ivaArticulo, #precio1Articulo').val('');
-                $('#cantidadArticulo').val('1');
-                $('#articuloSeleccionadoRow').hide();
+                $('#codigoArticulo, #descripcionArticulo, #ivaArticulo, #precioArticulo, #unidadArticulo').val('');
+                $('#cantidadArticulo').val('0');
+                $('#tipoPrecioArticulo').val('1');
+                $('#articuloSeleccionadoRow').removeClass('mostrar');
             });
 
-            // Delegación de eventos para botones de eliminar
+            // Delegacion de eventos para botones de eliminar
             $(document).on('click', '.btn-eliminar', function() {
                 const fila = $(this).closest('tr');
                 const id = parseInt(fila.data('id'));
@@ -978,22 +864,38 @@
                 calcularTotales();
             });
 
-            // Delegación de eventos para botones de editar
+            // Delegacion de eventos para botones de editar
             $(document).on('click', '.btn-editar', function() {
                 const fila = $(this).closest('tr');
                 const id = parseInt(fila.data('id'));
                 const articulo = articulos.find(a => a.id === id);
 
                 if (articulo) {
-                    // Llenar formulario con datos del artículo
+                    var desc = (articulo.descripcion || '').trim().substring(0, 240);
+                    // Llenar formulario con datos del articulo
                     $('#codigoArticulo').val(articulo.codigo);
-                    $('#descripcionArticulo').val(articulo.descripcion);
+                    $('#descripcionArticulo').val(desc).attr('title', desc);
                     $('#cantidadArticulo').val(articulo.cantidad);
-                    $('#precio1Articulo').val(articulo.precio);
                     $('#ivaArticulo').val(articulo.iva);
-                    $('#articuloSeleccionadoRow').show();
+                    $('#unidadArticulo').val(articulo.unidad || '');
+                    
+                    // Restaurar los 5 precios
+                    $('#precio1Articulo').val(articulo.precio1 || 0);
+                    $('#precio2Articulo').val(articulo.precio2 || 0);
+                    $('#precio3Articulo').val(articulo.precio3 || 0);
+                    $('#precio4Articulo').val(articulo.precio4 || 0);
+                    $('#precio5Articulo').val(articulo.precio5 || 0);
+                    
+                    // Restaurar el tipo de precio seleccionado
+                    $('#tipoPrecioArticulo').val(articulo.tipoPrecio || '1');
+                    
+                    // Mostrar el precio correspondiente
+                    $('#precioArticulo').val(articulo.precio);
+                    
+                    calcularTotalArticulo();
+                    $('#articuloSeleccionadoRow').addClass('mostrar');
 
-                    // Eliminar el artículo de la lista
+                    // Eliminar el articulo de la lista
                     articulos = articulos.filter(a => a.id !== id);
                     fila.remove();
                     contadorArticulos = articulos.length;
@@ -1008,7 +910,7 @@
 
         // Mejoras específicas para móvil
         if ($(window).width() <= 768) {
-            // Ajustar tamaño de fuente según el dispositivo
+            // Ajustar tamaño de fuente segun el dispositivo
             function adjustFontSize() {
                 const baseFontSize = 16;
                 const viewportWidth = Math.min(window.innerWidth, 768);
@@ -1020,7 +922,7 @@
             adjustFontSize();
             $(window).resize(adjustFontSize);
 
-            // Mejorar interacción táctil
+            // Mejorar interaccion tactil
             $('.form-control').on('focus', function() {
                 $(this).closest('.form-group').addClass('touched');
             }).on('blur', function() {
@@ -1038,36 +940,54 @@
             });
         }
 
-        // Resto del código existente
+        // Resto del codigo existente
+
+        // Lee el token anti-CSRF desde la cookie __RequestVerificationToken
+        function obtenerTokenCsrf() {
+            var match = document.cookie.match(new RegExp('(?:^|; )__RequestVerificationToken=([^;]*)'));
+            return match ? decodeURIComponent(match[1]) : '';
+        }
 
         $('#btnGuardarCotizacion').on('click', function () {
 
             // Validar cliente
-            if (!$('#codigo').val()) {
-                alert('Debe seleccionar un cliente antes de guardar la cotizacion.');
+            if (!$('#codigoCliente').val()) {
+                if (window.mostrarNotificacion) {
+                    window.mostrarNotificacion('warning', 'Debe seleccionar un cliente antes de guardar la cotización.');
+                } else {
+                    alert('Debe seleccionar un cliente antes de guardar la cotizacion.');
+                }
                 return;
             }
             // Validar transporte
             if (!$('#transporteSelect').val()) {
-                alert('Debe seleccionar un transporte antes de guardar la cotizacion.');
+                if (window.mostrarNotificacion) {
+                    window.mostrarNotificacion('warning', 'Debe seleccionar un transporte antes de guardar la cotización.');
+                } else {
+                    alert('Debe seleccionar un transporte antes de guardar la cotizacion.');
+                }
                 return;
             }
-            // Validar que haya al menos un artículo
+            // Validar que haya al menos un articulo
             if (articulos.length === 0) {
-                alert('Debe agregar al menos un articulo a la cotizacion.');
+                if (window.mostrarNotificacion) {
+                    window.mostrarNotificacion('warning', 'Debe agregar al menos un artículo a la cotización.');
+                } else {
+                    alert('Debe agregar al menos un articulo a la cotizacion.');
+                }
                 return;
             }
 
     var renglones = articulos
         .filter(a => a && a.codigo && a.cantidad && a.precio)
         .map(a => {
-            // Determinar tipo_imp según el IVA
+            // Determinar tipo_imp segun el IVA
             var tipoImp = (parseFloat(a.iva) === 16 ? "1" : "7");
-            // Calcular reng_neto según tipo_imp
+            // Calcular reng_neto segun tipo_imp
             var rengNeto = (tipoImp === "1")
                 ? a.precio * a.cantidad
                 : a.precio * a.cantidad;
-            // Calcular monto_imp según tipo_imp
+            // Calcular monto_imp segun tipo_imp
             var montoImp = (tipoImp === "1")
                 ? a.precio * 0.16 * a.cantidad
                 : 0;
@@ -1082,41 +1002,58 @@
         });
 
     var cotizacion = {
-        co_cli: $('#codigo').val(),
+        co_cli: $('#codigoCliente').val(),
         tip_cli: $('#tipCli').val(),
         co_tran: $('#transporteSelect').val(),
         fec_emis: new Date().toISOString(),
         total_bruto: parseFloat($('#subtotal').text().replace(/[^0-9.-]+/g,"")) || 0,
         monto_imp: parseFloat($('#iva').text().replace(/[^0-9.-]+/g,"")) || 0,
         total_neto: parseFloat($('#totalGeneral').text().replace(/[^0-9.-]+/g,"")) || 0,
+        tasa: tasaDelDia,
         renglones: renglones
     };
 
     $.ajax({
         url: '@Url.Action("GuardarCotizacion", "Cotizacion")',
         type: 'POST',
+        // Cabecera anti-CSRF requerida por [ValidateAntiForgeryToken] en el servidor
+        headers: { 'RequestVerificationToken': obtenerTokenCsrf() },
         data: JSON.stringify(cotizacion),
         contentType: 'application/json; charset=utf-8',
         success: function (response) {
             if (response.success) {
                 $('#nroCotizacion').text(response.doc_num);
+                if (response.tasa) {
+                    actualizarTasaDelDia(response.tasa);
+                }
                 $('#cotizacionNumero').show();
                 bloquearFormulario();
                 $('#btnGuardarCotizacion').hide();
                 $('#btnNuevaCotizacion').show();
+                if (window.mostrarNotificacion) {
+                    window.mostrarNotificacion('success', 'Cotización #' + response.doc_num + ' guardada exitosamente.');
+                }
             } else {
-                alert('Error: ' + response.error);
+                if (window.mostrarNotificacion) {
+                    window.mostrarNotificacion('error', 'Error: ' + response.error);
+                } else {
+                    alert('Error: ' + response.error);
+                }
             }
         },
         error: function(xhr, status, error) {
-            alert('Error al guardar la cotización');
+            if (window.mostrarNotificacion) {
+                window.mostrarNotificacion('error', 'Error al guardar la cotización.');
+            } else {
+                alert('Error al guardar la cotizacion');
+            }
         }
 
     });
  
        });
         function bloquearFormulario() {
-            // Deshabilita todos los inputs, selects y botones excepto el de nueva cotización
+            // Deshabilita todos los inputs, selects y botones excepto el de nueva cotizacion
             $('input, select, textarea, button').not('#btnNuevaCotizacion').prop('disabled', true);
             $('.btn-editar, .btn-eliminar, #btnAgregarArticulo').prop('disabled', true);
             // Mostrar overlay
@@ -1134,18 +1071,20 @@
 
         function limpiarFormulario() {
             // Limpia todos los campos de cliente
-            $('#clienteSeleccionado, #codigo, #vendedor, #transporteSelect, #codigoCliente').val('');
+            $('#clienteSeleccionado, #vendedor, #transporteSelect, #codigoCliente').val('');
             $('#camposCliente').hide();
-            // Limpia artículos
+            // Limpia articulos
             articulos = [];
             contadorArticulos = 0;
             $('#cuerpoTablaArticulos').empty();
             $('#subtotal, #iva, #totalGeneral').text('0.00');
-            // Limpia campos de artículo seleccionado
-            $('#codigoArticulo, #descripcionArticulo, #ivaArticulo, #precio1Articulo').val('');
-            $('#cantidadArticulo').val('1');
-            $('#articuloSeleccionadoRow').hide();
-            // Oculta número de cotización
+            cargarTasaDelDia();
+            // Limpia campos de articulo seleccionado
+            $('#codigoArticulo, #descripcionArticulo, #ivaArticulo, #precioArticulo, #unidadArticulo').val('');
+            $('#cantidadArticulo').val('0');
+            $('#tipoPrecioArticulo').val('1');
+            $('#articuloSeleccionadoRow').removeClass('mostrar');
+            // Oculta numero de cotizacion
             $('#cotizacionNumero').hide();
         }
     });

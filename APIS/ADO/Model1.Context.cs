@@ -28,9 +28,9 @@ namespace APIS.ADO
             throw new UnintentionalCodeFirstException();
         }
     
-        public DbSet<Usuarios> Usuarios { get; set; }
         public DbSet<ZCotizacionRengNB> ZCotizacionRengNB { get; set; }
         public DbSet<ZCotizacionNB> ZCotizacionNB { get; set; }
+        public DbSet<Usuarios> Usuarios { get; set; }
     
         public virtual ObjectResult<buscarPorDocumCC_Result> buscarPorDocumCC(string consulta, Nullable<int> cantidad, string usuario)
         {
@@ -220,6 +220,24 @@ namespace APIS.ADO
                 new ObjectParameter("consulta", typeof(string));
     
             return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<buscarRengPE2_Result>("buscarRengPE2", consultaParameter);
+        }
+    
+        public virtual ObjectResult<buscarPagosCP_Result> buscarPagosCP(string consulta)
+        {
+            var consultaParameter = consulta != null ?
+                new ObjectParameter("consulta", consulta) :
+                new ObjectParameter("consulta", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<buscarPagosCP_Result>("buscarPagosCP", consultaParameter);
+        }
+    
+        public virtual ObjectResult<buscarRengPGO_Result> buscarRengPGO(string consulta)
+        {
+            var consultaParameter = consulta != null ?
+                new ObjectParameter("consulta", consulta) :
+                new ObjectParameter("consulta", typeof(string));
+    
+            return ((IObjectContextAdapter)this).ObjectContext.ExecuteFunction<buscarRengPGO_Result>("buscarRengPGO", consultaParameter);
         }
     }
 }

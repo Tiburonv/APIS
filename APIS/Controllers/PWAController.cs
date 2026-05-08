@@ -29,7 +29,8 @@ namespace APIS.Controllers
             }
             catch (Exception ex)
             {
-                return Json(new { success = false, message = ex.Message });
+                System.Diagnostics.Debug.WriteLine($"Error en PWA Subscribe: {ex.ToString()}");
+                return Json(new { success = false, message = "Error al procesar la suscripción." });
             }
         }
 
@@ -46,7 +47,8 @@ namespace APIS.Controllers
             }
             catch (Exception ex)
             {
-                return Json(new { success = false, message = ex.Message });
+                System.Diagnostics.Debug.WriteLine($"Error en PWA SendNotification: {ex.ToString()}");
+                return Json(new { success = false, message = "Error al enviar la notificación." });
             }
         }
 

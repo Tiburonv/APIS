@@ -1,0 +1,302 @@
+@model APIS.Models.PagoValidadoViewModel
+@{
+    ViewBag.Title = "Detalle de Pago Validado";
+}
+
+<style>
+    body {
+        background: #f4f6fb;
+        -webkit-overflow-scrolling: touch;
+        scroll-behavior: smooth;
+    }
+
+    .container {
+        overflow-x: hidden;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .header-section {
+        background: linear-gradient(135deg, #1565c0 0%, #0d47a1 100%);
+        color: white;
+        padding: 30px 0;
+        margin-bottom: 30px;
+        border-radius: 0 0 15px 15px;
+        box-shadow: 0 4px 20px rgba(21, 101, 192, 0.3);
+    }
+
+    .header-section h1 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin: 0;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .header-section .subtitle {
+        font-size: 1.2rem;
+        opacity: 0.9;
+        margin-top: 10px;
+    }
+
+    .info-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        margin-bottom: 30px;
+        overflow: hidden;
+    }
+
+    .info-header {
+        background: linear-gradient(135deg, #4caf50 0%, #2e7d32 100%);
+        color: white;
+        padding: 20px;
+        font-size: 1.3rem;
+        font-weight: 600;
+    }
+
+    .info-body {
+        padding: 25px;
+    }
+
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+    }
+
+    .info-item {
+        padding: 15px;
+        background: #f8f9fa;
+        border-radius: 8px;
+        border-left: 4px solid #1565c0;
+    }
+
+    .info-label {
+        font-weight: 600;
+        color: #666;
+        font-size: 0.9rem;
+        margin-bottom: 5px;
+    }
+
+    .info-value {
+        font-weight: 700;
+        color: #1565c0;
+        font-size: 1.1rem;
+    }
+
+    .elements-table {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        overflow: hidden;
+    }
+
+    .table-header {
+        background: linear-gradient(135deg, #1565c0 0%, #0d47a1 100%);
+        color: white;
+        padding: 20px;
+        font-size: 1.3rem;
+        font-weight: 600;
+    }
+
+    .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .table {
+        margin: 0;
+        font-size: 0.95rem;
+    }
+
+    .table thead th {
+        background: #f8f9fa;
+        color: #1565c0;
+        font-weight: 700;
+        border: none;
+        padding: 15px 12px;
+        text-align: center;
+        vertical-align: middle;
+    }
+
+    .table tbody td {
+        padding: 12px;
+        vertical-align: middle;
+        border-top: 1px solid #e0e0e0;
+    }
+
+    .table tbody tr:hover {
+        background-color: #f8f9fa;
+    }
+
+    .badge-success {
+        background: linear-gradient(135deg, #4caf50 0%, #2e7d32 100%);
+        color: white;
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+
+    .btn-secondary {
+        background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+        border: none;
+        color: white;
+        font-weight: 600;
+        padding: 12px 25px;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .btn-secondary:hover {
+        transform: translateY(-1px);
+        color: white;
+        text-decoration: none;
+    }
+
+    .total-section {
+        background: linear-gradient(135deg, #4caf50 0%, #2e7d32 100%);
+        color: white;
+        padding: 20px;
+        border-radius: 8px;
+        margin-top: 20px;
+        text-align: center;
+    }
+
+    .total-amount {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 5px;
+    }
+
+    .total-label {
+        font-size: 1.1rem;
+        opacity: 0.9;
+    }
+
+    /* Responsive */
+    @@media (max-width: 768px) {
+        .header-section h1 {
+            font-size: 2rem;
+        }
+        
+        .info-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .table {
+            font-size: 0.85rem;
+        }
+        
+        .table td, .table th {
+            padding: 8px 6px;
+        }
+    }
+</style>
+
+<div class="container">
+    <!-- Header -->
+    <div class="header-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <h1><i class="fa fa-receipt mr-3"></i>Detalle de Pago</h1>
+                    <p class="subtitle">Información Completa del Pago Validado</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Información del Pago -->
+    <div class="info-card">
+        <div class="info-header">
+            <i class="fa fa-info-circle mr-2"></i>
+            Información del Pago
+        </div>
+        <div class="info-body">
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="info-label">ID del Pago</div>
+                    <div class="info-value">#@Model.Id</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Fecha de Validación</div>
+                    <div class="info-value">@Model.FechaValidacionFormateada</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Código Proveedor</div>
+                    <div class="info-value">@Model.CodigoProveedor</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Nombre Proveedor</div>
+                    <div class="info-value">@Model.NombreProveedor</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Cantidad de Elementos</div>
+                    <div class="info-value">@Model.CantidadElementos</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Usuario Validación</div>
+                    <div class="info-value">@Model.UsuarioValidacion</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabla de Elementos -->
+    <div class="elements-table">
+        <div class="table-header">
+            <i class="fa fa-list mr-2"></i>
+            Elementos del Pago
+        </div>
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th class="text-center">#</th>
+                        <th>Tipo Doc</th>
+                        <th>Nro Prov</th>
+                        <th class="text-center">Fecha</th>
+                        <th class="text-end">Saldo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for (int i = 0; i < Model.Elementos.Count; i++)
+                    {
+                        var elemento = Model.Elementos[i];
+                        <tr>
+                            <td class="text-center">
+                                <span class="badge badge-success">@(i + 1)</span>
+                            </td>
+                            <td class="font-weight-bold">@elemento.TipoDoc</td>
+                            <td>@elemento.NroProv</td>
+                            <td class="text-center">@elemento.FechaFormateada</td>
+                            <td class="text-end font-weight-bold text-success">$@elemento.SaldoFormateado</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Total -->
+        <div class="total-section">
+            <div class="total-amount">$@Model.TotalPagoFormateado</div>
+            <div class="total-label">Total del Pago</div>
+        </div>
+    </div>
+
+    <!-- Botones de Acción -->
+    <div class="text-center mt-4 mb-5">
+        <a href="@Url.Action("ResumenPagos", "Pago")" class="btn btn-secondary btn-lg">
+            <i class="fa fa-arrow-left mr-2"></i>
+            Volver al Resumen
+        </a>
+    </div>
+</div>
+
+@section scripts{
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+}

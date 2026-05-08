@@ -1,113 +1,270 @@
 @model APIS.Models.VercotizacionViewModel
+@using Newtonsoft.Json
 
 @{
+    ViewBag.Title = "Cotizaciones";
     var hoy = DateTime.Today;
     var mostrarTodas = Model.FechaInicio.HasValue || Model.FechaFin.HasValue;
-    var cotizacionesFiltradas = mostrarTodas ?
-        Model.Cotizaciones :
-        Model.Cotizaciones.Where(c => c.fec_emis.Date == hoy).ToList();
+    var cotizacionesFiltradas = mostrarTodas
+        ? Model.Cotizaciones
+        : Model.Cotizaciones.Where(c => c.fec_emis.Date == hoy).ToList();
 
-    var titulo = mostrarTodas ?
-   "Cotizaciones" :
-   string.Format("Cotizaciones del Día ({0})", hoy.ToString("dd/MM/yyyy"));
+    var titulo = mostrarTodas
+        ? "Cotizaciones"
+        : string.Format("Cotizaciones del Día ({0})", hoy.ToString("dd/MM/yyyy"));
+
+    var subtitulo = mostrarTodas && Model.FechaInicio.HasValue
+        ? string.Format("Del {0} al {1}", Model.FechaInicio.Value.ToString("dd/MM/yyyy"), (Model.FechaFin ?? hoy).ToString("dd/MM/yyyy"))
+        : "Mostrando cotizaciones de hoy";
+
+    var totalNeto = cotizacionesFiltradas.Sum(c => c.total_neto);
+    var usCulture = System.Globalization.CultureInfo.GetCultureInfo("en-US");
 }
 
-<div class="container mt-4">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>@titulo</h2>
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#filtroFechasModal">
-            <i class="fas fa-calendar-alt me-1"></i> Filtrar por Fechas
-        </button>
-    </div>
+<style>
+    /* Vercotizacion v2.0 */
+    .cot-filter-bar {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        padding: 16px 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 8px rgba(15,23,42,0.06);
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        align-items: flex-end;
+    }
+    .cot-filter-bar .filter-group { display: flex; flex-direction: column; gap: 4px; }
+    .cot-filter-bar label { font-size: 0.78rem; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; }
+    .cot-filter-bar input[type=date] {
+        padding: 9px 12px; border: 1.5px solid #e2e8f0; border-radius: 9px;
+        font-size: 0.9rem; color: #1e293b; background: #f8fafc;
+        transition: all 0.2s ease; min-width: 150px;
+    }
+    .cot-filter-bar input[type=date]:focus {
+        border-color: #1565c0; box-shadow: 0 0 0 3px rgba(21,101,192,0.1); outline: none;
+    }
+    .cot-filter-actions { display: flex; gap: 8px; align-items: flex-end; flex-wrap: wrap; }
 
-    <!-- Modal para el filtro de fechas -->
-    <div class="modal fade" id="filtroFechasModal" tabindex="-1" aria-labelledby="filtroFechasModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="filtroFechasModalLabel">Filtrar por Rango de Fechas</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                </div>
-                <form method="get" action="@Url.Action("Vercotizacion", "Cotizacion")">
-                    <div class="modal-body">
-                        <div class="mb-3">
-                            <label for="fechaInicio" class="form-label">Fecha de Inicio</label>
-                            <input type="date" class="form-control" id="fechaInicio" name="fechaInicio" value="@ViewBag.FechaInicio">
-                        </div>
-                        <div class="mb-3">
-                            <label for="fechaFin" class="form-label">Fecha de Fin</label>
-                            <input type="date" class="form-control" id="fechaFin" name="fechaFin" value="@(ViewBag.FechaFin ?? DateTime.Today.ToString("yyyy-MM-dd"))">
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <a href="@Url.Action("Vercotizacion", "Cotizacion")" class="btn btn-secondary me-2">
-                            <i class="fas fa-times me-1"></i> Limpiar Filtros
-                        </a>
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-search me-1"></i> Buscar
-                        </button>
-                    </div>
-                </form>
-            </div>
+    .cot-row { cursor: pointer; transition: all 0.15s ease; }
+    .cot-row:hover { background: #eff6ff !important; transform: translateX(2px); }
+    .cot-row td:first-child { border-left: 3px solid transparent; transition: border-color 0.15s; }
+    .cot-row:hover td:first-child { border-left-color: #1565c0; }
+
+    .cot-num { font-weight: 700; color: #1565c0; font-size: 0.95rem; display: flex; align-items: center; gap: 6px; }
+    .cot-num .cot-arrow { opacity: 0; transition: opacity 0.15s, transform 0.15s; font-size: 0.75rem; }
+    .cot-row:hover .cot-arrow { opacity: 1; transform: translateX(3px); }
+
+    .monto-chip {
+        display: inline-flex; align-items: center; gap: 4px;
+        background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0;
+        border-radius: 6px; padding: 3px 9px; font-size: 0.85rem; font-weight: 700;
+        font-variant-numeric: tabular-nums;
+    }
+
+    .empty-state {
+        text-align: center; padding: 56px 20px;
+        background: #fff; border-radius: 16px;
+        border: 1.5px dashed #e2e8f0;
+    }
+    .empty-state .es-icon {
+        width: 64px; height: 64px; border-radius: 16px;
+        background: #eff6ff; color: #1565c0;
+        display: inline-flex; align-items: center; justify-content: center;
+        font-size: 1.8rem; margin-bottom: 16px;
+    }
+    .empty-state h5 { font-weight: 700; color: #1e293b; margin-bottom: 6px; }
+    .empty-state p { color: #64748b; font-size: 0.9rem; margin-bottom: 20px; }
+</style>
+
+<div class="container-fluid">
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <div>
+            <h1 class="page-header__title">
+                <span class="ph-icon"><i class="fas fa-file-signature"></i></span>
+                @titulo
+            </h1>
+            <p class="page-header__subtitle">@subtitulo</p>
+        </div>
+        <div class="stat-chips">
+            <span class="stat-chip blue">
+                <i class="fas fa-list-ol"></i>
+                <strong>@cotizacionesFiltradas.Count</strong> cotizaciones
+            </span>
+            @if (cotizacionesFiltradas.Any())
+            {
+                <span class="stat-chip green">
+                    <i class="fas fa-dollar-sign"></i>
+                    Total: <strong>@totalNeto.ToString("C", usCulture)</strong>
+                </span>
+            }
         </div>
     </div>
 
+    <!-- Filter Bar -->
+    <form method="get" action="@Url.Action("Vercotizacion", "Cotizacion")" id="filterForm">
+        <div class="cot-filter-bar">
+            <div class="filter-group">
+                <label for="fechaInicio">Desde</label>
+                <input type="date" id="fechaInicio" name="fechaInicio"
+                       value="@(ViewBag.FechaInicio ?? string.Empty)" />
+            </div>
+            <div class="filter-group">
+                <label for="fechaFin">Hasta</label>
+                <input type="date" id="fechaFin" name="fechaFin"
+                       value="@(ViewBag.FechaFin ?? DateTime.Today.ToString("yyyy-MM-dd"))" />
+            </div>
+            <div class="cot-filter-actions">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-search"></i> Buscar
+                </button>
+                <a href="@Url.Action("Vercotizacion", "Cotizacion")" class="btn btn-outline-primary">
+                    <i class="fas fa-times"></i> Hoy
+                </a>
+                @if (cotizacionesFiltradas.Any())
+                {
+                    <button type="button" class="btn btn-success" id="btnImprimirPdf">
+                        <i class="fas fa-file-pdf"></i> Exportar PDF
+                    </button>
+                }
+                <a href="@Url.Action("Cotizacion", "Cotizacion")" class="btn btn-outline-primary">
+                    <i class="fas fa-plus"></i> Nueva
+                </a>
+            </div>
+        </div>
+    </form>
+
+    <!-- Table or Empty -->
     @if (cotizacionesFiltradas.Any())
     {
         <div class="table-responsive">
-            <table class="table table-hover table-striped">
-                <thead class="table-primary">
+            <table class="table table-hover mb-0" id="tablaCotizaciones">
+                <thead>
                     <tr>
-                        <th>Nro Cotización</th>
-                        <th>Fecha</th>
-                        <th>Código Cliente</th>
-                        <th>Nombre del Cliente</th>
-                        <th class="text-end">Total Neto</th>
+                        <th class="cabecera-azul-claro"><i class="fas fa-hashtag me-1"></i>Nro</th>
+                        <th class="cabecera-azul-claro"><i class="fas fa-calendar me-1"></i>Fecha</th>
+                        <th class="cabecera-azul-claro"><i class="fas fa-id-badge me-1"></i>Cód. Cliente</th>
+                        <th class="cabecera-azul-claro"><i class="fas fa-user me-1"></i>Cliente</th>
+                        <th class="cabecera-azul-claro text-end"><i class="fas fa-dollar-sign me-1"></i>Total Neto</th>
+                        <th class="cabecera-azul-claro text-end"><i class="fas fa-exchange-alt me-1"></i>Tasa BCV</th>
+                        <th class="cabecera-azul-claro text-center" style="width:60px;"></th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach (var cot in cotizacionesFiltradas)
                     {
                         var docNumLimpio = cot.doc_num.Trim();
-                        <tr style="cursor: pointer;" onclick="window.location.href='@Url.Action("DetalleCotizacion", "Cotizacion", new { id = docNumLimpio })'" onmouseover="this.style.backgroundColor='#f5f5f5'" onmouseout="this.style.backgroundColor=''">
-                            <td class="fw-bold text-primary">
-                                #@docNumLimpio
+                        var clienteNombre = Model.Clientes.ContainsKey(cot.co_cli)
+                            ? Model.Clientes[cot.co_cli] : cot.co_cli;
+                        <tr class="cot-row"
+                            onclick="window.location.href='@Url.Action("DetalleCotizacion", "Cotizacion", new { id = docNumLimpio })'">
+                            <td>
+                                <span class="cot-num">
+                                    <i class="fas fa-file-invoice" style="color:#93c5fd;font-size:0.8rem;"></i>
+                                    #@docNumLimpio
+                                    <i class="fas fa-chevron-right cot-arrow"></i>
+                                </span>
                             </td>
-                            <td>@cot.fec_emis.ToString("dd/MM/yyyy")</td>
-                            <td>@cot.co_cli</td>
-                            <td>@(Model.Clientes.ContainsKey(cot.co_cli) ? Model.Clientes[cot.co_cli] : cot.co_cli)</td>
-                            <td class="text-end">@cot.total_neto.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("en-US"))</td>
+                            <td style="color:#475569;">@cot.fec_emis.ToString("dd/MM/yyyy")</td>
+                            <td>
+                                <span style="font-family:monospace;font-size:0.88rem;color:#64748b;background:#f1f5f9;padding:2px 7px;border-radius:4px;">
+                                    @cot.co_cli
+                                </span>
+                            </td>
+                            <td style="font-weight:500;color:#1e293b;">@clienteNombre</td>
+                            <td class="text-end">
+                                <span class="monto-chip">@cot.total_neto.ToString("C", usCulture)</span>
+                            </td>
+                            <td class="text-end" style="color:#64748b;font-variant-numeric:tabular-nums;">
+                                @cot.tasa.ToString("N5")
+                            </td>
+                            <td class="text-center">
+                                <i class="fas fa-chevron-right" style="color:#cbd5e1;font-size:0.8rem;"></i>
+                            </td>
                         </tr>
                     }
                 </tbody>
+                <tfoot>
+                    <tr style="background:#eff6ff;">
+                        <td colspan="4" class="text-end fw-bold" style="color:#1565c0;">Total del período:</td>
+                        <td class="text-end fw-bold" style="color:#059669;font-size:1rem;font-variant-numeric:tabular-nums;">
+                            @totalNeto.ToString("C", usCulture)
+                        </td>
+                        <td colspan="2"></td>
+                    </tr>
+                </tfoot>
             </table>
         </div>
     }
     else
     {
-        <div class="alert alert-info" role="alert">
+        <div class="empty-state">
+            <div class="es-icon"><i class="fas fa-file-signature"></i></div>
+            <h5>No hay cotizaciones</h5>
             @if (mostrarTodas)
             {
-                <span>No se encontraron cotizaciones en el rango de fechas seleccionado.</span>
+                <p>No se encontraron cotizaciones en el rango de fechas seleccionado.</p>
             }
             else
             {
-                <span>No hay cotizaciones registradas para el día de hoy.</span>
+                <p>No hay cotizaciones registradas para el día de hoy.</p>
             }
+            <a href="@Url.Action("Cotizacion", "Cotizacion")" class="btn btn-primary">
+                <i class="fas fa-plus me-1"></i> Crear cotización
+            </a>
         </div>
     }
 </div>
 
-<style>
-    .table th {
-        font-weight: 600;
-    }
+@section scripts {
+    <script src="~/Content/Imagen/logoConfig.js"></script>
+    <script src="~/Content/Imagen/pdfEncabezado.js?v=20250528"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+    <script>
+        (function () {
+            var cotizacionesPdf = @Html.Raw(JsonConvert.SerializeObject(
+                cotizacionesFiltradas.Select(c => new {
+                    doc_num = c.doc_num.Trim(),
+                    fecha   = c.fec_emis.ToString("dd/MM/yyyy"),
+                    co_cli  = c.co_cli.Trim(),
+                    cliente = Model.Clientes.ContainsKey(c.co_cli) ? Model.Clientes[c.co_cli] : c.co_cli,
+                    total_neto = c.total_neto.ToString("C", usCulture)
+                })
+            ));
+            var tituloPdf = @Html.Raw(JsonConvert.SerializeObject(titulo));
 
-    .table td {
-        vertical-align: middle;
-    }
+            function imprimirPDFHistorico() {
+                if (!cotizacionesPdf.length) { alert('No hay cotizaciones para exportar.'); return; }
+                var jsPDF = window.jspdf.jsPDF;
+                var doc = new jsPDF('l');
+                window.agregarEncabezadoPdf(doc).then(function (startY) {
+                    doc.setFontSize(16);
+                    doc.text(tituloPdf, 14, startY + 4);
+                    doc.setFontSize(10);
+                    doc.text('Fecha de impresion: ' + new Date().toLocaleString(), 14, startY + 12);
+                    doc.text('Total de cotizaciones: ' + cotizacionesPdf.length, 14, startY + 18);
+                    var rows = cotizacionesPdf.map(function (c) {
+                        return [c.doc_num, c.fecha, c.co_cli, c.cliente, c.total_neto];
+                    });
+                    doc.autoTable({
+                        startY: startY + 26,
+                        head: [['Nro Cotización', 'Fecha', 'Cód. Cliente', 'Nombre del Cliente', 'Total Neto']],
+                        body: rows,
+                        styles: { fontSize: 9, cellPadding: 3 },
+                        headStyles: { fillColor: [21, 101, 192], textColor: 255, fontStyle: 'bold' },
+                        alternateRowStyles: { fillColor: [249, 249, 249] },
+                        columnStyles: { 4: { halign: 'right' } }
+                    });
+                    doc.save('Cotizaciones_' + new Date().toISOString().split('T')[0] + '.pdf');
+                });
+            }
 
-    .table-hover tbody tr:hover {
-        background-color: #f5f5f5;
-    }
-</style>
+            var btn = document.getElementById('btnImprimirPdf');
+            if (btn) btn.addEventListener('click', imprimirPDFHistorico);
+        })();
+    </script>
+}

@@ -13,6 +13,8 @@ namespace APIS.Models
     {
         public string co_art { get; set; }
         public string art_des { get; set; }
+        public string co_cat { get; set; }
+        public string cat_des { get; set; }
         public string tipo_imp { get; set; }
         public string iva { get; set; }
         public decimal Precio1 { get; set; }
@@ -20,5 +22,6 @@ namespace APIS.Models
         public decimal Precio3 { get; set; }
         public decimal Precio4 { get; set; }
         public decimal Precio5 { get; set; }
+        public decimal tasa { get; set; }
     }
 }

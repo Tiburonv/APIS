@@ -1,0 +1,476 @@
+@model Dictionary<string, List<APIS.Models.PagoValidadoViewModel>>
+@{
+    ViewBag.Title = "Resumen de Pagos Validados";
+}
+
+<style>
+    body {
+        -webkit-overflow-scrolling: touch;
+        scroll-behavior: smooth;
+    }
+
+    .container {
+        overflow-x: hidden;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .header-section {
+        background: linear-gradient(135deg, #1565c0 0%, #0d47a1 100%);
+        color: white;
+        padding: 30px 0;
+        margin-bottom: 30px;
+        border-radius: 0 0 15px 15px;
+        box-shadow: 0 4px 20px rgba(21, 101, 192, 0.3);
+    }
+
+    .header-section h1 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin: 0;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .header-section .subtitle {
+        font-size: 1.2rem;
+        opacity: 0.9;
+        margin-top: 10px;
+    }
+
+    .date-group {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        margin-bottom: 25px;
+        overflow: hidden;
+        border: 3px solid #64b5f6;
+    }
+
+    .date-header {
+        background: linear-gradient(135deg, #1976d2 0%, #1565c0 100%);
+        color: white;
+        padding: 20px 25px;
+        font-size: 1.4rem;
+        font-weight: 700;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .date-info {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .date-badge {
+        background: rgba(255, 255, 255, 0.2);
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-size: 1rem;
+        font-weight: 600;
+    }
+
+    .date-user {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.95rem;
+        opacity: 0.9;
+        background: rgba(255, 255, 255, 0.15);
+        padding: 8px 12px;
+        border-radius: 15px;
+    }
+
+    .date-user i {
+        font-size: 0.9rem;
+    }
+
+    .date-totals {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 4px;
+    }
+
+    .total-pagos {
+        font-size: 1rem;
+        opacity: 0.9;
+        font-weight: 600;
+    }
+
+    .total-monto {
+        font-size: 1.1rem;
+        font-weight: 700;
+        background: rgba(255, 255, 255, 0.2);
+        padding: 6px 12px;
+        border-radius: 12px;
+    }
+
+    .pagos-container {
+        padding: 0;
+    }
+
+    .pago-item {
+        border-bottom: 1px solid #e0e0e0;
+        padding: 20px 25px;
+        transition: background-color 0.3s ease;
+        cursor: pointer;
+    }
+
+    .pago-item:last-child {
+        border-bottom: none;
+    }
+
+    .pago-item:hover {
+        background-color: #f8f9fa;
+    }
+
+    .pago-codigo {
+        color: #666;
+        font-size: 0.9em;
+        font-weight: 500;
+    }
+
+    .documentos-seleccionados {
+        margin-top: 15px;
+        padding-top: 15px;
+        border-top: 1px solid #e0e0e0;
+    }
+
+    .documentos-title {
+        color: #1565c0;
+        font-weight: 600;
+        margin-bottom: 10px;
+        font-size: 0.95rem;
+    }
+
+    .documentos-table {
+        background: #f8f9fa;
+        border-radius: 6px;
+        padding: 10px;
+        margin-top: 8px;
+    }
+
+    .documentos-table .table {
+        margin: 0;
+        font-size: 0.85rem;
+    }
+
+    .documentos-table .table th {
+        background: #bbdefb;
+        color: #0d47a1;
+        font-weight: 600;
+        border: none;
+        padding: 8px 6px;
+        font-size: 0.8rem;
+    }
+
+    .documentos-table .table td {
+        padding: 6px;
+        border-top: 1px solid #dee2e6;
+        vertical-align: middle;
+    }
+
+    .documentos-table .table tbody tr:hover {
+        background-color: #e8f4fd;
+    }
+
+    .total-saldo-proveedor {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #e3f2fd;
+        border: 2px solid #64b5f6;
+        border-radius: 8px;
+        padding: 12px 15px;
+        margin-top: 15px;
+        font-weight: 700;
+    }
+
+    .total-saldo-label {
+        color: #1976d2;
+        font-size: 1rem;
+    }
+
+    .total-saldo-amount {
+        color: #0d47a1;
+        font-size: 1.2rem;
+    }
+
+    .pago-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+
+    .pago-proveedor {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #1565c0;
+    }
+
+    .pago-total {
+        text-align: right;
+    }
+
+    .total-amount {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: #64b5f6;
+        margin-bottom: 4px;
+    }
+
+
+    .pago-actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    .btn-ver-detalle {
+        background: linear-gradient(135deg, #1565c0 0%, #0d47a1 100%);
+        border: none;
+        color: white;
+        padding: 8px 16px;
+        border-radius: 6px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .btn-ver-detalle:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(21, 101, 192, 0.4);
+        color: white;
+        text-decoration: none;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: #666;
+    }
+
+    .empty-state i {
+        font-size: 4rem;
+        color: #ddd;
+        margin-bottom: 20px;
+    }
+
+    .empty-state h3 {
+        color: #999;
+        margin-bottom: 10px;
+    }
+
+
+    /* Responsive */
+    @@media (max-width: 768px) {
+        .header-section h1 {
+            font-size: 2rem;
+        }
+        
+        .date-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        
+        .pago-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        
+        .pago-details {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        
+        .pago-info {
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        
+        .documentos-table .table {
+            font-size: 0.75rem;
+        }
+        
+        .documentos-table .table td, .documentos-table .table th {
+            padding: 4px 3px;
+        }
+    }
+</style>
+
+<div class="container">
+    <!-- Header -->
+    <div class="header-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <h1><i class="fa fa-list-check mr-3"></i>Resumen de Pagos</h1>
+                    <p class="subtitle">Pagos Validados Agrupados por Fecha</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (Model != null && Model.Count > 0)
+    {
+
+        <!-- Grupos por Fecha -->
+        foreach (var grupo in Model.OrderByDescending(g => g.Key))
+        {
+            <div class="date-group">
+                <div class="date-header">
+                    <div class="date-info">
+                        <i class="fa fa-calendar-alt"></i>
+                        <span class="date-badge">@grupo.Key</span>
+                        <div class="date-user">
+                            <i class="fa fa-user mr-1"></i>
+                            <span>Validado por: @grupo.Value.First().UsuarioValidacion</span>
+                        </div>
+                    </div>
+                    <div class="date-totals">
+                        <div class="total-pagos">@grupo.Value.Count pago(s)</div>
+                        <div class="total-monto">Total: $@grupo.Value.Sum(p => p.TotalPago).ToString("N2")</div>
+                    </div>
+                </div>
+                
+                <div class="pagos-container">
+                    @foreach (var pago in grupo.Value.OrderByDescending(p => p.FechaValidacion))
+                    {
+                        <div class="pago-item">
+                            <div class="pago-header">
+                                <div class="pago-proveedor">
+                                    <i class="fa fa-building mr-2"></i>
+                                    @pago.NombreProveedor
+                                    <span class="pago-codigo">(@pago.CodigoProveedor)</span>
+                                </div>
+                                <div class="pago-actions">
+                                    <button type="button" 
+                                            class="btn btn-danger btn-sm"
+                                            onclick="eliminarPago(@pago.Id)"
+                                            title="Eliminar validación">
+                                        <i class="fa fa-trash mr-1"></i>
+                                        Eliminar
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Documentos Seleccionados -->
+                            <div class="documentos-seleccionados">
+                                <h6 class="documentos-title">
+                                    <i class="fa fa-file-text mr-2"></i>
+                                    Documentos Seleccionados:
+                                </h6>
+                                <div class="documentos-table">
+                                    <table class="table table-sm">
+                                        <thead>
+                                            <tr>
+                                                <th>Tipo DOC</th>
+                                                <th>Nro Prov</th>
+                                                <th>Fecha</th>
+                                                <th class="text-end">Saldo</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var elemento in pago.Elementos)
+                                            {
+                                                <tr>
+                                                    <td class="font-weight-bold">@elemento.TipoDoc</td>
+                                                    <td>@elemento.NroProv</td>
+                                                    <td>@elemento.FechaFormateada</td>
+                                                     <td class="text-end font-weight-bold" style="color: #0d47a1; font-size: 1.1em;">$@elemento.SaldoFormateado</td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                                
+                                <!-- Total a Pagar por Proveedor -->
+                                <div class="total-saldo-proveedor">
+                                    <div class="total-saldo-label">Total a Pagar:</div>
+                                    <div class="total-saldo-amount">$@pago.TotalPagoFormateado</div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <!-- Estado Vacío -->
+        <div class="empty-state">
+            <i class="fa fa-inbox"></i>
+            <h3>No hay pagos validados</h3>
+            <p>Los pagos validados aparecerán aquí agrupados por fecha.</p>
+            <a href="@Url.Action("Index", "DocumentoCP")" class="btn btn-primary mt-3">
+                <i class="fa fa-arrow-left mr-2"></i>
+                Volver a Proveedores
+            </a>
+        </div>
+    }
+</div>
+
+@Html.AntiForgeryToken()
+
+@section scripts{
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+    
+    <script>
+        // Lee el token anti-CSRF desde la cookie __RequestVerificationToken
+        function obtenerTokenCsrf() {
+            var match = document.cookie.match(new RegExp('(?:^|; )__RequestVerificationToken=([^;]*)'));
+            return match ? decodeURIComponent(match[1]) : '';
+        }
+
+        function eliminarPago(pagoId) {
+            if (confirm('¿Está seguro de que desea eliminar esta validación de pago? Esta acción no se puede deshacer.')) {
+                // Mostrar indicador de carga
+                const boton = event.target.closest('button');
+                const iconoOriginal = boton.innerHTML;
+                boton.innerHTML = '<i class="fa fa-spinner fa-spin mr-1"></i>Eliminando...';
+                boton.disabled = true;
+                
+                // Enviar petición de eliminación
+                fetch('/Pago/EliminarPago', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': obtenerTokenCsrf()
+                    },
+                    body: JSON.stringify({ id: pagoId })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Validación eliminada exitosamente!');
+                        // Recargar la página para mostrar los cambios
+                        window.location.reload();
+                    } else {
+                        alert('Error al eliminar la validación: ' + (data.message || 'Error desconocido'));
+                        // Restaurar botón
+                        boton.innerHTML = iconoOriginal;
+                        boton.disabled = false;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error al eliminar la validación. Por favor, intente nuevamente.');
+                    // Restaurar botón
+                    boton.innerHTML = iconoOriginal;
+                    boton.disabled = false;
+                });
+            }
+        }
+
+    </script>
+}

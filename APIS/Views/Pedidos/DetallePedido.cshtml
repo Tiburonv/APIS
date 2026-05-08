@@ -1,5 +1,6 @@
 @{
     ViewBag.Title = "Detalle del Pedido";
+    Layout = "~/Views/Shared/_Layout.cshtml";
     var doc_num = ViewBag.doc_num as string;
 }
 
@@ -13,17 +14,17 @@
          </div>
     </div>
 
-    <!-- Informacion del Cliente -->
+    <!-- Información del Cliente -->
     <div class="card mb-4">
         <div class="card-header bg-primary text-white">
-            <h5 class="mb-0">Informacion del Cliente</h5>
+            <h5 class="mb-0">Información del Cliente</h5>
         </div>
         <div class="card-body">
             <div class="row">
                 <div class="col-12 col-md-6">
                     <p><strong>Nombre:</strong> <span id="cli_des">Cargando...</span></p>
-                    <p><strong>Codigo de Cliente:</strong> <span id="co_cli">Cargando...</span></p>
-                    <p><strong>Codigo del Vendedor:</strong> <span id="co_ven">Cargando...</span></p>
+                    <p><strong>Código de Cliente:</strong> <span id="co_cli">Cargando...</span></p>
+                    <p><strong>Código del Vendedor:</strong> <span id="co_ven">Cargando...</span></p>
                 </div>
                 <div class="col-12 col-md-6">
                     <p><strong>Fecha de Emision:</strong> <span id="fec_emis">Cargando...</span></p>
@@ -57,8 +58,8 @@
                     <thead class="table-light">
                         <tr>
                             <th>#</th>
-                            <th>Codigo</th>
-                            <th>Descripcion</th>
+                            <th>Código</th>
+                            <th>Descripción</th>
                             <th class="text-end">Cantidad</th>
                             <!-- Headers for USD -->
                             <th class="text-end bs-currency">Precio Unit. ($)</th>
@@ -137,7 +138,7 @@
 
             if (!docNum || docNum === 'undefined' || docNum === 'null') {
                 console.error('No se proporciono numero de pedido valido:', docNum);
-                mostrarError('No se proporciono un numero de pedido valido. Por favor, regrese a la lista de pedidos.');
+                mostrarError('No se proporcionó un número de pedido válido. Por favor, regrese a la lista de pedidos.');
                 return;
             }
 
@@ -317,7 +318,7 @@
                 const totalNeto = subtotalNeto + totalIva;
                 $('#totalNeto').text(formatearNumero(totalNeto));
                 
-                console.log('Informacion del cliente actualizada:', {
+                console.log('Información del cliente actualizada:', {
                     co_cli: primerReng.co_cli,
                     cli_des: primerReng.cli_des,
                     co_ven: primerReng.co_ven,
@@ -406,7 +407,7 @@
         font-size: 0.875em;
     }
 
-    /* Responsive para moviles */
+    /* Responsive para móviles */
     @@media (max-width: 768px) {
         .table-responsive {
             font-size: 0.875rem;

@@ -1,42 +1,16 @@
 @{
     ViewBag.Title = "Pedidos Clientes";
+    Layout = "~/Views/Shared/_Layout.cshtml";
     var co_cli = ViewBag.co_cli as string;
     var cli_des = ViewBag.cli_des as string;
 }
 
 <style>
     /* En Index.cshtml (Clientes) */
-    body {
-        background: #f4f6fb;
-        /* Mejoras para scroll móvil */
-        -webkit-overflow-scrolling: touch;
-        scroll-behavior: smooth;
-    }
 
     /* Contenedor principal con scroll optimizado para móvil */
     .container {
         overflow-x: hidden;
-        -webkit-overflow-scrolling: touch;
-    }
-
-    /* Scroll personalizado para móviles */
-    ::-webkit-scrollbar {
-        width: 8px;
-        height: 8px;
-    }
-
-    ::-webkit-scrollbar-track {
-        background: #f1f1f1;
-        border-radius: 4px;
-    }
-
-    ::-webkit-scrollbar-thumb {
-        background: #1565c0;
-        border-radius: 4px;
-    }
-
-    ::-webkit-scrollbar-thumb:hover {
-        background: #0d47a1;
     }
 
     /* Scroll horizontal para tablas en móvil */
@@ -45,27 +19,6 @@
         -webkit-overflow-scrolling: touch;
         scrollbar-width: thin;
         scrollbar-color: #1565c0 #f1f1f1;
-    }
-
-    /* Indicador de scroll para móviles */
-    .scroll-indicator {
-        position: fixed;
-        right: 10px;
-        top: 50%;
-        transform: translateY(-50%);
-        background: rgba(21, 101, 192, 0.8);
-        color: white;
-        padding: 8px 4px;
-        border-radius: 20px;
-        font-size: 12px;
-        z-index: 1000;
-        opacity: 0;
-        transition: opacity 0.3s;
-        pointer-events: none;
-    }
-
-    .scroll-indicator.show {
-        opacity: 1;
     }
 
     /* Mejoras para navegación táctil */
@@ -77,12 +30,6 @@
     .btn {
         touch-action: manipulation;
         -webkit-tap-highlight-color: transparent;
-    }
-
-    /* Scroll suave para secciones */
-    .scroll-smooth {
-        scroll-behavior: smooth;
-        -webkit-overflow-scrolling: touch;
     }
 
     h4 {
@@ -187,36 +134,67 @@
         font-weight: 600;
         margin-bottom: 18px;
     }
-
-    /* Botón de scroll hacia arriba para móviles */
-    .scroll-to-top {
+    
+    /* Estilos para el indicador de carga */
+    .loading-overlay {
         position: fixed;
-        bottom: 20px;
-        right: 20px;
-        background: #1565c0;
-        color: white;
-        border: none;
-        border-radius: 50%;
-        width: 50px;
-        height: 50px;
-        font-size: 20px;
-        cursor: pointer;
-        opacity: 0;
-        transition: opacity 0.3s, transform 0.3s;
-        z-index: 1000;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 9999;
         display: flex;
-        align-items: center;
         justify-content: center;
-        box-shadow: 0 4px 12px rgba(21, 101, 192, 0.3);
+        align-items: center;
     }
-
-    .scroll-to-top.show {
-        opacity: 1;
+    
+    .loading-spinner {
+        background: white;
+        padding: 20px 40px;
+        border-radius: 8px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.2);
     }
-
-    .scroll-to-top:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 16px rgba(21, 101, 192, 0.4);
+    
+    .spinner-border-custom {
+        width: 3rem;
+        height: 3rem;
+        border-width: 0.3em;
+    }
+    
+    .loading-text {
+        margin-top: 10px;
+        font-weight: 600;
+        color: #1565c0;
+    }
+    
+    /* Animación de búsqueda */
+    .search-loading {
+        position: relative;
+        pointer-events: none;
+        opacity: 0.7;
+    }
+    
+    .search-loading::after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        right: 15px;
+        transform: translateY(-50%);
+        width: 20px;
+        height: 20px;
+        border: 3px solid #f3f3f3;
+        border-top: 3px solid #1565c0;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+    }
+    
+    @@keyframes spin {
+        0% { transform: translateY(-50%) rotate(0deg); }
+        100% { transform: translateY(-50%) rotate(360deg); }
     }
 
     /* Mejoras para móviles */
@@ -250,14 +228,6 @@
             border-radius: 0;
         }
 
-        /* Indicador de scroll visible en móviles */
-        .scroll-indicator {
-            opacity: 1;
-            right: 5px;
-            padding: 6px 3px;
-            font-size: 10px;
-        }
-
         /* Mejoras para tablas en móvil */
         .table {
             font-size: 0.875rem;
@@ -267,19 +237,25 @@
             padding: 0.5rem 0.25rem;
             white-space: nowrap;
         }
+    }
 
-        /* Scroll suave para navegación móvil */
-        html {
-            scroll-behavior: smooth;
-        }
+    /* Mejoras para el card de resultados seleccionados */
+    .card.border-primary {
+        border: 1.5px solid #1565c0 !important;
+    }
 
-        .scroll-to-top {
-            bottom: 15px;
-            right: 15px;
-            width: 45px;
-            height: 45px;
-            font-size: 18px;
-        }
+    .card-header.bg-primary {
+        background: #1565c0 !important;
+        color: #fff !important;
+        font-weight: 600;
+        font-size: 1.15rem;
+        letter-spacing: 0.5px;
+        border-radius: 8px 8px 0 0;
+    }
+
+    .card {
+        border-radius: 8px;
+        box-shadow: 0 2px 12px rgba(21,101,192,0.10);
     }
 </style>
 
@@ -297,19 +273,30 @@
 </script>
 
 <div class="container" id="root">
+    <!-- Indicador de carga global -->
+    <div v-if="cargando" class="loading-overlay">
+        <div class="loading-spinner">
+            <div class="spinner-border spinner-border-custom text-primary" role="status">
+                <span class="sr-only">Cargando...</span>
+            </div>
+            <div class="loading-text">[[ textoCargar ]]</div>
+        </div>
+    </div>
+    
     <div class="search-container">
         <h4><i class="fa fa-search"></i> Buscar Pedidos</h4>
         <div style="position:relative;">
             <div class="search-flex">
                 <img src="~/Content/Zulia_log.bmp" alt="Logo" />
                 <input type="text"
-                       class="form-control"
+                       :class="['form-control', {'search-loading': buscando}]"
                        v-model="txtBusqueda"
                        v-on:focus="limpiarBusqueda"
                        v-on:input="buscarSugerenciasDebounced"
                        v-on:keyup.enter="getBsuqueda()"
-                       placeholder="Buscar por codigo cliente o nombre..."
-                       autocomplete="off" />
+                       placeholder="Buscar por código cliente o nombre..."
+                       autocomplete="off"
+                       v-bind:disabled="buscando || cargando" />
             </div>
             <ul v-if="sugerencias.length > 0" class="list-group autocomplete-list">
                 <li class="list-group-item autocomplete-item"
@@ -327,7 +314,7 @@
             <thead>
                 <tr>
                     <th class="cabecera-azul-claro" v-on:click="ordenarPor('co_cli')" style="cursor:pointer;">
-                        <i class="fa fa-id-card"></i> Codigo Cliente
+                        <i class="fa fa-id-card"></i> Código Cliente
                         <span v-if="columnaOrden==='co_cli'">
                             <span v-if="ordenAscendente">&#9650;</span>
                             <span v-else>&#9660;</span>
@@ -380,7 +367,7 @@
     </nav>
 
     <div v-if="resultadosFiltrados.length === 0 && txtBusqueda" class="alert alert-info mt-3">
-        <i class="fa fa-info-circle"></i> No se encontraron pedidos para la busqueda.
+        <i class="fa fa-info-circle"></i> No se encontraron pedidos para la búsqueda.
     </div>
 
     <!-- Mensaje de carga cuando hay parametros iniciales -->
@@ -388,68 +375,67 @@
         <i class="fa fa-spinner fa-spin"></i> Cargando detalles del cliente <strong>[[ initialCliDes ]]</strong>...
     </div>
 
-    <!-- Mensaje de exito cuando se carga automaticamente -->
+    <!-- Mensaje de éxito cuando se carga automáticamente -->
     <div v-if="cargarAutomaticamente && clienteSeleccionado" class="alert alert-success mt-3" id="mensajeExito">
-        <i class="fa fa-check-circle"></i> Cliente cargado automaticamente: <strong>[[ clienteSeleccionado.cli_des ]]</strong>
+        <i class="fa fa-check-circle"></i> Cliente cargado automáticamente: <strong>[[ clienteSeleccionado.cli_des ]]</strong>
     </div>
 
     <!-- RESULTADOS SELECCIONADOS -->
     <div v-if="clienteSeleccionado" class="mt-4">
-        <div class="table-responsive">
-            <h5><i class="fa fa-list-alt"></i> Pedidos del cliente seleccionado</h5>
-            <table class="table table-bordered table-hover table-striped">
-                <thead>
-                    <tr>
-                        <th class="cabecera-azul-claro">Nro Pedido</th>
-                        <th class="cabecera-azul-claro">Fecha</th>
-                        <th class="cabecera-azul-claro">Total Bruto</th>
-                        <th class="cabecera-azul-claro">IVA</th>
-                        <th class="cabecera-azul-claro">Total Neto</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="(item, idx) in resultadosPorCliente" :key="item.doc_num + '-' + idx">
-                        <td>
-                            <a href="javascript:void(0)"
-                               v-on:click="verDetallePedido(item)"
-                               class="document-link">
-                                [[ item.doc_num ]]
-                            </a>
-                        </td>
-                        <td>[[ formatFecha(item.fec_emis) ]]</td>
-                        <td class="text-end">[[ formatNumero(item.total_bruto / item.tasa) ]]</td>
-                        <td class="text-end">[[ formatNumero(item.monto_imp / item.tasa) ]]</td>
-                        <td class="text-end">[[ formatNumero(item.total_neto / item.tasa) ]]</td>
-                    </tr>
-                </tbody>
-                <tfoot v-if="resultadosPorCliente.length > 1">
-                    <tr style="font-weight:bold; background:#e3f2fd;">
-                        <td colspan="2">Totales:</td>
-                        <td class="text-end">[[ sumaCol('total_bruto') ]]</td>
-                        <td class="text-end">[[ sumaCol('monto_imp') ]]</td>
-                        <td class="text-end">[[ sumaCol('total_neto') ]]</td>
-                    </tr>
-                </tfoot>
-            </table>
+        <div class="card border-primary shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <i class="fa fa-list-alt"></i> Pedidos del cliente seleccionado
+            </div>
+            <div class="card-body p-3" style="background:#f8fafc;">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover table-striped">
+                        <thead>
+                            <tr>
+                                <th class="cabecera-azul-claro">Nro Pedido</th>
+                                <th class="cabecera-azul-claro">Fecha</th>
+                                <th class="cabecera-azul-claro">Total Bruto</th>
+                                <th class="cabecera-azul-claro">IVA</th>
+                                <th class="cabecera-azul-claro">Total Neto</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="(item, idx) in resultadosPorCliente" :key="item.doc_num + '-' + idx">
+                                <td>
+                                    <a href="javascript:void(0)"
+                                       v-on:click="verDetallePedido(item)"
+                                       class="document-link">
+                                        [[ item.doc_num ]]
+                                    </a>
+                                </td>
+                                <td>[[ formatFecha(item.fec_emis) ]]</td>
+                                <td class="text-end">[[ formatNumero(item.total_bruto / item.tasa) ]]</td>
+                                <td class="text-end">[[ formatNumero(item.monto_imp / item.tasa) ]]</td>
+                                <td class="text-end">[[ formatNumero(item.total_neto / item.tasa) ]]</td>
+                            </tr>
+                        </tbody>
+                        <tfoot v-if="resultadosPorCliente.length > 1">
+                            <tr style="font-weight:bold; background:#e3f2fd;">
+                                <td colspan="2">Totales:</td>
+                                <td class="text-end">[[ sumaCol('total_bruto') ]]</td>
+                                <td class="text-end">[[ sumaCol('monto_imp') ]]</td>
+                                <td class="text-end">[[ sumaCol('total_neto') ]]</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
         </div>
-
-
+        <button v-if="clienteSeleccionado" class="btn btn-primary mt-3" v-on:click="compartirPDF">
+            <i class="fa fa-share-alt"></i> Compartir PDF
+        </button>
     </div>
 
-    <!-- Botón de scroll hacia arriba -->
-    <button class="scroll-to-top" id="scrollToTop" title="Ir arriba">
-        <i class="fa fa-arrow-up"></i>
-    </button>
-
-    <!-- Indicador de scroll -->
-    <div class="scroll-indicator" id="scrollIndicator">
-        <i class="fa fa-chevron-up"></i><br>
-        <i class="fa fa-chevron-down"></i>
-    </div>
+    
 </div>
 
 @section scripts{
     <script src="~/Content/Imagen/logoConfig.js"></script>
+    <script src="~/Content/Imagen/pdfEncabezado.js?v=20250528"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.6.0/css/bootstrap.min.css" />
     <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
@@ -483,7 +469,10 @@
                 columnaOrden: 'co_cli',
                 ordenAscendente: true,
                 debugMode: true,
-                cargarAutomaticamente: cargarAutomaticamente
+                cargarAutomaticamente: cargarAutomaticamente,
+                cargando: false,
+                buscando: false,
+                textoCargar: 'Cargando...'
             },
             computed: {
                 resultadosPaginados() {
@@ -498,6 +487,10 @@
                 getBsuqueda() {
                     if (this.txtBusqueda.trim() !== '') {
                         let cadena = this.txtBusqueda.trim();
+                        
+                        this.buscando = true;
+                        this.cargando = true;
+                        this.textoCargar = 'Buscando pedidos...';
 
                         axios.post('/Pedidos/buscarPedidosActivos', null, {
                             params: {
@@ -520,7 +513,7 @@
                                     this.paginaActual = 1;
                                     this.sugerencias = [];
 
-                                    // Si es carga automatica, seleccionar el cliente despues de la busqueda
+                                    // Si es carga automatica, seleccionar el cliente después de la búsqueda
                                     if (cargarAutomaticamente && initialCoCli && initialCliDes) {
                                         setTimeout(() => {
                                             this.seleccionarClienteAutomaticamente();
@@ -535,6 +528,8 @@
                                     this.paginaActual = 1;
                                     this.sugerencias = [];
                                 }
+                                this.buscando = false;
+                                this.cargando = false;
                             })
                             .catch((error) => {
                                 console.error('Error en la peticion:', error);
@@ -544,6 +539,8 @@
                                 this.resultadosPorCliente = [];
                                 this.paginaActual = 1;
                                 this.sugerencias = [];
+                                this.buscando = false;
+                                this.cargando = false;
                             });
                     } else {
                         this.todosResultados = [];
@@ -551,6 +548,8 @@
                         this.clienteSeleccionado = null;
                         this.resultadosPorCliente = [];
                         this.paginaActual = 1;
+                        this.buscando = false;
+                        this.cargando = false;
                     }
                 },
                 buscarSugerencias() {
@@ -576,17 +575,22 @@
                     this.getBsuqueda();
                 },
                 seleccionarCliente(item) {
-                    this.clienteSeleccionado = item;
-                    this.resultadosPorCliente = this.todosResultados.filter(x =>
-                        x.co_cli && x.co_cli.trim() === item.co_cli.trim() &&
-                        x.cli_des && x.cli_des.trim() === item.cli_des.trim()
-                    );
+                    this.cargando = true;
+                    this.textoCargar = 'Cargando pedidos del cliente...';
+                    
+                    // Simular un pequeño delay para mostrar el indicador
+                    setTimeout(() => {
+                        this.clienteSeleccionado = item;
+                        this.resultadosPorCliente = this.todosResultados.filter(x =>
+                            x.co_cli && x.co_cli.trim() === item.co_cli.trim() &&
+                            x.cli_des && x.cli_des.trim() === item.cli_des.trim()
+                        );
 
-                    // Dejar solo el cliente seleccionado en los resultados filtrados
-                    this.resultadosFiltrados = [item];
-                    this.paginaActual = 1;
+                        // Dejar solo el cliente seleccionado en los resultados filtrados
+                        this.resultadosFiltrados = [item];
+                        this.paginaActual = 1;
 
-                    // Mostrar mensaje de exito si se cargo automaticamente
+                    // Mostrar mensaje de éxito si se cargo automáticamente
                     if (cargarAutomaticamente) {
                         setTimeout(() => {
                             const mensajeExito = document.getElementById('mensajeExito');
@@ -599,17 +603,26 @@
                         }, 500);
                     }
 
-                    // Scroll hacia la seccion de resultados del cliente
-                    setTimeout(() => {
-                        const resultadosSection = document.querySelector('.card.border-primary');
-                        if (resultadosSection) {
-                            resultadosSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                        }
-                    }, 100);
+                        // Scroll hacia la seccion de resultados del cliente
+                        setTimeout(() => {
+                            const resultadosSection = document.querySelector('.card.border-primary');
+                            if (resultadosSection) {
+                                resultadosSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                            }
+                        }, 100);
+                        
+                        this.cargando = false;
+                    }, 300);
                 },
                 cambiarPagina(pagina) {
-                    if (pagina > 0 && pagina <= this.totalPaginas) {
-                        this.paginaActual = pagina;
+                    if (página > 0 && página <= this.totalPaginas) {
+                        this.cargando = true;
+                        this.textoCargar = 'Cambiando página...';
+                        
+                        setTimeout(() => {
+                            this.paginaActual = pagina;
+                            this.cargando = false;
+                        }, 300);
                     }
                 },
                 ordenarPor(columna) {
@@ -679,7 +692,7 @@
                         return;
                     }
 
-                    // Navegar a la pagina de detalle del pedido
+                    // Navegar a la página de detalle del pedido
                     const url = '/Pedidos/DetallePedido?doc_num=' + encodeURIComponent(item.doc_num);
                     console.log('Navegando a:', url);
                     window.location.href = url;
@@ -716,6 +729,8 @@
                     this.clienteSeleccionado = null;
                     this.resultadosPorCliente = [];
                     this.paginaActual = 1;
+                    this.buscando = false;
+                    this.cargando = false;
                 },
                 sumaCol(campo) {
                     return this.resultadosPorCliente.reduce((acc, item) => {
@@ -734,11 +749,15 @@
                 async compartirPDF() {
                     const { jsPDF } = window.jspdf;
                     const doc = new jsPDF();
-                    doc.addImage(logoBase64, 'PNG', 10, 8, 40, 40);
+                    const startY = await window.agregarEncabezadoPdf(doc, {
+                        logoWidth: 40,
+                        logoMaxHeight: 40,
+                        direccionMaxWidth: 85
+                    });
                     doc.autoTable({
-                        startY: 60,
+                        startY: startY + 4,
                         head: [[
-                            { content: ' Codigo Cliente', styles: { fillColor: [21, 101, 192], textColor: 255, fontStyle: 'bold', halign: 'left' } },
+                            { content: ' Código Cliente', styles: { fillColor: [21, 101, 192], textColor: 255, fontStyle: 'bold', halign: 'left' } },
                             { content: ' Nombre Cliente', styles: { fillColor: [21, 101, 192], textColor: 255, fontStyle: 'bold', halign: 'left' } }
                         ]],
                         body: [[
@@ -777,11 +796,17 @@
                         alert('La función de compartir archivos no está soportada en este navegador.');
                     }
                 },
-                // Metodo para obtener renglones del pedido - navega a la pagina de detalle
-                obtenerRenglonesPedidos(doc_num) {
-                    // Navegar directamente a la pagina de detalle del pedido
+                // Metodo para obtener renglones del pedido - navega a la página de detalle
+                            obtenerRenglonesPedidos(doc_num) {
+                // Mostrar indicador de carga antes de navegar
+                this.cargando = true;
+                this.textoCargar = 'Cargando detalle del pedido...';
+                
+                // Navegar a la página de detalle del pedido después de un pequeño delay
+                setTimeout(() => {
                     window.location.href = '/Pedidos/DetallePedido?doc_num=' + encodeURIComponent(doc_num);
-                },
+                }, 300);
+            },
                 seleccionarClienteAutomaticamente() {
                     if (this.todosResultados.length > 0) {
                         const cliente = this.todosResultados.find(x =>
@@ -790,96 +815,41 @@
                         );
 
                         if (cliente) {
-                            console.log('Cliente encontrado automaticamente:', cliente);
+                            console.log('Cliente encontrado automáticamente:', cliente);
                             this.seleccionarCliente(cliente);
                         } else {
                             console.warn('Cliente no encontrado en los resultados:', initialCoCli, initialCliDes);
                         }
                     } else {
-                        // Si no hay resultados, intentar de nuevo despues de un tiempo
+                        // Si no hay resultados, intentar de nuevo después de un tiempo
                         setTimeout(() => {
                             this.seleccionarClienteAutomaticamente();
                         }, 500);
                     }
                 },
 
-                setupMobileScroll() {
-                    const scrollToTopBtn = document.getElementById('scrollToTop');
-                    const scrollIndicator = document.getElementById('scrollIndicator');
-                    let scrollTimeout;
-
-                    // Mostrar/ocultar botón de scroll hacia arriba
-                    window.addEventListener('scroll', () => {
-                        if (window.pageYOffset > 300) {
-                            scrollToTopBtn.classList.add('show');
-                        } else {
-                            scrollToTopBtn.classList.remove('show');
-                        }
-
-                        // Mostrar indicador de scroll
-                        clearTimeout(scrollTimeout);
-                        scrollIndicator.classList.add('show');
-                        
-                        scrollTimeout = setTimeout(() => {
-                            scrollIndicator.classList.remove('show');
-                        }, 2000);
-                    });
-
-                    // Scroll hacia arriba
-                    scrollToTopBtn.addEventListener('click', () => {
-                        window.scrollTo({
-                            top: 0,
-                            behavior: 'smooth'
-                        });
-                    });
-
-                    // Scroll horizontal para tablas en móvil
-                    const tables = document.querySelectorAll('.table-responsive');
-                    tables.forEach(table => {
-                        let isScrolling = false;
-                        let startX, startScrollLeft;
-
-                        table.addEventListener('touchstart', (e) => {
-                            isScrolling = true;
-                            startX = e.touches[0].pageX - table.offsetLeft;
-                            startScrollLeft = table.scrollLeft;
-                        });
-
-                        table.addEventListener('touchmove', (e) => {
-                            if (!isScrolling) return;
-                            e.preventDefault();
-                            const x = e.touches[0].pageX - table.offsetLeft;
-                            const walk = (x - startX) * 2;
-                            table.scrollLeft = startScrollLeft - walk;
-                        });
-
-                        table.addEventListener('touchend', () => {
-                            isScrolling = false;
-                        });
-                    });
-                }
+                
             },
 
             created() {
                 this.buscarSugerenciasDebounced = debounce(this.buscarSugerencias, 300);
             },
             mounted() {
-                // Si hay parametros iniciales, cargar automaticamente el cliente
+                // Si hay parametros iniciales, cargar automáticamente el cliente
                 if (cargarAutomaticamente && initialCoCli && initialCliDes) {
-                    console.log('Cargando cliente automaticamente:', initialCoCli, initialCliDes);
+                    console.log('Cargando cliente automáticamente:', initialCoCli, initialCliDes);
                     this.txtBusqueda = initialCliDes;
 
-                    // Realizar la busqueda inicial
+                    // Realizar la búsqueda inicial
                     this.getBsuqueda();
 
-                    // Esperar a que se complete la busqueda y luego seleccionar el cliente
+                    // Esperar a que se complete la búsqueda y luego seleccionar el cliente
                     setTimeout(() => {
                         this.seleccionarClienteAutomaticamente();
                     }, 1000);
                 }
 
-                // Configurar funcionalidad de scroll para móviles
-                this.setupMobileScroll();
+                
             }
         });
     </script>

@@ -16,17 +16,17 @@
         </div>
     </div>
 
-    <!-- Informacion del Proveedor -->
+    <!-- Información del Proveedor -->
     <div class="card mb-4">
         <div class="card-header bg-primary text-white">
-            <h5 class="mb-0">Informacion del Proveedor</h5>
+            <h5 class="mb-0">Información del Proveedor</h5>
         </div>
         <div class="card-body">
             <div class="row">
                 <div class="col-12 col-md-6">
                     <p><strong>Nombre:</strong> @Model.Proveedor.prov_des</p>
-                    <p><strong>Codigo de Proveedor:</strong> @Model.Proveedor.co_prov</p>
-                    <p><strong>Numero de Factura:</strong> @Model.Documento.nro_fact</p>
+                    <p><strong>Código de Proveedor:</strong> @Model.Proveedor.co_prov</p>
+                    <p><strong>Número de Factura:</strong> @Model.Documento.nro_fact</p>
                 </div>
                 <div class="col-12 col-md-6">
                     <p><strong>Fecha de Emision:</strong> @Model.Documento.fec_emis.ToString("dd/MM/yyyy")</p>
@@ -102,8 +102,8 @@
                     <thead class="table-light">
                         <tr>
                             <th>Renglon</th>
-                            <th>Codigo</th>
-                            <th>Descripcion</th>
+                            <th>Código</th>
+                            <th>Descripción</th>
                             <th class="text-end">Cantidad</th>
                             <!-- Headers for USD -->
                             <th class="text-end bs-currency">Precio Unit. ($)</th>
@@ -162,6 +162,8 @@
 </div>
 
 @section scripts {
+    <script src="~/Content/Imagen/logoConfig.js"></script>
+    <script src="~/Content/Imagen/pdfEncabezado.js?v=20250528"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
     <script>
@@ -185,21 +187,22 @@
             const { jsPDF } = window.jspdf;
             const doc = new jsPDF();
 
+            window.agregarEncabezadoPdf(doc).then(function (startY) {
             // Titulo del documento
             doc.setFontSize(18);
-            doc.text('Detalle de Documento: @Model.Documento.co_tipo_doc-@Model.Documento.nro_doc', 14, 22);
+            doc.text('Detalle de Documento: @Model.Documento.co_tipo_doc-@Model.Documento.nro_doc', 14, startY + 4);
 
-            // Informacion del proveedor
+            // Información del proveedor
             doc.setFontSize(11);
-            doc.text('Proveedor: @Model.Proveedor.prov_des', 14, 32);
-            doc.text('Codigo: @Model.Proveedor.co_prov', 14, 37);
-            doc.text('Fecha Emision: @Model.Documento.fec_emis.ToString("dd/MM/yyyy")', 14, 42);
+            doc.text('Proveedor: @Model.Proveedor.prov_des', 14, startY + 14);
+            doc.text('Codigo: @Model.Proveedor.co_prov', 14, startY + 19);
+            doc.text('Fecha Emisión: @Model.Documento.fec_emis.ToString("dd/MM/yyyy")', 14, startY + 24);
 
             // Tabla de renglones
             const columns = [
                 { header: 'Renglon', dataKey: 'renglon' },
-                { header: 'Codigo', dataKey: 'codigo' },
-                { header: 'Descripcion', dataKey: 'descripcion' },
+                { header: 'Código', dataKey: 'codigo' },
+                { header: 'Descripción', dataKey: 'descripcion' },
                 { header: 'Cantidad', dataKey: 'cantidad' },
                 { header: 'Precio Unit.', dataKey: 'precio' },
                 { header: 'Total', dataKey: 'total' }
@@ -223,13 +226,14 @@
             doc.autoTable({
                 head: [columns.map(col => col.header)],
                 body: rows.map(row => columns.map(col => row[col.dataKey])),
-                startY: 60,
+                startY: startY + 32,
                 styles: { fontSize: 8 },
                 headStyles: { fillColor: [21, 101, 192] }
             });
 
             // Guardar el PDF
             @*doc.save('Detalle_Documento_@(Model.Documento.co_tipo_doc)_@(Model.Documento.nro_doc).pdf');*@
+            });
         }
     </script>
 }
@@ -257,7 +261,7 @@
         font-size: 0.875em;
     }
 
-    /* Responsive para moviles */
+    /* Responsive para móviles */
     @@media (max-width: 768px) {
         .table-responsive {
             font-size: 0.875rem;

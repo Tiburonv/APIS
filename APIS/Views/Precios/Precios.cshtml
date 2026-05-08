@@ -1,10 +1,9 @@
 @{
-    ViewBag.Title = "Buscar Articulos";
+    ViewBag.Title = "Buscar Artículos";
 }
 
 <style>
     body {
-        background: #f4f6fb;
         font-family: 'Segoe UI', 'Montserrat', Arial, Verdana, sans-serif;
     }
 
@@ -462,6 +461,187 @@
             font-family: inherit;
         }
 
+    .categoria-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: #e3f2fd;
+        color: #1565c0;
+        border: 1px solid #90caf9;
+        border-radius: 20px;
+        padding: 6px 12px;
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+
+    .categoria-badge-clear {
+        background: transparent;
+        border: none;
+        color: #1565c0;
+        cursor: pointer;
+        padding: 0 4px;
+        line-height: 1;
+    }
+
+        .categoria-badge-clear:hover {
+            color: #d32f2f;
+        }
+
+    .categoria-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.45);
+        z-index: 10000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+
+    .categoria-modal {
+        background: #fff;
+        border-radius: 10px;
+        box-shadow: 0 8px 32px rgba(21, 101, 192, 0.25);
+        width: 100%;
+        max-width: 520px;
+        max-height: 80vh;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+
+    .categoria-modal-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 20px;
+        border-bottom: 1px solid #e0e0e0;
+        color: #1565c0;
+    }
+
+        .categoria-modal-header h5 {
+            margin: 0;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+    .categoria-modal-close {
+        background: transparent;
+        border: none;
+        color: #666;
+        font-size: 1.2rem;
+        cursor: pointer;
+    }
+
+        .categoria-modal-close:hover {
+            color: #d32f2f;
+        }
+
+    .categoria-modal-search {
+        padding: 16px 20px 0 20px;
+    }
+
+    .categoria-list {
+        list-style: none;
+        margin: 12px 0 0 0;
+        padding: 0 0 12px 0;
+        overflow-y: auto;
+        max-height: 50vh;
+    }
+
+    .categoria-item {
+        padding: 12px 20px;
+        cursor: pointer;
+        border-bottom: 1px solid #f0f0f0;
+        transition: background 0.2s;
+    }
+
+        .categoria-item:hover,
+        .categoria-item-active {
+            background: #e3f2fd;
+        }
+
+        .categoria-item strong {
+            color: #1565c0;
+        }
+
+    .categoria-empty {
+        text-align: center;
+        padding: 24px 20px;
+        color: #666;
+    }
+
+    .pdf-actions {
+        display: flex;
+        justify-content: center;
+        margin-top: 16px;
+    }
+        
+        /* Estilos para el indicador de carga */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .loading-spinner {
+            background: white;
+            padding: 20px 40px;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+        
+        .spinner-border-custom {
+            width: 3rem;
+            height: 3rem;
+            border-width: 0.3em;
+        }
+        
+        .loading-text {
+            margin-top: 10px;
+            font-weight: 600;
+            color: #1565c0;
+        }
+        
+        /* Animación de búsqueda */
+        .search-loading {
+            position: relative;
+            pointer-events: none;
+            opacity: 0.7;
+        }
+        
+        .search-loading::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            right: 15px;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #1565c0;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @@keyframes spin {
+            0% { transform: translateY(-50%) rotate(0deg); }
+            100% { transform: translateY(-50%) rotate(360deg); }
+        }
+
     @@media (max-width: 768px) {
         .search-container {
             margin: 20px 15px;
@@ -507,29 +687,41 @@
 </style>
 
 <div class="container" id="precios-root">
+    <!-- Indicador de carga global -->
+    <div v-if="cargando" class="loading-overlay">
+        <div class="loading-spinner">
+            <div class="spinner-border spinner-border-custom text-primary" role="status">
+                <span class="sr-only">Cargando...</span>
+            </div>
+            <div class="loading-text">[[ textoCargar ]]</div>
+        </div>
+    </div>
+    
     <div class="search-container">
-        <h4><i class="fa fa-search"></i> Buscar Articulos</h4>
-        <div style="position:relative;">
+        <h4><i class="fa fa-search"></i> Buscar Artículos</h4>
+        <form style="position:relative;" v-on:submit.prevent="buscarPorTexto">
             <div class="search-flex">
                 <img src="~/Content/Zulia_log.bmp" alt="Logo" />
                 <div class="search-input-container">
                     <input type="text"
-                           class="search-input"
+                           ref="inputBusqueda"
+                           :class="['search-input', {'search-loading': buscando}]"
                            v-model="busqueda"
                            v-on:focus="limpiarSugerencias"
                            v-on:input="buscarSugerenciasDebounced"
-                           v-on:keyup.enter="buscar"
-                           placeholder="Codigo o descripcion del artculo..."
-                           autocomplete="off" />
-                    <button class="clear-button"
+                           placeholder="Código o descripción del artículo..."
+                           autocomplete="off"
+                           :disabled="buscando || cargando" />
+                    <button type="button"
+                            class="clear-button"
                             v-if="busqueda"
                             v-on:click="limpiarBusqueda"
                             title="Limpiar búsqueda">
                         <i class="fa fa-times"></i>
                     </button>
-                    <button class="search-button"
-                            v-on:click="buscar"
-                            v-bind:disabled="!busqueda.trim() || cargando"
+                    <button type="submit"
+                            class="search-button"
+                            v-bind:disabled="(!busqueda.trim() && !categoriaSeleccionada) || cargando"
                             title="Buscar">
                         <i class="fa fa-search"></i>
                     </button>
@@ -543,11 +735,28 @@
                     <i class="fa fa-cube"></i> [[ s ]]
                 </li>
             </ul>
-        </div>
+        </form>
     </div>
 
     <!-- Filtros de Precios -->
     <div class="filters-container">
+        <div class="filter-actions" style="margin-top: 0; margin-bottom: 15px; justify-content: flex-start;">
+            <button type="button"
+                    class="btn-filter"
+                    v-on:click="abrirModalCategoria"
+                    v-bind:disabled="cargando || buscando">
+                <i class="fa fa-folder-open"></i> Categoría
+            </button>
+            <span v-if="categoriaSeleccionada" class="categoria-badge">
+                [[ categoriaSeleccionada.co_cat ]] - [[ categoriaSeleccionada.cat_des ]]
+                <button type="button"
+                        class="categoria-badge-clear"
+                        v-on:click="limpiarCategoria"
+                        title="Quitar categoría">
+                    <i class="fa fa-times"></i>
+                </button>
+            </span>
+        </div>
         <div class="filters-grid">
             <div class="filter-item">
                 <input type="checkbox" id="precio1" v-model="filtrosPrecios.precio1" />
@@ -577,6 +786,9 @@
         <i class="fa fa-info-circle"></i>
         Mostrando [[ resultadosPaginados.length ]] de [[ resultados.length ]] articulos
         (Pagina [[ paginaActual ]] de [[ totalPaginas ]])
+        <span v-if="categoriaSeleccionada">
+            | Categoría: [[ categoriaSeleccionada.co_cat ]] - [[ categoriaSeleccionada.cat_des ]]
+        </span>
     </div>
 
     <div v-if="resultadosPaginados.length > 0 && hayPreciosSeleccionados" class="mt-4">
@@ -590,7 +802,7 @@
                     <table class="table table-bordered mb-0" style="border-collapse: collapse; width: 100%;">
                         <thead>
                             <tr>
-                                <th class="text-center" style="width: 10%;"><i class="fa fa-id-card"></i> Codigo</th>
+                                <th class="text-center" style="width: 10%;"><i class="fa fa-id-card"></i> Código</th>
                                 <th class="text-center" style="width: 30%;"><i class="fa fa-cube"></i> Nombre</th>
                                 <th class="text-center" style="width: 5%;"><i class="fa fa-percentage"></i> IVA</th>
                                 <th class="text-center precio-header" v-if="filtrosPrecios.precio1" style="width: 8%;">P1</th>
@@ -633,11 +845,14 @@
                 </div>
             </div>
         </div>
-        @*BOTON PDF*@
-
-        @*<button v-if="resultadosPaginados.length > 0" class="btn btn-primary mt-3" v-on:click="imprimirPDF">
-                <i class="fa fa-print"></i> Imprimir PDF
-            </button>*@
+        <div v-if="resultados.length > 0 && hayPreciosSeleccionados" class="pdf-actions">
+            <button type="button"
+                    class="btn-filter"
+                    v-on:click="imprimirPDF"
+                    v-bind:disabled="cargando">
+                <i class="fa fa-file-pdf"></i> Imprimir PDF
+            </button>
+        </div>
     </div>
 
     <nav v-if="totalPaginas > 1 && hayPreciosSeleccionados">
@@ -658,10 +873,10 @@
         </ul>
     </nav>
 
-    <div v-else-if="busqueda && !cargando && resultados.length === 0" class="no-results">
+    <div v-else-if="(busqueda || categoriaSeleccionada) && !cargando && resultados.length === 0" class="no-results">
         <i class="fa fa-search"></i>
-        <h5>No se encontraron articulos</h5>
-        <p>Intenta con otros términos de búsqueda o verifica la ortografia.</p>
+        <h5>No se encontraron artículos</h5>
+        <p>Intenta con otros términos de búsqueda, otra categoría o verifica la ortografia.</p>
     </div>
 
     <div v-else-if="resultados.length > 0 && !hayPreciosSeleccionados" class="alert alert-warning mt-3">
@@ -670,13 +885,49 @@
     </div>
 
     <div v-if="cargando" class="loading-spinner">
-        <i class="fa fa-spinner fa-spin"></i> Buscando articulos...
+        <i class="fa fa-spinner fa-spin"></i> Buscando artículos...
+    </div>
+
+    <!-- Modal de categorías -->
+    <div v-if="mostrarModalCategoria" class="categoria-overlay" v-on:click.self="cerrarModalCategoria">
+        <div class="categoria-modal">
+            <div class="categoria-modal-header">
+                <h5><i class="fa fa-folder-open"></i> Seleccionar categoría</h5>
+                <button type="button" class="categoria-modal-close" v-on:click="cerrarModalCategoria">
+                    <i class="fa fa-times"></i>
+                </button>
+            </div>
+            <div class="categoria-modal-search">
+                <input type="text"
+                       class="search-input"
+                       v-model="filtroCategoriaTexto"
+                       placeholder="Buscar por código o descripción..."
+                       autocomplete="off" />
+            </div>
+            <ul v-if="categoriasFiltradas.length > 0" class="categoria-list">
+                <li v-for="cat in categoriasFiltradas"
+                    :key="cat.co_cat"
+                    class="categoria-item"
+                    :class="{ 'categoria-item-active': categoriaSeleccionada && categoriaSeleccionada.co_cat === cat.co_cat }"
+                    v-on:click="seleccionarCategoria(cat)">
+                    <strong>[[ cat.co_cat ]]</strong> - [[ cat.cat_des ]]
+                </li>
+            </ul>
+            <div v-else-if="!cargandoCategorias" class="categoria-empty">
+                No hay categorías que coincidan con la búsqueda.
+            </div>
+            <div v-else class="categoria-empty">
+                <i class="fa fa-spinner fa-spin"></i> Cargando categorías...
+            </div>
+        </div>
     </div>
 </div>
 
 @section scripts{
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat:700&display=swap" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+    <script src="~/Content/Imagen/logoConfig.js?v=20250108"></script>
+    <script src="~/Content/Imagen/pdfEncabezado.js?v=20250528"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.9.0/axios.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -698,18 +949,38 @@
                 sugerencias: [],
                 resultados: [],
                 cargando: false,
+                buscando: false,
+                textoCargar: 'Cargando...',
                 todosResultados: [],
                 paginaActual: 1,
-                resultadosPorPagina: 10,
                 filtrosPrecios: {
                     precio1: true,
                     precio2: true,
                     precio3: true,
                     precio4: true,
                     precio5: true
-                }
+                },
+                categorias: [],
+                categoriaSeleccionada: null,
+                mostrarModalCategoria: false,
+                filtroCategoriaTexto: '',
+                cargandoCategorias: false
             },
             computed: {
+                categoriasFiltradas() {
+                    const texto = this.filtroCategoriaTexto.trim().toLowerCase();
+                    if (!texto) {
+                        return this.categorias;
+                    }
+                    return this.categorias.filter(cat => {
+                        const codigo = (cat.co_cat || '').toLowerCase();
+                        const descripcion = (cat.cat_des || '').toLowerCase();
+                        return codigo.includes(texto) || descripcion.includes(texto);
+                    });
+                },
+                resultadosPorPagina() {
+                    return this.categoriaSeleccionada ? 50 : 10;
+                },
                 resultadosPaginados() {
                     const inicio = (this.paginaActual - 1) * this.resultadosPorPagina;
                     return this.resultados.slice(inicio, inicio + this.resultadosPorPagina);
@@ -739,14 +1010,23 @@
                 }
             },
             methods: {
-                buscar() {
-                    if (!this.busqueda.trim()) {
-                        this.limpiarResultados();
+                buscarPorTexto() {
+                    const inputEl = this.$refs.inputBusqueda;
+                    const texto = (inputEl ? inputEl.value : this.busqueda || '').trim();
+                    this.busqueda = texto;
+
+                    if (!texto) {
+                        this.ejecutarBusqueda();
                         return;
                     }
-                    this.limpiarResultados();
+
+                    this.$set(this, 'categoriaSeleccionada', null);
+                    this.sugerencias = [];
+                    this.buscando = true;
                     this.cargando = true;
-                    axios.get('/Precios/Buscar', { params: { busqueda: this.busqueda } })
+                    this.textoCargar = 'Buscando artículos...';
+
+                    axios.get('/Precios/Buscar', { params: { busqueda: texto, _: Date.now() } })
                         .then(res => {
                             this.resultados = res.data;
                             this.todosResultados = res.data;
@@ -755,17 +1035,104 @@
                         .catch((error) => {
                             console.error('Error en la búsqueda:', error);
                             this.resultados = [];
+                            this.todosResultados = [];
                             this.paginaActual = 1;
                         })
                         .finally(() => {
                             this.cargando = false;
+                            this.buscando = false;
                         });
+                },
+                buscar() {
+                    this.buscarPorTexto();
+                },
+                ejecutarBusqueda() {
+                    const texto = this.busqueda.trim();
+                    const coCat = this.categoriaSeleccionada
+                        ? (this.categoriaSeleccionada.co_cat || '').trim()
+                        : null;
+
+                    if (!texto && !coCat) {
+                        this.limpiarResultados();
+                        return;
+                    }
+
+                    this.sugerencias = [];
+                    this.buscando = true;
+                    this.cargando = true;
+                    this.textoCargar = 'Buscando artículos...';
+
+                    const params = { _: Date.now() };
+                    if (texto) {
+                        params.busqueda = texto;
+                    } else if (coCat) {
+                        params.co_cat = coCat;
+                    }
+
+                    axios.get('/Precios/Buscar', { params: params })
+                        .then(res => {
+                            this.resultados = res.data;
+                            this.todosResultados = res.data;
+                            this.paginaActual = 1;
+                        })
+                        .catch((error) => {
+                            console.error('Error en la búsqueda:', error);
+                            this.resultados = [];
+                            this.todosResultados = [];
+                            this.paginaActual = 1;
+                        })
+                        .finally(() => {
+                            this.cargando = false;
+                            this.buscando = false;
+                        });
+                },
+                abrirModalCategoria() {
+                    this.mostrarModalCategoria = true;
+                    this.filtroCategoriaTexto = '';
+                    if (this.categorias.length === 0) {
+                        this.cargarCategorias();
+                    }
+                },
+                cerrarModalCategoria() {
+                    this.mostrarModalCategoria = false;
+                    this.filtroCategoriaTexto = '';
+                },
+                cargarCategorias() {
+                    this.cargandoCategorias = true;
+                    axios.get('/Precios/ListarCategorias')
+                        .then(res => {
+                            this.categorias = res.data || [];
+                        })
+                        .catch((error) => {
+                            console.error('Error al cargar categorías:', error);
+                            this.categorias = [];
+                        })
+                        .finally(() => {
+                            this.cargandoCategorias = false;
+                        });
+                },
+                seleccionarCategoria(cat) {
+                    this.$set(this, 'categoriaSeleccionada', cat);
+                    this.busqueda = '';
+                    this.sugerencias = [];
+                    this.cerrarModalCategoria();
+                    this.ejecutarBusqueda();
+                },
+                limpiarCategoria() {
+                    this.$set(this, 'categoriaSeleccionada', null);
+                    if (this.busqueda.trim()) {
+                        this.ejecutarBusqueda();
+                    } else {
+                        this.limpiarResultados();
+                    }
                 },
                 limpiarResultados() {
                     this.resultados = [];
                     this.todosResultados = [];
                     this.paginaActual = 1;
                     this.sugerencias = [];
+                    this.buscando = false;
+                    this.cargando = false;
                 },
                 buscarSugerencias() {
                     if (this.busqueda.length < 2) {
@@ -787,7 +1154,7 @@
                 seleccionarSugerencia(s) {
                     this.busqueda = s;
                     this.sugerencias = [];
-                    this.buscar();
+                    this.buscarPorTexto();
                 },
                 limpiarSugerencias() {
                     this.sugerencias = [];
@@ -795,19 +1162,29 @@
                 limpiarBusqueda() {
                     this.busqueda = '';
                     this.sugerencias = [];
-                    this.resultados = [];
-                    this.todosResultados = [];
-                    this.paginaActual = 1;
+                    if (this.categoriaSeleccionada) {
+                        this.ejecutarBusqueda();
+                    } else {
+                        this.limpiarResultados();
+                    }
                 },
                 cambiarPagina(pagina) {
                     if (pagina > 0 && pagina <= this.totalPaginas) {
-                        this.paginaActual = pagina;
-                        this.$nextTick(() => {
-                            const table = document.querySelector('.table-responsive');
-                            if (table) {
-                                table.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                            }
-                        });
+                        this.cargando = true;
+                        this.textoCargar = 'Cambiando página...';
+                        
+                        setTimeout(() => {
+                            this.paginaActual = pagina;
+                            this.cargando = false;
+                            
+                            // Scroll hacia la tabla después del cambio
+                            this.$nextTick(() => {
+                                const table = document.querySelector('.table-responsive');
+                                if (table) {
+                                    table.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                }
+                            });
+                        }, 300);
                     }
                 },
                 formatNumero(valor) {
@@ -847,83 +1224,149 @@
                 },
                 seleccionarArticulo(item) {
                     this.busqueda = item.co_art;
-                    console.log('Articulo seleccionado:', item);
+                    console.log('Artículo seleccionado:', item);
                 },
-                imprimirPDF() {
+                async imprimirPDF() {
+                    if (!this.resultados.length || !this.hayPreciosSeleccionados) {
+                        return;
+                    }
+
                     const { jsPDF } = window.jspdf;
-                    const doc = new jsPDF();
-                    doc.setFontSize(18);
-                    doc.text('Reporte de Precios de Articulos', 14, 22);
-                    doc.setFontSize(12);
-                    doc.text(`Búsqueda: ${this.busqueda}`, 14, 32);
-                    doc.text(`Fecha: ${new Date().toLocaleDateString()}`, 14, 40);
-                    doc.text(`Total de articulos: ${this.resultados.length}`, 14, 48);
-                    const headers = ['Codigo', 'Nombre', 'IVA'];
+                    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'letter' });
+                    const tieneIVA = this.resultados.some(item => item.tipo_imp === '1');
+                    const marginLeft = 10;
+                    const marginRight = 10;
+                    const pageWidth = doc.internal.pageSize.getWidth();
+                    const tableWidth = pageWidth - marginLeft - marginRight;
+
+                    const encabezadoY = await window.agregarEncabezadoPdf(doc, { marginLeft: marginLeft });
+
+                    doc.setFontSize(14);
+                    doc.text('Reporte de Precios de Artículos', marginLeft, encabezadoY + 6);
+                    doc.setFontSize(10);
+
+                    let y = encabezadoY + 14;
+                    if (this.busqueda.trim()) {
+                        doc.text(`Búsqueda: ${this.busqueda.trim()}`, marginLeft, y);
+                        y += 6;
+                    }
+                    if (this.categoriaSeleccionada) {
+                        doc.text(
+                            `Categoría: ${this.categoriaSeleccionada.co_cat} - ${this.categoriaSeleccionada.cat_des}`,
+                            marginLeft,
+                            y
+                        );
+                        y += 6;
+                    }
+                    doc.text(`Fecha: ${new Date().toLocaleDateString()}`, marginLeft, y);
+                    y += 6;
+                    doc.text(`Total de artículos: ${this.resultados.length}`, marginLeft, y);
+
+                    const headers = ['Código', 'Nombre', 'IVA'];
                     if (this.filtrosPrecios.precio1) {
                         headers.push('P1');
-                        if (this.tieneIVA16) headers.push('+IVA');
+                        if (tieneIVA) headers.push('+IVA');
                     }
                     if (this.filtrosPrecios.precio2) {
                         headers.push('P2');
-                        if (this.tieneIVA16) headers.push('+IVA');
+                        if (tieneIVA) headers.push('+IVA');
                     }
                     if (this.filtrosPrecios.precio3) {
                         headers.push('P3');
-                        if (this.tieneIVA16) headers.push('+IVA');
+                        if (tieneIVA) headers.push('+IVA');
                     }
                     if (this.filtrosPrecios.precio4) {
                         headers.push('P4');
-                        if (this.tieneIVA16) headers.push('+IVA');
+                        if (tieneIVA) headers.push('+IVA');
                     }
                     if (this.filtrosPrecios.precio5) {
                         headers.push('P5');
-                        if (this.tieneIVA16) headers.push('+IVA');
+                        if (tieneIVA) headers.push('+IVA');
                     }
+
+                    const priceColCount = headers.length - 3;
+                    const wCodigo = 14;
+                    const wIva = 10;
+                    const wPrecio = Math.max(12, Math.floor((tableWidth - wCodigo - wIva - 50) / Math.max(priceColCount, 1)));
+                    const wNombre = tableWidth - wCodigo - wIva - (priceColCount * wPrecio);
+
+                    const columnStyles = {
+                        0: { cellWidth: wCodigo, halign: 'center', valign: 'middle' },
+                        1: { cellWidth: wNombre, halign: 'left', valign: 'middle', overflow: 'linebreak' },
+                        2: { cellWidth: wIva, halign: 'center', valign: 'middle' }
+                    };
+                    for (let i = 3; i < headers.length; i++) {
+                        columnStyles[i] = { cellWidth: wPrecio, halign: 'right', valign: 'middle' };
+                    }
+
                     const data = this.resultados.map(item => {
                         const row = [
-                            item.co_art,
-                            item.art_des,
-                            item.iva
+                            item.co_art || '',
+                            item.art_des || '',
+                            item.iva || ''
                         ];
                         if (this.filtrosPrecios.precio1) {
                             row.push(this.formatNumero(item.precio1));
-                            if (this.tieneIVA16) row.push(this.mostrarPrecioConIVA(item.precio1, item.tipo_imp));
+                            if (tieneIVA) row.push(this.mostrarPrecioConIVA(item.precio1, item.tipo_imp));
                         }
                         if (this.filtrosPrecios.precio2) {
                             row.push(this.formatNumero(item.precio2));
-                            if (this.tieneIVA16) row.push(this.mostrarPrecioConIVA(item.precio2, item.tipo_imp));
+                            if (tieneIVA) row.push(this.mostrarPrecioConIVA(item.precio2, item.tipo_imp));
                         }
                         if (this.filtrosPrecios.precio3) {
                             row.push(this.formatNumero(item.precio3));
-                            if (this.tieneIVA16) row.push(this.mostrarPrecioConIVA(item.precio3, item.tipo_imp));
+                            if (tieneIVA) row.push(this.mostrarPrecioConIVA(item.precio3, item.tipo_imp));
                         }
                         if (this.filtrosPrecios.precio4) {
                             row.push(this.formatNumero(item.precio4));
-                            if (this.tieneIVA16) row.push(this.mostrarPrecioConIVA(item.precio4, item.tipo_imp));
+                            if (tieneIVA) row.push(this.mostrarPrecioConIVA(item.precio4, item.tipo_imp));
                         }
                         if (this.filtrosPrecios.precio5) {
                             row.push(this.formatNumero(item.precio5));
-                            if (this.tieneIVA16) row.push(this.mostrarPrecioConIVA(item.precio5, item.tipo_imp));
+                            if (tieneIVA) row.push(this.mostrarPrecioConIVA(item.precio5, item.tipo_imp));
                         }
                         return row;
                     });
+
                     doc.autoTable({
                         head: [headers],
                         body: data,
-                        startY: 60,
+                        startY: y + 4,
+                        tableWidth: tableWidth,
+                        margin: { left: marginLeft, right: marginRight },
+                        theme: 'grid',
                         styles: {
-                            fontSize: 8,
-                            cellPadding: 2
+                            fontSize: 7,
+                            cellPadding: 1.2,
+                            overflow: 'linebreak',
+                            lineWidth: 0.1,
+                            lineColor: [200, 200, 200]
                         },
                         headStyles: {
                             fillColor: [21, 101, 192],
-                            textColor: 255
+                            textColor: 255,
+                            halign: 'center',
+                            fontSize: 7,
+                            valign: 'middle'
                         },
+                        bodyStyles: {
+                            valign: 'middle'
+                        },
+                        columnStyles: columnStyles,
                         alternateRowStyles: {
                             fillColor: [248, 249, 250]
                         }
                     });
-                    doc.save(`precios_articulos_${this.busqueda}_${new Date().toISOString().split('T')[0]}.pdf`);
+
+                    let nombreArchivo = 'precios_articulos';
+                    if (this.busqueda.trim()) {
+                        nombreArchivo += `_${this.busqueda.trim().replace(/[^a-zA-Z0-9_-]/g, '_')}`;
+                    }
+                    if (this.categoriaSeleccionada) {
+                        nombreArchivo += `_cat_${this.categoriaSeleccionada.co_cat.trim().replace(/[^a-zA-Z0-9_-]/g, '_')}`;
+                    }
+                    nombreArchivo += `_${new Date().toISOString().split('T')[0]}.pdf`;
+                    doc.save(nombreArchivo);
                 }
             },
             created() {

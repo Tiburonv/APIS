@@ -1,0 +1,151 @@
+@{
+    ViewBag.Title = "Configuración de Empresa";
+}
+
+<div class="container mt-4">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-2">
+        <h2 class="mb-0"><i class="fas fa-building text-primary me-2"></i> Configuración de Empresa (PDF)</h2>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-header">
+            <i class="fas fa-heading me-1"></i> Encabezado de Reportes y Documentos
+        </div>
+        <div class="card-body p-4">
+            <form id="formConfigEmpresa" enctype="multipart/form-data">
+                @Html.AntiForgeryToken()
+                
+                <div class="row g-4">
+                    <div class="col-md-4 text-center">
+                        <label class="form-label fw-bold mb-2">Logo de la Empresa</label>
+                        <div class="border rounded-3 p-3 mb-3 bg-light d-flex align-items-center justify-content-center" style="min-height: 140px;">
+                            <img id="previewLogo" src="" alt="Logo" class="img-fluid d-none" style="max-height: 120px; object-fit: contain;" />
+                            <div id="sinLogo" class="text-muted small">
+                                <i class="fas fa-image fa-2x mb-2 d-block text-secondary"></i>
+                                Sin logo cargado
+                            </div>
+                        </div>
+                        <input type="file" class="form-control" id="logo" name="logo" accept="image/png,image/jpeg" />
+                        <small class="text-muted mt-1 d-block">PNG o JPG. Dejar vacío para conservar el actual.</small>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="mb-3">
+                            <label for="rif" class="form-label fw-bold">RIF / Identificación Fiscal</label>
+                            <input type="text" class="form-control" id="rif" name="rif" maxlength="20" placeholder="Ej: J-12345678-9" required />
+                        </div>
+                        <div class="mb-3">
+                            <label for="direccion" class="form-label fw-bold">Dirección Fiscal</label>
+                            <textarea class="form-control" id="direccion" name="direccion" rows="3" maxlength="250" placeholder="Dirección completa..." required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="telefono" class="form-label fw-bold">Teléfono de Contacto</label>
+                            <input type="text" class="form-control" id="telefono" name="telefono" maxlength="50" placeholder="Ej: +58 261 1234567" required />
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-4 pt-3 border-top d-flex justify-content-end">
+                    <button type="submit" class="btn btn-primary px-4" id="btnGuardar">
+                        <i class="fas fa-save me-1"></i> Guardar Cambios
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        (function () {
+            var preview = document.getElementById('previewLogo');
+            var sinLogo = document.getElementById('sinLogo');
+            var inputLogo = document.getElementById('logo');
+            var token = document.querySelector('input[name="__RequestVerificationToken"]')?.value || '';
+
+            function mostrarLogo(base64) {
+                if (base64) {
+                    preview.src = base64;
+                    preview.classList.remove('d-none');
+                    sinLogo.classList.add('d-none');
+                } else {
+                    preview.classList.add('d-none');
+                    preview.removeAttribute('src');
+                    sinLogo.classList.remove('d-none');
+                }
+            }
+
+            fetch('@Url.Action("Obtener", "ConfigEmpresa")')
+                .then(function (r) { return r.json(); })
+                .then(function (data) {
+                    document.getElementById('rif').value = data.rif || '';
+                    document.getElementById('direccion').value = data.direccion || '';
+                    document.getElementById('telefono').value = data.telefono || '';
+                    mostrarLogo(data.logoBase64);
+                })
+                .catch(function () {
+                    if (window.mostrarNotificacion) {
+                        window.mostrarNotificacion('warning', 'No se pudo cargar la configuración actual de empresa.');
+                    }
+                });
+
+            inputLogo.addEventListener('change', function () {
+                var file = inputLogo.files[0];
+                if (!file) return;
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    mostrarLogo(e.target.result);
+                };
+                reader.readAsDataURL(file);
+            });
+
+            document.getElementById('formConfigEmpresa').addEventListener('submit', function (e) {
+                e.preventDefault();
+                var btn = document.getElementById('btnGuardar');
+                btn.disabled = true;
+
+                var formData = new FormData();
+                formData.append('__RequestVerificationToken', token);
+                formData.append('rif', document.getElementById('rif').value.trim());
+                formData.append('direccion', document.getElementById('direccion').value.trim());
+                formData.append('telefono', document.getElementById('telefono').value.trim());
+                if (inputLogo.files[0]) {
+                    formData.append('logo', inputLogo.files[0]);
+                }
+
+                fetch('@Url.Action("Guardar", "ConfigEmpresa")', {
+                    method: 'POST',
+                    body: formData
+                })
+                    .then(function (r) {
+                        return r.json().then(function (data) {
+                            if (!r.ok && !data.mensaje) {
+                                throw new Error('Error del servidor (' + r.status + ')');
+                            }
+                            return data;
+                        });
+                    })
+                    .then(function (res) {
+                        if (res.ok) {
+                            if (window.mostrarNotificacion) {
+                                window.mostrarNotificacion('success', res.mensaje || 'Configuración guardada.');
+                            }
+                            if (window.limpiarCacheConfigEmpresa) {
+                                window.limpiarCacheConfigEmpresa();
+                            }
+                        } else {
+                            if (window.mostrarNotificacion) {
+                                window.mostrarNotificacion('error', res.mensaje || 'Error al guardar.');
+                            }
+                        }
+                    })
+                    .catch(function (err) {
+                        if (window.mostrarNotificacion) {
+                            window.mostrarNotificacion('error', err.message || 'Error de comunicación.');
+                        }
+                    })
+                    .finally(function () {
+                        btn.disabled = false;
+                    });
+            });
+        })();
+    </script>
+}

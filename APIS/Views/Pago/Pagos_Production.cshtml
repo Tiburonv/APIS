@@ -1,0 +1,48 @@
+// Versión de producción sin logs - Reemplazar las funciones en Pagos.cshtml
+
+// Función formatNumero para producción (sin logs)
+formatNumero(valor) {
+    if (valor == null || valor === '') return '0.00';
+    
+    // Convertir a número
+    let num;
+    if (typeof valor === 'string') {
+        // Limpiar la cadena de caracteres no numéricos excepto punto y coma
+        const cleaned = valor.toString().replace(/[^\d.,-]/g, '');
+        num = parseFloat(cleaned.replace(',', '.'));
+    } else {
+        num = Number(valor);
+    }
+    
+    if (isNaN(num)) {
+        return '0.00';
+    }
+    
+    // Formatear con separadores de miles y 2 decimales
+    try {
+        return num.toLocaleString('en-US', { 
+            minimumFractionDigits: 2, 
+            maximumFractionDigits: 2 
+        });
+    } catch (e) {
+        // Fallback si toLocaleString no está disponible
+        return num.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    }
+},
+
+// Función sumaTotalPagos para producción (sin logs)
+sumaTotalPagos() {
+    if (!this.resultadosFiltrados || this.resultadosFiltrados.length === 0) return 0;
+    return this.resultadosFiltrados.reduce((acc, item) => {
+        // Manejar diferentes tipos de valores
+        let val = 0;
+        if (item.Total !== null && item.Total !== undefined) {
+            if (typeof item.Total === 'string') {
+                val = parseFloat(item.Total.replace(/[^\d.,-]/g, '').replace(',', '.')) || 0;
+            } else {
+                val = Number(item.Total) || 0;
+            }
+        }
+        return acc + val;
+    }, 0);
+},

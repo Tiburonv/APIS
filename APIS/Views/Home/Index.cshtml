@@ -3,274 +3,129 @@
     var co_cli = ViewBag.co_cli as string;
     var cli_des = ViewBag.cli_des as string;
 }
-@*<h2>Clientes</h2>
-    <p>Bienvenido a la página de clientes.</p>*@
 
-<style>
-    /* En Index.cshtml (Clientes) */
-    body {
-        background: #f4f6fb;
-    }
-
-    h4 {
-        color: #1565c0;
-    }
-
-    .search-container {
-        margin: 32px auto 24px auto;
-        max-width: 520px;
-        background: #fff;
-        border-radius: 10px;
-        box-shadow: 0 2px 16px rgba(21,101,192,0.10);
-        padding: 28px 36px 20px 36px;
-    }
-
-    .search-flex {
-        display: flex;
-        align-items: center;
-    }
-
-        .search-flex img {
-            height: 38px;
-            margin-right: 14px;
-            border-radius: 6px;
-        }
-
-    .cabecera-azul-claro {
-        background-color: #1565c0 !important;
-        color: #fff;
-        border-radius: 6px 6px 0 0;
-        font-size: 1.1rem;
-        letter-spacing: 0.5px;
-    }
-
-    .row-seleccionada, .table-active {
-        background-color: #ffe082 !important;
-        font-weight: bold;
-    }
-
-    .table-hover tbody tr:hover {
-        background-color: #e3f2fd !important;
-        transition: background 0.2s;
-    }
-
-    .table-striped tbody tr:nth-of-type(odd) {
-        background-color: #f9f9f9;
-    }
-
-    .truncate {
-        max-width: 120px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
-    .highlight {
-        background-color: #ffff66;
-        padding: 0 2px;
-        border-radius: 2px;
-    }
-
-    .autocomplete-list {
-        position: absolute;
-        z-index: 1000;
-        width: 100%;
-        max-height: 200px;
-        overflow-y: auto;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-        border-radius: 0 0 6px 6px;
-    }
-
-    .autocomplete-item {
-        cursor: pointer;
-        transition: background 0.2s;
-    }
-
-        .autocomplete-item:hover {
-            background: #e3f2fd;
-        }
-
-    .table-responsive {
-        margin-top: 24px;
-        border-radius: 8px;
-        box-shadow: 0 2px 12px rgba(21,101,192,0.08);
-        background: #fff;
-        padding: 16px;
-    }
-
-    .pagination {
-        margin-top: 20px;
-    }
-
-    .alert-info {
-        margin-top: 24px;
-        border-radius: 6px;
-    }
-
-    h4, h5 {
-        color: #1565c0;
-        font-weight: 600;
-        margin-bottom: 18px;
-    }
-
-    /* Mejoras para el card de resultados seleccionados */
-    .card.border-primary {
-        border: 1.5px solid #1565c0 !important;
-    }
-
-    .card-header.bg-primary {
-        background: #1565c0 !important;
-        color: #fff !important;
-        font-weight: 600;
-        font-size: 1.15rem;
-        letter-spacing: 0.5px;
-        border-radius: 8px 8px 0 0;
-    }
-
-    .card {
-        border-radius: 8px;
-        box-shadow: 0 2px 12px rgba(21,101,192,0.10);
-    }
-
-    .table tfoot tr {
-        background: #e3f2fd !important;
-    }
-
-    /* Estilos para los enlaces de navegación */
-    .btn-group .btn {
-        margin: 0 2px;
-    }
-
-    .btn-outline-primary:hover {
-        background-color: #1565c0;
-        border-color: #1565c0;
-        color: white;
-    }
-
-    .btn-outline-info:hover {
-        background-color: #17a2b8;
-        border-color: #17a2b8;
-        color: white;
-    }
-
-    /* Mejoras para móviles */
-    @@media (max-width: 768px) {
-        .btn-group {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-        }
-
-            .btn-group .btn {
-                margin: 0;
-                font-size: 0.75rem;
-                padding: 0.25rem 0.5rem;
-            }
-
-        .card-header .btn {
-            font-size: 0.875rem;
-            padding: 0.375rem 0.75rem;
-        }
-
-        .d-flex.justify-content-between {
-            flex-direction: column;
-            gap: 5px;
-        }
-    }
-
-    /* Estilos para los enlaces en la tabla principal */
-    .table td .btn-sm {
-        font-size: 0.75rem;
-        padding: 0.25rem 0.5rem;
-    }
-
-    .table td .d-flex {
-        min-height: 30px;
-    }
-</style>
-
+<link href="~/Content/home-index.css?v=20260714" rel="stylesheet" />
 <script>
+    document.body.classList.add('home-index-page');
     var initialCoCli = '@(co_cli ?? "")';
     var initialCliDes = '@(cli_des ?? "")';
     var cargarAutomaticamente = @(ViewBag.CargarAutomaticamente == true ? "true" : "false");
 </script>
 
-<div class="container" id="root">
-    <div class="search-container">
-        <h4><i class="fa fa-search"></i> Buscar Clientes</h4>
-        <div style="position:relative;">
-            <div class="search-flex">
-                <img src="~/Content/Zulia_log.bmp" alt="Logo" />
-                <input type="text"
-                       class="form-control"
-                       v-model="txtBusqueda"
-                       v-on:focus="limpiarBusqueda"
-                       v-on:input="buscarSugerenciasDebounced"
-                       v-on:keyup.enter="getBsuqueda()"
-                       placeholder="Buscar Cliente..."
-                       autocomplete="off" />
+<div class="container home-index" id="root" v-cloak>
+    <div v-if="cargando" class="loading-overlay" aria-busy="true">
+        <div class="loading-spinner" v-bind:class="{'has-progress': mostrarProgreso}">
+            <div class="spinner-border spinner-border-custom text-primary" role="status" v-if="!mostrarProgreso || progresoCarga < 100">
+                <span class="visually-hidden">Cargando...</span>
             </div>
-            <ul v-if="sugerencias.length > 0" class="list-group autocomplete-list">
+            <div class="loading-text">[[ textoCargar ]]</div>
+            <div v-if="mostrarProgreso" class="loading-progress-wrap">
+                <div class="progress" style="height: 22px;">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated bg-primary"
+                         role="progressbar"
+                         v-bind:style="{ width: progresoCarga + '%' }"
+                         v-bind:aria-valuenow="progresoCarga"
+                         aria-valuemin="0"
+                         aria-valuemax="100">
+                    </div>
+                </div>
+                <div class="loading-progress-pct">[[ progresoCarga ]]%</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="search-container">
+        <h4><i class="fa fa-search" aria-hidden="true"></i> Buscar Clientes</h4>
+        <div class="search-meta" role="status" aria-live="polite">
+            <span v-if="totalClientesEncontrados > 0"><strong>[[ totalClientesEncontrados ]]</strong> clientes encontrados</span>
+            <span v-else>Busca por código o nombre del cliente.</span>
+        </div>
+        <div class="search-box-wrap">
+            <div class="search-flex">
+                <input type="text"
+                       :class="['form-control', {'search-loading': buscando}]"
+                       v-model="txtBusqueda"
+                       v-on:focus="onFocusBusqueda"
+                       v-on:input="buscarSugerenciasDebounced"
+                       v-on:keydown.down.prevent="moverSugerencia(1)"
+                       v-on:keydown.up.prevent="moverSugerencia(-1)"
+                       v-on:keydown.enter.prevent="confirmarSugerenciaOBuscar"
+                       v-on:keydown.esc="sugerencias = []; sugerenciaIndex = -1"
+                       placeholder="Código o nombre del cliente..."
+                       autocomplete="off"
+                       aria-autocomplete="list"
+                       aria-controls="lista-sugerencias"
+                       v-bind:aria-expanded="sugerencias.length > 0 ? 'true' : 'false'"
+                       v-bind:disabled="buscando || cargando" />
+                <button type="button"
+                        class="btn todos-clientes-btn"
+                        v-on:click="cargarTodosClientes"
+                        v-bind:disabled="cargando || buscando"
+                        v-bind:class="{'btn-loading': cargando || buscando}">
+                    <i class="fa fa-list me-1" v-if="!cargando && !buscando" aria-hidden="true"></i>
+                    <i class="fa fa-spinner fa-spin me-1" v-if="cargando || buscando" aria-hidden="true"></i>
+                    <span v-if="!cargando && !buscando">Todos</span>
+                    <span v-else>...</span>
+                </button>
+            </div>
+            <ul id="lista-sugerencias"
+                v-if="sugerencias.length > 0"
+                class="list-group autocomplete-list"
+                role="listbox">
                 <li class="list-group-item autocomplete-item"
                     v-for="(s, i) in sugerencias"
                     :key="i"
-                    v-on:click="seleccionarSugerencia(s)">
-                    <i class="fa fa-user"></i> [[ s ]]
+                    role="option"
+                    :class="{'is-active': i === sugerenciaIndex}"
+                    v-on:click="seleccionarSugerencia(s)"
+                    v-on:mouseenter="sugerenciaIndex = i">
+                    <i class="fa fa-user" aria-hidden="true"></i> [[ s ]]
                 </li>
             </ul>
         </div>
     </div>
 
-    <div class="table-responsive" v-if="resultadosPaginados.length > 0">
-        <table class="table table-bordered mt-3">
+    <div class="clientes-table-wrap table-responsive" v-if="resultadosPaginados.length > 0">
+        <table class="table table-bordered table-hover mb-0">
             <thead>
                 <tr>
-                    <th class="cabecera-azul-claro" v-on:click="ordenarPor('co_cli')" style="cursor:pointer;">
-                        <i class="fa fa-id-card"></i> Código Cliente
-                        <span v-if="columnaOrden==='co_cli'">
-                            <span v-if="ordenAscendente">&#9650;</span>
-                            <span v-else>&#9660;</span>
-                        </span>
+                    <th class="cabecera-azul-claro is-sortable" v-on:click="ordenarPor('co_cli')">
+                        <i class="fa fa-id-card" aria-hidden="true"></i> Código
+                        <span class="sort-indicator" v-if="columnaOrden==='co_cli'">[[ ordenAscendente ? '▲' : '▼' ]]</span>
                     </th>
-                    <th class="cabecera-azul-claro" v-on:click="ordenarPor('cli_des')" style="cursor:pointer;">
-                        <i class="fa fa-user"></i> Nombre Cliente
-                        <span v-if="columnaOrden==='cli_des'">
-                            <span v-if="ordenAscendente">&#9650;</span>
-                            <span v-else>&#9660;</span>
-                        </span>
+                    <th class="cabecera-azul-claro is-sortable" v-on:click="ordenarPor('cli_des')">
+                        <i class="fa fa-user" aria-hidden="true"></i> Nombre
+                        <span class="sort-indicator" v-if="columnaOrden==='cli_des'">[[ ordenAscendente ? '▲' : '▼' ]]</span>
                     </th>
+                    <th class="cabecera-azul-claro text-center">FACT/PED</th>
                 </tr>
             </thead>
             <tbody>
                 <tr v-for="(item, index) in resultadosPaginados"
                     :key="item.co_cli + '-' + index"
                     :class="{
-                        'table-active': clienteSeleccionado
-                            && clienteSeleccionado.co_cli === item.co_cli
-                            && clienteSeleccionado.cli_des === item.cli_des,
-                        'row-seleccionada': clienteSeleccionado
-                            && clienteSeleccionado.co_cli === item.co_cli
-                            && clienteSeleccionado.cli_des === item.cli_des
-                    }"
-                    style="cursor:pointer;">
+                        'table-active': esClienteActivo(item),
+                        'row-seleccionada': esClienteActivo(item),
+                        'row-clickable': true
+                    }">
                     <td v-on:click="seleccionarCliente(item)" v-html="highlight(item.co_cli)"></td>
-                    <td>
-                        <div class="d-flex justify-content-between align-items-center">
-                            <span v-on:click="seleccionarCliente(item)" v-html="highlight(item.cli_des)" style="cursor:pointer;"></span>
-                        </div>
+                    <td v-on:click="seleccionarCliente(item)" v-html="highlight(item.cli_des)"></td>
+                    <td class="text-center">
+                        <span class="fact-ped-badge">[[ contarFactPed(item) ]]</span>
                     </td>
                 </tr>
             </tbody>
         </table>
     </div>
 
-    <nav v-if="totalPaginas > 1">
-        <ul class="pagination justify-content-center">
+    <nav v-if="totalPaginas > 1" aria-label="Paginación de clientes">
+        <ul class="pagination justify-content-center home-pagination">
             <li :class="['page-item', {disabled: paginaActual === 1}]">
                 <a class="page-link" href="#" v-on:click.prevent="cambiarPagina(paginaActual - 1)">Anterior</a>
             </li>
-            <li v-for="n in totalPaginas" :key="n" :class="['page-item', {active: paginaActual === n}]">
-                <a class="page-link" href="#" v-on:click.prevent="cambiarPagina(n)">[[ n ]]</a>
+            <li v-for="(n, idx) in paginasVisibles" :key="'p-' + idx"
+                :class="['page-item', {active: n === paginaActual, disabled: n === '…'}]">
+                <a class="page-link" href="#" v-on:click.prevent="n !== '…' && cambiarPagina(n)">[[ n ]]</a>
             </li>
             <li :class="['page-item', {disabled: paginaActual === totalPaginas}]">
                 <a class="page-link" href="#" v-on:click.prevent="cambiarPagina(paginaActual + 1)">Siguiente</a>
@@ -278,107 +133,186 @@
         </ul>
     </nav>
 
-    <div v-if="resultadosFiltrados.length === 0 && txtBusqueda" class="alert alert-info mt-3">
-        <i class="fa fa-info-circle"></i> El cliente tiene Documentos.
+    <div v-if="busquedaSinResultados" class="alert alert-info mt-3">
+        <i class="fa fa-info-circle" aria-hidden="true"></i>
+        No se encontraron clientes para «[[ txtBusqueda ]]».
     </div>
 
-    <!-- Mensaje de carga cuando hay parámetros iniciales -->
-    <div v-if="cargarAutomaticamente && initialCoCli && initialCliDes && !clienteSeleccionado && todosResultados.length === 0" class="alert alert-warning mt-3">
-        <i class="fa fa-spinner fa-spin"></i> Cargando detalles del cliente...
+    <div v-if="mensajeAuto" class="alert alert-success mt-3" role="status">
+        <i class="fa fa-check-circle" aria-hidden="true"></i> [[ mensajeAuto ]]
     </div>
 
-    <!-- Mensaje de éxito cuando se carga automáticamente -->
-    <div v-if="cargarAutomaticamente && clienteSeleccionado" class="alert alert-success mt-3" style="display: none;" id="mensajeExito">
-        <i class="fa fa-check-circle"></i> Cliente cargado automáticamente: <strong>[[ clienteSeleccionado.cli_des ]]</strong>
-    </div>
-
-    <!-- RESULTADOS SELECCIONADOS MEJORADOS -->
-    <div v-if="clienteSeleccionado" class="mt-4">
+    <div v-if="clienteSeleccionado" class="mt-4" id="panel-cliente">
         <div class="card border-primary shadow-sm">
-            <div class="card-header bg-primary text-white d-flex align-items-center justify-content-between" style="font-size:1.15rem;">
+            <div class="card-header bg-primary text-white d-flex align-items-center justify-content-between flex-wrap">
                 <div>
-                    <i class="fa fa-list-alt mr-2"></i>
-                    <span class="ml-2">Resultados para el cliente seleccionado</span>
+                    <i class="fa fa-list-alt me-2" aria-hidden="true"></i>
+                    Documentos del cliente
                 </div>
-                
+                <small class="opacity-75">[[ clienteSeleccionado.co_cli ]] · [[ clienteSeleccionado.cli_des ]]</small>
             </div>
-            <div class="card-body p-3" style="background:#f8fafc;">
-                <!-- Imagen del cliente -->
-                <div v-if="clienteSeleccionado && clienteSeleccionado.IMAGEN">
-                    <h5>Imagen del Cliente</h5>
-                    <img :src="'data:image/png;base64,' + clienteSeleccionado.IMAGEN" alt="Imagen del Cliente" style="max-width: 200px; max-height: 200px; border: 1px solid #ccc; border-radius: 8px;" />
+            <div class="card-body p-3 panel-cliente-body">
+                <div class="cliente-resumen">
+                    <div class="cliente-resumen__item">
+                        <span class="cliente-resumen__label">Cliente</span>
+                        <span class="cliente-resumen__value cliente-resumen__value--muted">[[ clienteSeleccionado.cli_des ]]</span>
+                    </div>
+                    <div class="cliente-resumen__item">
+                        <span class="cliente-resumen__label">Documentos</span>
+                        <span class="cliente-resumen__value">[[ resultadosPorCliente.length ]]</span>
+                    </div>
+                    <div class="cliente-resumen__item">
+                        <span class="cliente-resumen__label">Con imagen</span>
+                        <span class="cliente-resumen__value">[[ totalImagenesCliente ]]</span>
+                    </div>
+                    <div class="cliente-resumen__item">
+                        <span class="cliente-resumen__label">Vencidos (+40 días)</span>
+                        <span class="cliente-resumen__value">[[ totalVencidosCliente ]]</span>
+                    </div>
+                    <div class="cliente-resumen__item">
+                        <span class="cliente-resumen__label">Saldo total</span>
+                        <span class="cliente-resumen__value">[[ totalSaldoCliente ]]</span>
+                    </div>
                 </div>
 
+                <div class="leyenda-filas">
+                    <span class="leg-vencido">Vencido (+40)</span>
+                    <span class="leg-imagen">Con imagen</span>
+                    <span class="leg-ambos">Vencido + imagen</span>
+                </div>
 
-                <!-- Tabla de resultados -->
-                <div class="table-responsive">
-                    <table class="table table-sm table-bordered table-hover table-striped mb-0">
-                        <thead class="thead-light">
+                <div class="docs-toolbar">
+                    <div class="docs-filters" role="group" aria-label="Filtros de documentos">
+                        <button type="button" class="btn btn-outline-primary" :class="{active: filtroDocs==='todos'}" v-on:click="filtroDocs='todos'">Todos ([[ documentosStats.total ]])</button>
+                        <button type="button" class="btn btn-outline-primary" :class="{active: filtroDocs==='vencidos'}" v-on:click="filtroDocs='vencidos'">Vencidos ([[ documentosStats.vencidos ]])</button>
+                        <button type="button" class="btn btn-outline-primary" :class="{active: filtroDocs==='conImagen'}" v-on:click="filtroDocs='conImagen'">Con imagen ([[ documentosStats.conImagen ]])</button>
+                        <button type="button" class="btn btn-outline-primary" :class="{active: filtroDocs==='FACT'}" v-on:click="filtroDocs='FACT'">FACT ([[ documentosStats.FACT ]])</button>
+                        <button type="button" class="btn btn-outline-primary" :class="{active: filtroDocs==='PED'}" v-on:click="filtroDocs='PED'">PED ([[ documentosStats.PED ]])</button>
+                        <button type="button" class="btn btn-outline-primary" :class="{active: filtroDocs==='N/CR'}" v-on:click="filtroDocs='N/CR'">N/CR ([[ documentosStats.NCR ]])</button>
+                    </div>
+                    <button type="button"
+                            class="btn btn-sm btn-outline-secondary d-none d-md-inline-block"
+                            v-on:click="mostrarDetalleMontos = !mostrarDetalleMontos">
+                        <i class="fa fa-columns" aria-hidden="true"></i>
+                        [[ mostrarDetalleMontos ? 'Ocultar montos extra' : 'Mostrar montos extra' ]]
+                    </button>
+                </div>
+
+                <div v-if="documentosFiltrados.length === 0" class="alert alert-warning mb-0">
+                    No hay documentos con el filtro seleccionado.
+                </div>
+
+                <!-- Desktop table -->
+                <div class="table-responsive docs-table-wrap docs-table-desktop p-0" v-if="documentosFiltrados.length > 0">
+                    <table class="table table-bordered table-hover table-striped mb-0 tabla-docs"
+                           :class="{'show-extras': mostrarDetalleMontos}">
+                        <thead>
                             <tr>
-                                <th class="text-center">Tipo Doc</th>
-                                <th class="text-center">Nro Doc</th>
-                                <th class="text-center">Fecha</th>
-                                <th class="text-center">Días</th>
-                                <th class="text-end">IVA 25%</th>
-                                <th class="text-end">IVA 75%</th>
-                                <th class="text-end">Sub+ IVA25%</th>
-                                <th class="text-end">Sub Total</th>
-                                <th class="text-end">IVA</th>
-                                <th class="text-end">Saldo</th>
-                                <th class="text-center">IMG</th>
+                                <th class="cabecera-azul-claro text-center">Tipo</th>
+                                <th class="cabecera-azul-claro text-center">Nro / IMPFISCAL</th>
+                                <th class="cabecera-azul-claro text-center">Fecha</th>
+                                <th class="cabecera-azul-claro text-center">Días</th>
+                                <th class="cabecera-azul-claro text-end col-extra">IVA 25%</th>
+                                <th class="cabecera-azul-claro text-end col-extra">IVA 75%</th>
+                                <th class="cabecera-azul-claro text-end col-extra">Sub+ IVA25%</th>
+                                <th class="cabecera-azul-claro text-end col-extra">Sub Total</th>
+                                <th class="cabecera-azul-claro text-end col-extra">IVA</th>
+                                <th class="cabecera-azul-claro text-end">Saldo</th>
+                                <th class="cabecera-azul-claro text-center">
+                                    <i class="fa fa-image" aria-hidden="true"></i>
+                                    <div><small>[[ totalImagenesFiltradas ]] / [[ documentosFiltrados.length ]]</small></div>
+                                </th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="(item, idx) in resultadosPorCliente" :key="item.co_cli + '-' + idx" :class="{'fila-roja': Number(item.Dias) > 40}" style="cursor: pointer;">
-                                <td class="truncate text-center clickable-cell" :title="item.co_tipo_doc" v-html="highlight(item.co_tipo_doc)" v-on:click="navigateToDocument(item)"></td>
-                                <td class="text-center">
-                                    <a :href="'/Home/DetalleDocumento?co_tipo_doc=' + encodeURIComponent(item.co_tipo_doc.trim()) + '&nro_doc=' + encodeURIComponent(item.nro_doc.trim()) + '&co_cli=' + encodeURIComponent(clienteSeleccionado.co_cli.trim()) + '&cli_des=' + encodeURIComponent(clienteSeleccionado.cli_des.trim())"
-                                       class="text-decoration-none"
-                                       v-html="highlight(item.nro_doc)">
-                                    </a>
+                            <tr v-for="(item, idx) in documentosFiltrados"
+                                :key="'doc-' + item.co_tipo_doc + '-' + item.nro_doc + '-' + idx"
+                                :class="[obtenerClasesFila(item), 'row-clickable']">
+                                <td class="truncate text-center" :title="item.co_tipo_doc" v-html="highlight(item.co_tipo_doc)" v-on:click="navigateToDocument(item, $event)"></td>
+                                <td class="text-center" v-on:click="navigateToDocument(item, $event)" v-html="highlight(item.nro_doc)"></td>
+                                <td class="text-center" v-on:click="navigateToDocument(item, $event)">[[ formatFecha(item.fec_emis) ]]</td>
+                                <td class="text-center" v-on:click="navigateToDocument(item, $event)">
+                                    <span class="badge" :class="Number(item.Dias) > 40 ? 'bg-danger' : 'bg-success'">[[ item.Dias ]]</span>
                                 </td>
-                                <td class="text-center clickable-cell" v-on:click="navigateToDocument(item)">[[ formatFecha(item.fec_emis) ]]</td>
-                                <td class="text-center clickable-cell" v-on:click="navigateToDocument(item)" v-html="highlight(item.Dias)"></td>
-                                <td class="text-end clickable-cell" v-on:click="navigateToDocument(item)">[[ formatNumero(item.IVA25) ]]</td>
-                                <td class="text-end clickable-cell" v-on:click="navigateToDocument(item)" v-html="highlight(item.estado_retencion)"></td>
-                                <td class="text-end clickable-cell" v-on:click="navigateToDocument(item)">[[ formatNumero(item.monto_bru+item.IVA25) ]]</td>
-                                <td class="text-end clickable-cell" v-on:click="navigateToDocument(item)">[[ formatNumero(item.monto_bru) ]]</td>
-                                <td class="text-end clickable-cell" v-on:click="navigateToDocument(item)">[[ formatNumero(item.monto_imp) ]]</td>
-                                <td class="text-end clickable-cell" v-on:click="navigateToDocument(item)">[[ formatNumero(item.saldo) ]]</td>
-                                <td class="text-center">
-                                    <div class="btn-group" role="group">
-                                        <div v-if="item.IMAGEN && item.IMAGEN.length > 0">
-                                            <i class="fa fa-eye"
-                                               style="font-size: 16px; color: #1565c0; cursor: pointer; margin-left: 5px;"
-                                               v-on:click="verImagenCompleta('data:image/png;base64,' + item.IMAGEN)"
-                                               title="Haz clic para ver la imagen completa"></i>
-                                        </div>
-                                    </div>
+                                <td class="text-end num-tabular col-extra" v-on:click="navigateToDocument(item, $event)">[[ formatNumero(item.IVA25) ]]</td>
+                                <td class="text-end col-extra" v-on:click="navigateToDocument(item, $event)" v-html="highlight(item.estado_retencion)"></td>
+                                <td class="text-end num-tabular col-extra" v-on:click="navigateToDocument(item, $event)">[[ formatNumero(Number(item.monto_bru) + Number(item.IVA25)) ]]</td>
+                                <td class="text-end num-tabular col-extra" v-on:click="navigateToDocument(item, $event)">[[ formatNumero(item.monto_bru) ]]</td>
+                                <td class="text-end num-tabular col-extra" v-on:click="navigateToDocument(item, $event)">[[ formatNumero(item.monto_imp) ]]</td>
+                                <td class="text-end num-tabular fw-bold" v-on:click="navigateToDocument(item, $event)">[[ formatNumero(item.saldo) ]]</td>
+                                <td class="text-center" v-on:click.stop>
+                                    <i v-if="item.tiene_imagen === 1"
+                                       class="fa fa-image icono-imagen icono-imagen-doc"
+                                       v-on:click="abrirImagenDocumento(item)"
+                                       title="Ver imagen"
+                                       role="button"
+                                       tabindex="0"
+                                       v-on:keydown.enter="abrirImagenDocumento(item)"></i>
+                                    <span v-else class="text-muted" title="Sin imagen">—</span>
                                 </td>
                             </tr>
-                        <tfoot v-if="resultadosPorCliente.length > 1">
-                            <tr style="font-weight:bold; background:#e3f2fd;">
-                                <td colspan="9"></td>
-                                <td class="text-end">[[ sumaCol('saldo') ]]</td>
-
+                        </tbody>
+                        <tfoot v-if="documentosFiltrados.length > 1">
+                            <tr class="fila-total-docs">
+                                <td :colspan="mostrarDetalleMontos ? 9 : 4" class="text-end">Total saldo</td>
+                                <td class="text-end num-tabular">[[ totalSaldoFiltrado ]]</td>
+                                <td></td>
                             </tr>
                         </tfoot>
                     </table>
                 </div>
+
+                <!-- Mobile cards -->
+                <div class="doc-cards" v-if="documentosFiltrados.length > 0">
+                    <div v-for="(item, idx) in documentosFiltrados"
+                         :key="'card-' + item.co_tipo_doc + '-' + item.nro_doc + '-' + idx"
+                         class="doc-card"
+                         :class="{
+                             'is-vencido': Number(item.Dias) > 40,
+                             'has-img': item.tiene_imagen === 1
+                         }"
+                         v-on:click="navigateToDocument(item, $event)">
+                        <div class="doc-card__top">
+                            <div>
+                                <div class="doc-card__title">[[ item.co_tipo_doc ]] · [[ item.nro_doc ]]</div>
+                                <div class="text-muted doc-card__date">[[ formatFecha(item.fec_emis) ]]</div>
+                            </div>
+                            <div class="d-flex align-items-center doc-card__actions" v-on:click.stop>
+                                <span class="badge" :class="Number(item.Dias) > 40 ? 'bg-danger' : 'bg-success'">[[ item.Dias ]] d</span>
+                                <i v-if="item.tiene_imagen === 1"
+                                   class="fa fa-image icono-imagen icono-imagen-card"
+                                   v-on:click="abrirImagenDocumento(item)"
+                                   title="Ver imagen"></i>
+                            </div>
+                        </div>
+                        <div class="doc-card__meta">
+                            <div>Subtotal: <strong class="num-tabular">[[ formatNumero(item.monto_bru) || '0.00' ]]</strong></div>
+                            <div class="text-end">Saldo</div>
+                            <div>IVA: <strong class="num-tabular">[[ formatNumero(item.monto_imp) || '0.00' ]]</strong></div>
+                            <div class="doc-card__saldo text-end">[[ formatNumero(item.saldo) || '0.00' ]]</div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-        <button v-if="clienteSeleccionado" class="btn btn-primary mt-3" v-on:click="imprimirPDF">
-            <i class="fa fa-print"></i> Imprimir PDF
+        <button v-if="clienteSeleccionado" class="btn btn-primary mt-3" v-on:click="imprimirPDF" v-bind:disabled="generandoPdf">
+            <i class="fa fa-print" aria-hidden="true"></i>
+            [[ generandoPdf ? 'Generando PDF...' : 'Imprimir PDF' ]]
         </button>
     </div>
-    <!-- FIN RESULTADOS SELECCIONADOS MEJORADOS -->
+
+    <div v-if="modalImagenVisible" class="modal-imagen-home" v-on:click="cerrarModalImagen" role="dialog" aria-modal="true" aria-label="Imagen del documento">
+        <div class="modal-imagen-home__box" v-on:click.stop>
+            <button type="button" class="modal-imagen-home__close" v-on:click="cerrarModalImagen" aria-label="Cerrar">&times;</button>
+            <img :src="modalImagenSrc" alt="Imagen del documento" />
+        </div>
+    </div>
 </div>
 
-
-@section scripts{
-    <script src="~/Content/Imagen/logoConfig.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
-    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+@section scripts {
+    <script src="~/Content/Imagen/logoConfig.js?v=20250108"></script>
+    <script src="~/Content/Imagen/pdfEncabezado.js?v=20250528"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.7.16/dist/vue.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.9.0/axios.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
@@ -386,9 +320,11 @@
     <script>
         function debounce(func, wait) {
             let timeout;
-            return function (...args) {
+            return function () {
+                const args = arguments;
+                const ctx = this;
                 clearTimeout(timeout);
-                timeout = setTimeout(() => func.apply(this, args), wait);
+                timeout = setTimeout(function () { func.apply(ctx, args); }, wait);
             };
         }
 
@@ -398,488 +334,675 @@
             data: {
                 txtBusqueda: '',
                 sugerencias: [],
+                sugerenciaIndex: -1,
                 todosResultados: [],
+                resultadosPorClienteMap: {},
+                conteoFactPedPorClienteMap: {},
                 resultadosFiltrados: [],
                 clienteSeleccionado: null,
                 resultadosPorCliente: [],
                 paginaActual: 1,
-                resultadosPorPagina: 10,
+                resultadosPorPagina: 50,
                 columnaOrden: 'co_cli',
                 ordenAscendente: true,
-                debugMode: true
+                showFullImage: false,
+                cargando: false,
+                buscando: false,
+                textoCargar: 'Cargando...',
+                mostrarProgreso: false,
+                progresoCarga: 0,
+                mostrandoTodos: false,
+                filtroDocs: 'todos',
+                mostrarDetalleMontos: false,
+                modalImagenVisible: false,
+                modalImagenSrc: '',
+                mensajeAuto: '',
+                generandoPdf: false,
+                _searchCancelSource: null,
+                _progresoTimer: null,
+                _escHandler: null
             },
             computed: {
-                resultadosPaginados() {
+                resultadosPaginados: function () {
                     const inicio = (this.paginaActual - 1) * this.resultadosPorPagina;
                     return this.resultadosFiltrados.slice(inicio, inicio + this.resultadosPorPagina);
                 },
-                totalPaginas() {
-                    return Math.ceil(this.resultadosFiltrados.length / this.resultadosPorPagina);
+                totalPaginas: function () {
+                    return Math.ceil(this.resultadosFiltrados.length / this.resultadosPorPagina) || 0;
+                },
+                totalClientesEncontrados: function () {
+                    return this.resultadosFiltrados.length;
+                },
+                documentosStats: function () {
+                    return this.resultadosPorCliente.reduce(function (acc, item) {
+                        const tipo = (item.co_tipo_doc || '').toString().trim().toUpperCase();
+                        const dias = Number(item.Dias) || 0;
+                        acc.total += 1;
+                        if (dias > 40) acc.vencidos += 1;
+                        if (item.tiene_imagen === 1) acc.conImagen += 1;
+                        if (tipo === 'FACT') acc.FACT += 1;
+                        if (tipo === 'PED') acc.PED += 1;
+                        if (tipo === 'N/CR') acc.NCR += 1;
+                        return acc;
+                    }, { total: 0, vencidos: 0, conImagen: 0, FACT: 0, PED: 0, NCR: 0 });
+                },
+                paginasVisibles: function () {
+                    const total = this.totalPaginas;
+                    const actual = this.paginaActual;
+                    if (total <= 7) {
+                        const all = [];
+                        for (let i = 1; i <= total; i++) all.push(i);
+                        return all;
+                    }
+                    const pages = [1];
+                    let start = Math.max(2, actual - 1);
+                    let end = Math.min(total - 1, actual + 1);
+                    if (actual <= 3) { start = 2; end = 4; }
+                    if (actual >= total - 2) { start = total - 3; end = total - 1; }
+                    if (start > 2) pages.push('…');
+                    for (let i = start; i <= end; i++) pages.push(i);
+                    if (end < total - 1) pages.push('…');
+                    pages.push(total);
+                    return pages;
+                },
+                documentosFiltrados: function () {
+                    const f = this.filtroDocs;
+                    return this.resultadosPorCliente.filter(function (item) {
+                        const tipo = (item.co_tipo_doc || '').toString().trim().toUpperCase();
+                        const dias = Number(item.Dias) || 0;
+                        if (f === 'vencidos') return dias > 40;
+                        if (f === 'conImagen') return item.tiene_imagen === 1;
+                        if (f === 'FACT' || f === 'PED' || f === 'N/CR') return tipo === f;
+                        return true;
+                    });
+                },
+                totalImagenesCliente: function () {
+                    return this.resultadosPorCliente.reduce(function (acc, item) {
+                        return acc + (item.tiene_imagen === 1 ? 1 : 0);
+                    }, 0);
+                },
+                totalImagenesFiltradas: function () {
+                    return this.documentosFiltrados.reduce(function (acc, item) {
+                        return acc + (item.tiene_imagen === 1 ? 1 : 0);
+                    }, 0);
+                },
+                totalVencidosCliente: function () {
+                    return this.resultadosPorCliente.reduce(function (acc, item) {
+                        return acc + (Number(item.Dias) > 40 ? 1 : 0);
+                    }, 0);
+                },
+                totalSaldoCliente: function () {
+                    return this.formatearTotal(this.resultadosPorCliente);
+                },
+                totalSaldoFiltrado: function () {
+                    return this.formatearTotal(this.documentosFiltrados);
+                },
+                busquedaSinResultados: function () {
+                    return !!this.txtBusqueda &&
+                        this.txtBusqueda.trim().length > 0 &&
+                        !this.buscando &&
+                        !this.cargando &&
+                        this.resultadosFiltrados.length === 0 &&
+                        !this.clienteSeleccionado;
                 }
             },
             methods: {
-                getBsuqueda() {
-                    if (this.txtBusqueda.trim() !== '') {
-                        let cadena = this.txtBusqueda.trim();
-                        let cantidad = 1000;
-
-                        axios.get('/Home/buscarPorDocumCC1', {
-                            params: {
-                                nombre: cadena,
-                                cantidad: cantidad
-                            }
-                        })
-                            .then((response) => {
-                                console.log('API Response:', response.data);
-                                this.todosResultados = response.data.datos || [];
-                                // Log the first item to check if Imagen property exists
-                                if (this.todosResultados.length > 0) {
-                                    console.log('First item in response:', this.todosResultados[0]);
-                                }
-                                const seen = {};
-                                this.resultadosFiltrados = this.todosResultados.filter(item => {
-                                    const key = item.co_cli + '|' + item.cli_des;
-                                    if (seen[key]) return false;
-                                    seen[key] = true;
-                                    return true;
-                                });
-                                this.clienteSeleccionado = null;
-                                this.resultadosPorCliente = [];
-                                this.paginaActual = 1;
-                                this.sugerencias = [];
-                                // Selección automática si hay parámetros iniciales
-                                if (initialCoCli && initialCliDes) {
-                                    const cliente = this.todosResultados.find(x => 
-                                        x.co_cli && x.co_cli.trim() === initialCoCli.trim() && 
-                                        x.cli_des && x.cli_des.trim() === initialCliDes.trim()
-                                    );
-                                    if (cliente) {
-                                        this.seleccionarCliente(cliente);
-                                    }
-                                }
-                            })
-                            .catch(() => {
-                                this.todosResultados = [];
-                                this.resultadosFiltrados = [];
-                                this.clienteSeleccionado = null;
-                                this.resultadosPorCliente = [];
-                                this.paginaActual = 1;
-                                this.sugerencias = [];
-                            });
-                    } else {
-                        this.todosResultados = [];
-                        this.resultadosFiltrados = [];
-                        this.clienteSeleccionado = null;
-                        this.resultadosPorCliente = [];
-                        this.paginaActual = 1;
-                        this.sugerencias = [];
+                notificar: function (tipo, mensaje) {
+                    if (typeof window.mostrarNotificacion === 'function') {
+                        window.mostrarNotificacion(tipo, mensaje);
+                        return;
+                    }
+                    alert(mensaje);
+                },
+                formatearTotal: function (lista) {
+                    const total = lista.reduce(function (acc, item) {
+                        const val = Number(item.saldo);
+                        return acc + (isNaN(val) ? 0 : val);
+                    }, 0);
+                    return total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                },
+                normalizarTexto: function (valor) {
+                    return (valor || '').toString().trim();
+                },
+                obtenerClaveCliente: function (item) {
+                    return this.normalizarTexto(item.co_cli) + '|' + this.normalizarTexto(item.cli_des);
+                },
+                esClienteActivo: function (item) {
+                    return this.clienteSeleccionado &&
+                        this.clienteSeleccionado.co_cli === item.co_cli &&
+                        this.clienteSeleccionado.cli_des === item.cli_des;
+                },
+                construirMapaClientes: function (items) {
+                    const mapa = {};
+                    const conteoFactPed = {};
+                    const self = this;
+                    items.forEach(function (item) {
+                        const key = self.obtenerClaveCliente(item);
+                        if (!mapa[key]) mapa[key] = [];
+                        mapa[key].push(item);
+                        const tipoDoc = self.normalizarTexto(item.co_tipo_doc).toUpperCase();
+                        if (tipoDoc === 'FACT' || tipoDoc === 'PED') {
+                            conteoFactPed[key] = (conteoFactPed[key] || 0) + 1;
+                        }
+                    });
+                    this.resultadosPorClienteMap = mapa;
+                    this.conteoFactPedPorClienteMap = conteoFactPed;
+                },
+                cancelarBusquedaPendiente: function () {
+                    if (this._searchCancelSource) {
+                        this._searchCancelSource.cancel('Nueva búsqueda');
+                        this._searchCancelSource = null;
                     }
                 },
-                buscarSugerencias() {
+                getBusqueda: function () {
+                    const cadena = this.txtBusqueda.trim();
+                    if (!cadena) {
+                        this.limpiarResultadosBusqueda();
+                        return;
+                    }
+
+                    this.cancelarBusquedaPendiente();
+                    this._searchCancelSource = axios.CancelToken.source();
+
+                    this.buscando = true;
+                    this.cargando = true;
+                    this.textoCargar = 'Buscando clientes...';
+                    this.mensajeAuto = '';
+
+                    const self = this;
+                    axios.get('/Home/buscarPorDocumCC1', {
+                        params: { nombre: cadena, cantidad: 50, incluirImagen: false },
+                        cancelToken: this._searchCancelSource.token
+                    })
+                        .then(function (response) {
+                            self.aplicarResultadosBusqueda(response.data.datos || [], false);
+                            if (initialCoCli && initialCliDes) {
+                                const cliente = self.todosResultados.find(function (x) {
+                                    return x.co_cli && x.co_cli.trim() === initialCoCli.trim() &&
+                                        x.cli_des && x.cli_des.trim() === initialCliDes.trim();
+                                });
+                                if (cliente) self.seleccionarCliente(cliente);
+                            }
+                        })
+                        .catch(function (err) {
+                            if (axios.isCancel(err)) return;
+                            self.limpiarResultadosBusqueda();
+                        })
+                        .finally(function () {
+                            self.buscando = false;
+                            self.cargando = false;
+                            self._searchCancelSource = null;
+                        });
+                },
+                getBsuqueda: function () { this.getBusqueda(); },
+                aplicarResultadosBusqueda: function (datos, esTodos) {
+                    this.todosResultados = datos;
+                    this.construirMapaClientes(this.todosResultados);
+                    const seen = {};
+                    const self = this;
+                    this.resultadosFiltrados = this.todosResultados.filter(function (item) {
+                        const key = self.obtenerClaveCliente(item);
+                        if (seen[key]) return false;
+                        seen[key] = true;
+                        return true;
+                    });
+                    this.clienteSeleccionado = null;
+                    this.resultadosPorCliente = [];
+                    this.filtroDocs = 'todos';
+                    this.paginaActual = 1;
+                    this.sugerencias = [];
+                    this.sugerenciaIndex = -1;
+                    this.mostrandoTodos = !!esTodos;
+                },
+                limpiarResultadosBusqueda: function () {
+                    this.todosResultados = [];
+                    this.resultadosFiltrados = [];
+                    this.clienteSeleccionado = null;
+                    this.resultadosPorCliente = [];
+                    this.resultadosPorClienteMap = {};
+                    this.conteoFactPedPorClienteMap = {};
+                    this.paginaActual = 1;
+                    this.sugerencias = [];
+                    this.sugerenciaIndex = -1;
+                    this.buscando = false;
+                    this.cargando = false;
+                },
+                buscarSugerencias: function () {
                     if (this.txtBusqueda.length < 2) {
                         this.sugerencias = [];
+                        this.sugerenciaIndex = -1;
                         return;
                     }
                     const texto = this.txtBusqueda.toLowerCase();
-                    const sugerenciasSet = new Set();
-                    this.todosResultados.forEach(item => {
-                        if (item.cli_des && item.cli_des.toLowerCase().includes(texto)) {
-                            sugerenciasSet.add(item.cli_des);
-                        }
-                        if (item.co_cli && item.co_cli.toLowerCase().includes(texto)) {
-                            sugerenciasSet.add(item.co_cli);
-                        }
+                    const set = {};
+                    this.todosResultados.forEach(function (item) {
+                        if (item.cli_des && item.cli_des.toLowerCase().indexOf(texto) !== -1) set[item.cli_des] = true;
+                        if (item.co_cli && item.co_cli.toLowerCase().indexOf(texto) !== -1) set[item.co_cli] = true;
                     });
-                    this.sugerencias = Array.from(sugerenciasSet).slice(0, 10);
+                    this.sugerencias = Object.keys(set).slice(0, 10);
+                    this.sugerenciaIndex = this.sugerencias.length ? 0 : -1;
                 },
-                seleccionarSugerencia(s) {
+                moverSugerencia: function (delta) {
+                    if (!this.sugerencias.length) return;
+                    const max = this.sugerencias.length - 1;
+                    let next = this.sugerenciaIndex + delta;
+                    if (next < 0) next = max;
+                    if (next > max) next = 0;
+                    this.sugerenciaIndex = next;
+                },
+                confirmarSugerenciaOBuscar: function () {
+                    if (this.sugerencias.length && this.sugerenciaIndex >= 0) {
+                        this.seleccionarSugerencia(this.sugerencias[this.sugerenciaIndex]);
+                    } else {
+                        this.getBusqueda();
+                    }
+                },
+                seleccionarSugerencia: function (s) {
                     this.txtBusqueda = s;
                     this.sugerencias = [];
-                    this.getBsuqueda();
+                    this.sugerenciaIndex = -1;
+                    this.getBusqueda();
                 },
-                seleccionarCliente(item) {
+                seleccionarCliente: function (item) {
                     this.clienteSeleccionado = item;
-                    this.resultadosPorCliente = this.todosResultados.filter(x =>
-                        x.co_cli && x.co_cli.trim() === item.co_cli.trim() && 
-                        x.cli_des && x.cli_des.trim() === item.cli_des.trim()
-                    );
-
-                    // Dejar solo el cliente seleccionado en los resultados filtrados
+                    this.showFullImage = false;
+                    this.filtroDocs = 'todos';
+                    const key = this.obtenerClaveCliente(item);
+                    this.resultadosPorCliente = this.resultadosPorClienteMap[key] || [];
                     this.resultadosFiltrados = [item];
                     this.paginaActual = 1;
-                    
-                    // Mostrar mensaje de éxito si se cargó automáticamente
+
                     if (cargarAutomaticamente) {
-                        setTimeout(() => {
-                            const mensajeExito = document.getElementById('mensajeExito');
-                            if (mensajeExito) {
-                                mensajeExito.style.display = 'block';
-                                setTimeout(() => {
-                                    mensajeExito.style.display = 'none';
-                                }, 3000);
-                            }
-                        }, 500);
+                        this.mensajeAuto = 'Cliente cargado: ' + item.cli_des;
+                        const self = this;
+                        setTimeout(function () { self.mensajeAuto = ''; }, 3500);
                     }
-                    
-                    // Scroll hacia la sección de resultados del cliente
-                    setTimeout(() => {
-                        const resultadosSection = document.querySelector('.card.border-primary');
-                        if (resultadosSection) {
-                            resultadosSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                        }
-                    }, 100);
+
+                    this.$nextTick(function () {
+                        const el = document.getElementById('panel-cliente');
+                        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    });
                 },
-                cambiarPagina(pagina) {
+                cambiarPagina: function (pagina) {
                     if (pagina > 0 && pagina <= this.totalPaginas) {
                         this.paginaActual = pagina;
                     }
                 },
-                ordenarPor(columna) {
+                ordenarPor: function (columna) {
                     if (this.columnaOrden === columna) {
                         this.ordenAscendente = !this.ordenAscendente;
                     } else {
                         this.columnaOrden = columna;
                         this.ordenAscendente = true;
                     }
-                    this.resultadosFiltrados.sort((a, b) => {
-                        if (a[columna] < b[columna]) return this.ordenAscendente ? -1 : 1;
-                        if (a[columna] > b[columna]) return this.ordenAscendente ? 1 : -1;
+                    const asc = this.ordenAscendente;
+                    this.resultadosFiltrados.sort(function (a, b) {
+                        if (a[columna] < b[columna]) return asc ? -1 : 1;
+                        if (a[columna] > b[columna]) return asc ? 1 : -1;
                         return 0;
                     });
                     this.paginaActual = 1;
                 },
-                formatNumero(valor) {
+                formatNumero: function (valor) {
                     if (valor == null || valor === '' || Number(valor) === 0) return '';
                     return Number(valor).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
                 },
-
-                navigateToDocument(item) {
-                    window.location.href = `/Home/DetalleDocumento?co_tipo_doc=${encodeURIComponent(item.co_tipo_doc.trim())}&nro_doc=${encodeURIComponent(item.nro_doc.trim())}&co_cli=${encodeURIComponent(this.clienteSeleccionado.co_cli.trim())}&cli_des=${encodeURIComponent(this.clienteSeleccionado.cli_des.trim())}`;
-                },
-                formatFecha(valor) {
+                formatFecha: function (valor) {
                     if (!valor) return '';
                     let fecha;
-
-                    // Si es formato /Date(1234567890)/
                     if (typeof valor === 'string' && valor.match(/\/Date\((\d+)\)\//)) {
                         const ms = parseInt(valor.match(/\/Date\((\d+)\)\//)[1], 10);
                         fecha = new Date(ms);
-                    } else if (typeof valor === 'string' && valor.length === 10 && valor.match(/^\d{4}-\d{2}-\d{2}$/)) {
-                        // Si es formato YYYY-MM-DD, parsear manualmente como local
-                        const [anio, mes, dia] = valor.split('-');
-                        fecha = new Date(Number(anio), Number(mes) - 1, Number(dia));
+                    } else if (typeof valor === 'string' && valor.length === 10 && /^\d{4}-\d{2}-\d{2}$/.test(valor)) {
+                        const parts = valor.split('-');
+                        fecha = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
                     } else {
                         fecha = new Date(valor);
                     }
-
                     if (isNaN(fecha)) return valor;
-
                     const dia = ('0' + fecha.getDate()).slice(-2);
                     const mes = ('0' + (fecha.getMonth() + 1)).slice(-2);
-                    const anio = fecha.getFullYear();
-                    return `${dia}/${mes}/${anio}`;
-
-
+                    return dia + '/' + mes + '/' + fecha.getFullYear();
                 },
-                limpiarBusqueda() {
+                navigateToDocument: function (item, event) {
+                    if (event) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    if (this.cargando || !this.clienteSeleccionado) return;
+
+                    this.cargando = true;
+                    const tipoDocumento = (item.co_tipo_doc || '').toString().trim().toUpperCase();
+                    if (tipoDocumento === 'FACT') this.textoCargar = 'Abriendo factura...';
+                    else if (tipoDocumento === 'N/CR') this.textoCargar = 'Abriendo nota de credito...';
+                    else if (tipoDocumento === 'N/DB') this.textoCargar = 'Abriendo nota de debito...';
+                    else this.textoCargar = 'Cargando detalle del documento...';
+
+                    const url = '/Home/DetalleDocumento?co_tipo_doc=' + encodeURIComponent(item.co_tipo_doc.trim()) +
+                        '&nro_doc=' + encodeURIComponent(item.nro_doc.trim()) +
+                        '&co_cli=' + encodeURIComponent(this.clienteSeleccionado.co_cli.trim()) +
+                        '&cli_des=' + encodeURIComponent(this.clienteSeleccionado.cli_des.trim());
+
+                    requestAnimationFrame(function () {
+                        setTimeout(function () { window.location.href = url; }, 60);
+                    });
+                },
+                onFocusBusqueda: function () {
+                    // No limpia selección; solo ayuda a reescribir
+                },
+                limpiarBusqueda: function () {
+                    this.cancelarBusquedaPendiente();
                     this.txtBusqueda = '';
-                    this.sugerencias = [];
-                    this.resultadosFiltrados = [];
-                    this.clienteSeleccionado = null;
-                    this.resultadosPorCliente = [];
-                    this.paginaActual = 1;
+                    this.limpiarResultadosBusqueda();
+                    this.mostrandoTodos = false;
+                    this.mensajeAuto = '';
+                    this.cerrarModalImagen();
                 },
-                verDetalleSaldo(item) {
-                    // Aquí puedes implementar la lógica para mostrar los detalles del saldo
-                    // Por ejemplo, podrías mostrar un modal con información detallada
-                    alert(`Detalles del saldo para el documento ${item.nro_doc}:\n` +
-                        `Tipo: ${item.co_tipo_doc}\n` +
-                        `Monto: ${this.formatNumero(item.saldo)}\n` +
-                        `Días vencidos: ${item.Dias || '0'}\n` +
-                        `Fecha emisión: ${this.formatFecha(item.fec_emis)}`);
+                escapeHtml: function (text) {
+                    return String(text)
+                        .replace(/&/g, '&amp;')
+                        .replace(/</g, '&lt;')
+                        .replace(/>/g, '&gt;')
+                        .replace(/"/g, '&quot;')
+                        .replace(/'/g, '&#39;');
                 },
-                verImagenCompleta(imagenData) {
-                    // Convertir la imagen a base64 si es un array de bytes
-                    let srcImagen = '';
-
-                    if (Array.isArray(imagenData) || (imagenData instanceof Uint8Array)) {
-                        // Es un array de bytes, convertir a base64
-                        const bytes = new Uint8Array(imagenData);
-                        let binary = '';
-                        const len = bytes.byteLength;
-                        for (let i = 0; i < len; i++) {
-                            binary += String.fromCharCode(bytes[i]);
-                        }
-                        srcImagen = 'data:image/png;base64,' + window.btoa(binary);
-                    } else if (typeof imagenData === 'string') {
-                        // Ya es una cadena base64 o una URL de datos
-                        if (imagenData.startsWith('data:image/')) {
-                            srcImagen = imagenData;
-                        } else {
-                            srcImagen = 'data:image/png;base64,' + imagenData;
-                        }
-                    } else {
-                        console.error('Formato de imagen no soportado:', imagenData);
-                        alert('No se pudo cargar la imagen: Formato no compatible');
+                highlight: function (text) {
+                    if (text == null) return '';
+                    const safe = this.escapeHtml(text);
+                    if (!this.txtBusqueda) return safe;
+                    const q = this.escapeHtml(this.txtBusqueda.trim());
+                    if (!q) return safe;
+                    try {
+                        const regex = new RegExp('(' + q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi');
+                        return safe.replace(regex, '<span class="highlight">$1</span>');
+                    } catch (e) {
+                        return safe;
+                    }
+                },
+                verImagenCompleta: function (imagenData) {
+                    if (!imagenData || imagenData === 'undefined' || imagenData === 'null') {
+                        this.notificar('warning', 'No hay imagen disponible para mostrar');
                         return;
                     }
-
-                    // Si ya existe un modal, lo removemos primero
-                    const modalExistente = document.getElementById('modalImagenCompleta');
-                    if (modalExistente) {
-                        document.body.removeChild(modalExistente);
+                    let srcImagen = '';
+                    if (Array.isArray(imagenData) || (imagenData instanceof Uint8Array)) {
+                        const bytes = new Uint8Array(imagenData);
+                        let binary = '';
+                        for (let i = 0; i < bytes.byteLength; i++) binary += String.fromCharCode(bytes[i]);
+                        srcImagen = 'data:image/png;base64,' + window.btoa(binary);
+                    } else if (typeof imagenData === 'string') {
+                        srcImagen = imagenData.indexOf('data:image/') === 0 ? imagenData : ('data:image/png;base64,' + imagenData);
+                    } else {
+                        this.notificar('error', 'No se pudo cargar la imagen: formato no compatible');
+                        return;
                     }
-
-                    // Crear el elemento modal
-                    const modal = document.createElement('div');
-                    modal.id = 'modalImagenCompleta';
-                    modal.style.position = 'fixed';
-                    modal.style.top = '0';
-                    modal.style.left = '0';
-                    modal.style.width = '100%';
-                    modal.style.height = '100%';
-                    modal.style.backgroundColor = 'rgba(0, 0, 0, 0.9)';
-                    modal.style.display = 'flex';
-                    modal.style.justifyContent = 'center';
-                    modal.style.alignItems = 'center';
-                    modal.style.zIndex = '2000';
-                    modal.style.cursor = 'zoom-out';
-
-                    // Crear el contenedor de la imagen
-                    const imgContainer = document.createElement('div');
-                    imgContainer.style.position = 'relative';
-                    imgContainer.style.maxWidth = '90%';
-                    imgContainer.style.maxHeight = '90%';
-                    imgContainer.style.display = 'flex';
-                    imgContainer.style.justifyContent = 'center';
-                    imgContainer.style.alignItems = 'center';
-
-                    // Crear la imagen
-                    const img = document.createElement('img');
-                    img.src = srcImagen;
-                    img.style.maxWidth = '100%';
-                    img.style.maxHeight = '90vh';
-                    img.style.objectFit = 'contain';
-                    img.style.borderRadius = '8px';
-                    img.style.boxShadow = '0 4px 20px rgba(0,0,0,0.5)';
-
-                    // Botón de cerrar
-                    const closeBtn = document.createElement('button');
-                    closeBtn.innerHTML = '&times;';
-                    closeBtn.style.position = 'absolute';
-                    closeBtn.style.top = '-15px';
-                    closeBtn.style.right = '-15px';
-                    closeBtn.style.background = '#dc3545';
-                    closeBtn.style.color = 'white';
-                    closeBtn.style.border = 'none';
-                    closeBtn.style.borderRadius = '50%';
-                    closeBtn.style.width = '30px';
-                    closeBtn.style.height = '30px';
-                    closeBtn.style.fontSize = '20px';
-                    closeBtn.style.cursor = 'pointer';
-                    closeBtn.style.display = 'flex';
-                    closeBtn.style.justifyContent = 'center';
-                    closeBtn.style.alignItems = 'center';
-                    closeBtn.style.paddingBottom = '3px';
-                    closeBtn.style.boxSizing = 'border-box';
-                    closeBtn.onclick = (e) => {
-                        e.stopPropagation();
-                        document.body.removeChild(modal);
+                    this.modalImagenSrc = srcImagen;
+                    this.modalImagenVisible = true;
+                    const self = this;
+                    this._escHandler = function (e) {
+                        if (e.key === 'Escape') self.cerrarModalImagen();
                     };
-
-                    // Evitar que el clic en la imagen cierre el modal
-                    img.onclick = function (e) {
-                        e.stopPropagation();
-                    };
-
-                    // Cerrar el modal al hacer clic fuera de la imagen
-                    modal.onclick = () => {
-                        document.body.removeChild(modal);
-                    };
-
-                    // Agregar elementos al DOM
-                    imgContainer.appendChild(img);
-                    imgContainer.appendChild(closeBtn);
-                    modal.appendChild(imgContainer);
-
-                    // Agregar el modal al body
-                    document.body.appendChild(modal);
-
-                    // Cerrar con la tecla ESC
-                    const keyHandler = (e) => {
-                        if (e.key === 'Escape') {
-                            document.body.removeChild(modal);
-                            document.removeEventListener('keydown', keyHandler);
-                        }
-                    };
-                    document.addEventListener('keydown', keyHandler);
+                    document.addEventListener('keydown', this._escHandler);
                 },
-                sumaCol(campo) {
-                    return this.resultadosPorCliente.reduce((acc, item) => {
-                        let val = Number(item[campo]);
+                cerrarModalImagen: function () {
+                    this.modalImagenVisible = false;
+                    this.modalImagenSrc = '';
+                    if (this._escHandler) {
+                        document.removeEventListener('keydown', this._escHandler);
+                        this._escHandler = null;
+                    }
+                },
+                abrirImagenDocumento: function (item) {
+                    if (!item) return;
+                    if (item.Imagen && item.Imagen !== 'undefined' && item.Imagen !== 'null') {
+                        this.verImagenCompleta('data:image/png;base64,' + item.Imagen);
+                        return;
+                    }
+                    this.cargando = true;
+                    this.textoCargar = 'Cargando imagen del documento...';
+                    const self = this;
+                    axios.get('/Home/ObtenerImagenDocumento', {
+                        params: {
+                            co_tipo_doc: (item.co_tipo_doc || '').trim(),
+                            nro_doc: (item.nro_doc || '').trim(),
+                            co_cli: this.clienteSeleccionado
+                                ? (this.clienteSeleccionado.co_cli || '').trim()
+                                : (item.co_cli || '').trim()
+                        }
+                    })
+                        .then(function (response) {
+                            const data = response.data || {};
+                            if (data.success && data.imagen) {
+                                item.Imagen = data.imagen;
+                                self.verImagenCompleta('data:image/png;base64,' + data.imagen);
+                            } else {
+                                self.notificar('warning', 'No hay imagen disponible para este documento');
+                            }
+                        })
+                        .catch(function () {
+                            self.notificar('warning', 'No hay imagen disponible para este documento');
+                        })
+                        .finally(function () {
+                            self.cargando = false;
+                        });
+                },
+                sumaCol: function (campo) {
+                    return this.resultadosPorCliente.reduce(function (acc, item) {
+                        const val = Number(item[campo]);
                         return acc + (isNaN(val) ? 0 : val);
                     }, 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
                 },
-                sumaColSuma() {
-                    return this.resultadosPorCliente.reduce((acc, item) => {
-                        let monto = Number(item.monto_bru) || 0;
-                        let iva = Number(item.IVA25) || 0;
-                        return acc + monto + iva;
-                    }, 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                obtenerClasesFila: function (item) {
+                    return {
+                        'fila-roja': Number(item.Dias) > 40,
+                        'fila-con-imagen': item.tiene_imagen === 1
+                    };
                 },
-
-                highlight(text) {
-                    if (!this.txtBusqueda) return text;
-                    const regex = new RegExp(`(${this.txtBusqueda})`, 'gi');
-                    return text != null
-                        ? text.toString().replace(regex, '<span class="highlight">$1</span>')
-                        : '';
+                contarFactPed: function (cliente) {
+                    const key = this.obtenerClaveCliente(cliente);
+                    return this.conteoFactPedPorClienteMap[key] || 0;
                 },
-
-
-                // Función modificada
-                imprimirPDF() {
-                    const { jsPDF } = window.jspdf;
-                    const doc = new jsPDF();
-
-                    // Logo importado desde logoConfig.js
-                    doc.addImage(logoBase64, 'PNG', 10, 8, 40, 40);
-
-                    // Encabezado tipo tabla para cliente
-                    doc.autoTable({
-                        startY: 60,
-                        head: [[
-                            { content: ' Código Cliente', styles: { fillColor: [21, 101, 192], textColor: 255, fontStyle: 'bold', halign: 'left' } },
-                            { content: ' Nombre Cliente', styles: { fillColor: [21, 101, 192], textColor: 255, fontStyle: 'bold', halign: 'left' } }
-                        ]],
-                        body: [[
-                            { content: this.clienteSeleccionado.co_cli, styles: { fillColor: [229, 200, 112], textColor: 20, fontStyle: 'bold' } },
-                            { content: this.clienteSeleccionado.cli_des, styles: { fillColor: [229, 200, 112], textColor: 20, fontStyle: 'bold' } }
-                        ]],
-                        theme: 'plain',
-                        styles: {
-                            fontSize: 12,
-                            cellPadding: 4,
-                            lineWidth: 0.5,
-                            lineColor: [200, 200, 200]
-                        },
-                        headStyles: {
-                            fontStyle: 'bold'
-                        },
-                        margin: { left: 10, right: 10 }
-                    });
-
-                    let y = doc.lastAutoTable.finalY + 8;
-
-                    // Definir columnas igual que en la tabla de la página
-                    const columns = [
-                        { header: 'Tipo Doc', dataKey: 'co_tipo_doc' },
-                        { header: 'Nro Doc', dataKey: 'nro_doc' },
-                        { header: 'Fecha', dataKey: 'fec_emis' },
-                        { header: 'Días', dataKey: 'Dias' },
-                        { header: 'IVA 25%', dataKey: 'IVA25' },
-                        { header: 'IVA 75%', dataKey: 'estado_retencion' },
-                        { header: 'Sub+ IVA25%', dataKey: 'sub_iva25' },
-                        { header: 'Sub Total', dataKey: 'monto_bru' },
-                        { header: 'IVA', dataKey: 'monto_imp' },
-                        { header: 'Saldo', dataKey: 'saldo' }
-                    ];
-
-                    // Prepara los datos
-                    const rows = this.resultadosPorCliente.map(item => ({
-                        co_tipo_doc: item.co_tipo_doc,
-                        nro_doc: item.nro_doc,
-                        fec_emis: this.formatFecha(item.fec_emis),
-                        Dias: item.Dias,
-                        IVA25: this.formatNumero(item.IVA25),
-                        estado_retencion: item.estado_retencion,
-                        sub_iva25: this.formatNumero(Number(item.monto_bru) + Number(item.IVA25)),
-                        monto_bru: this.formatNumero(item.monto_bru),
-                        monto_imp: this.formatNumero(item.monto_imp),
-                        saldo: this.formatNumero(item.saldo)
-                    }));
-
-                    // Totales si hay más de un documento
-                    let foot = [];
-
-                    if (this.resultadosPorCliente.length > 1) {
-                        foot = [[
-                            { content: 'Totales:', colSpan: 9, styles: { halign: 'right', fontStyle: 'bold' } },
-                            { content: this.sumaCol('saldo'), styles: { fontStyle: 'bold' } }
-                        ]];
-                    }
-
-                    // Usa AutoTable para crear la tabla con colores
-                    doc.autoTable({
-                        startY: y,
-                        head: [columns.map(col => col.header)],
-                        body: rows.map(row => columns.map(col => row[col.dataKey])),
-                        foot: foot,
-                        styles: {
-                            fontSize: 9,
-                            cellPadding: 2,
-                        },
-                        headStyles: {
-                            fillColor: [21, 101, 192], // Azul cabecera
-                            textColor: 255,
-                            fontStyle: 'bold'
-                        },
-                        footStyles: {
-                            fillColor: [227, 242, 253], // Azul claro para totales
-                            textColor: 0,
-                            fontStyle: 'bold'
-                        },
-                        alternateRowStyles: {
-                            fillColor: [249, 249, 249] // Gris claro para filas impares
-                        },
-                        bodyStyles: {
-                            textColor: 20
+                imprimirPDF: async function () {
+                    if (!this.clienteSeleccionado || this.generandoPdf) return;
+                    this.generandoPdf = true;
+                    try {
+                        if (!window.jspdf || !window.agregarEncabezadoPdf) {
+                            this.notificar('error', 'No se pudo cargar el generador de PDF. Recarga la página e intenta de nuevo.');
+                            return;
                         }
-                    });
+                        const doc = new window.jspdf.jsPDF();
+                        const startY = await window.agregarEncabezadoPdf(doc, {
+                            logoWidth: 55,
+                            logoMaxHeight: 32,
+                            direccionMaxWidth: 85
+                        });
 
-                    // Log de impresión
-                    let finalY = doc.lastAutoTable.finalY + 10;
-                    doc.setFontSize(10);
-                    //doc.text(`Impreso por: ${window.usuarioActual || 'Usuario'}`, 10, finalY);
-                    //finalY += 6;
-                    doc.text(`Fecha de impresión: ${new Date().toLocaleString()}`, 10, finalY);
+                        doc.autoTable({
+                            startY: startY + 4,
+                            head: [[
+                                { content: ' Código Cliente', styles: { fillColor: [21, 101, 192], textColor: 255, fontStyle: 'bold', halign: 'left' } },
+                                { content: ' Nombre Cliente', styles: { fillColor: [21, 101, 192], textColor: 255, fontStyle: 'bold', halign: 'left' } }
+                            ]],
+                            body: [[
+                                { content: this.clienteSeleccionado.co_cli, styles: { fillColor: [229, 200, 112], textColor: 20, fontStyle: 'bold' } },
+                                { content: this.clienteSeleccionado.cli_des, styles: { fillColor: [229, 200, 112], textColor: 20, fontStyle: 'bold' } }
+                            ]],
+                            theme: 'plain',
+                            styles: { fontSize: 12, cellPadding: 4, lineWidth: 0.5, lineColor: [200, 200, 200] },
+                            margin: { left: 10, right: 10 }
+                        });
 
-                    doc.save(`Cliente_${this.clienteSeleccionado.co_cli}.pdf`);
+                        const self = this;
+                        const lista = this.documentosFiltrados.length ? this.documentosFiltrados : this.resultadosPorCliente;
+                        const columns = [
+                            { header: 'Tipo Doc', dataKey: 'co_tipo_doc' },
+                            { header: 'Nro Doc', dataKey: 'nro_doc' },
+                            { header: 'Fecha', dataKey: 'fec_emis' },
+                            { header: 'Dias', dataKey: 'Dias' },
+                            { header: 'IVA 25%', dataKey: 'IVA25' },
+                            { header: 'IVA 75%', dataKey: 'estado_retencion' },
+                            { header: 'Sub+ IVA25%', dataKey: 'sub_iva25' },
+                            { header: 'Sub Total', dataKey: 'monto_bru' },
+                            { header: 'IVA', dataKey: 'monto_imp' },
+                            { header: 'Saldo', dataKey: 'saldo' }
+                        ];
+                        const rows = lista.map(function (item) {
+                            return {
+                                co_tipo_doc: item.co_tipo_doc,
+                                nro_doc: item.nro_doc,
+                                fec_emis: self.formatFecha(item.fec_emis),
+                                Dias: item.Dias,
+                                IVA25: self.formatNumero(item.IVA25),
+                                estado_retencion: item.estado_retencion,
+                                sub_iva25: self.formatNumero(Number(item.monto_bru) + Number(item.IVA25)),
+                                monto_bru: self.formatNumero(item.monto_bru),
+                                monto_imp: self.formatNumero(item.monto_imp),
+                                saldo: self.formatNumero(item.saldo)
+                            };
+                        });
+
+                        let foot = [];
+                        if (lista.length > 1) {
+                            foot = [[
+                                { content: 'Totales:', colSpan: 9, styles: { halign: 'right', fontStyle: 'bold' } },
+                                { content: this.formatearTotal(lista), styles: { fontStyle: 'bold' } }
+                            ]];
+                        }
+
+                        doc.autoTable({
+                            startY: doc.lastAutoTable.finalY + 8,
+                            head: [columns.map(function (c) { return c.header; })],
+                            body: rows.map(function (row) { return columns.map(function (col) { return row[col.dataKey]; }); }),
+                            foot: foot,
+                            styles: { fontSize: 9, cellPadding: 2 },
+                            headStyles: { fillColor: [21, 101, 192], textColor: 255, fontStyle: 'bold' },
+                            footStyles: { fillColor: [227, 242, 253], textColor: 0, fontStyle: 'bold' },
+                            alternateRowStyles: { fillColor: [249, 249, 249] }
+                        });
+
+                        doc.setFontSize(10);
+                        doc.text('Fecha de impresion: ' + new Date().toLocaleString(), 10, doc.lastAutoTable.finalY + 10);
+                        doc.save('Cliente_' + this.clienteSeleccionado.co_cli + '.pdf');
+                    } catch (e) {
+                        console.error(e);
+                        this.notificar('error', 'Error al generar el PDF.');
+                    } finally {
+                        this.generandoPdf = false;
+                    }
+                },
+                iniciarProgresoCarga: function (mensajeBase) {
+                    this.mostrarProgreso = true;
+                    this.progresoCarga = 0;
+                    this.textoCargar = mensajeBase + ' 0%';
+                    this.detenerProgresoTimer();
+                    const self = this;
+                    this._progresoTimer = setInterval(function () {
+                        if (self.progresoCarga < 85) {
+                            self.progresoCarga += 1;
+                            self.textoCargar = mensajeBase + ' ' + self.progresoCarga + '%';
+                        }
+                    }, 180);
+                },
+                detenerProgresoTimer: function () {
+                    if (this._progresoTimer) {
+                        clearInterval(this._progresoTimer);
+                        this._progresoTimer = null;
+                    }
+                },
+                actualizarProgresoDescarga: function (progressEvent, mensajeBase) {
+                    if (!progressEvent.total) return;
+                    this.detenerProgresoTimer();
+                    const pct = Math.min(99, Math.round((progressEvent.loaded * 100) / progressEvent.total));
+                    this.progresoCarga = pct;
+                    this.textoCargar = mensajeBase + ' ' + pct + '%';
+                },
+                finalizarProgresoCarga: function (callback) {
+                    this.detenerProgresoTimer();
+                    this.progresoCarga = 100;
+                    this.textoCargar = 'Completado 100%';
+                    const self = this;
+                    setTimeout(function () {
+                        self.mostrarProgreso = false;
+                        self.progresoCarga = 0;
+                        if (typeof callback === 'function') callback();
+                    }, 350);
+                },
+                cancelarProgresoCarga: function () {
+                    this.detenerProgresoTimer();
+                    this.mostrarProgreso = false;
+                    this.progresoCarga = 0;
+                },
+                cargarTodosClientes: function () {
+                    const mensajeBase = 'Cargando todos los clientes';
+                    this.cancelarBusquedaPendiente();
+                    this._searchCancelSource = axios.CancelToken.source();
+                    this.cargando = true;
+                    this.buscando = true;
+                    this.iniciarProgresoCarga(mensajeBase);
+
+                    const self = this;
+                    axios.get('/Home/buscarPorDocumCC1', {
+                        params: { nombre: '', cantidad: 1000, incluirImagen: false },
+                        cancelToken: this._searchCancelSource.token,
+                        onDownloadProgress: function (pe) { self.actualizarProgresoDescarga(pe, mensajeBase); }
+                    })
+                        .then(function (response) {
+                            self.detenerProgresoTimer();
+                            self.progresoCarga = 96;
+                            self.textoCargar = 'Procesando clientes... 96%';
+                            self.aplicarResultadosBusqueda(response.data.datos || [], true);
+                            self.txtBusqueda = '';
+                            self.finalizarProgresoCarga(function () {
+                                self.buscando = false;
+                                self.cargando = false;
+                            });
+                        })
+                        .catch(function (error) {
+                            if (axios.isCancel(error)) return;
+                            console.error(error);
+                            self.cancelarProgresoCarga();
+                            self.limpiarResultadosBusqueda();
+                            self.txtBusqueda = '';
+                            self.textoCargar = 'Error al cargar los clientes';
+                            self.buscando = false;
+                            self.cargando = false;
+                        })
+                        .finally(function () {
+                            self._searchCancelSource = null;
+                        });
                 }
             },
-
-            created() {
+            created: function () {
                 this.buscarSugerenciasDebounced = debounce(this.buscarSugerencias, 300);
-                // Si hay parámetros iniciales y debe cargar automáticamente, realiza la búsqueda
                 if (cargarAutomaticamente && initialCoCli && initialCliDes) {
                     this.txtBusqueda = initialCliDes;
-                    this.getBsuqueda();
+                    this.getBusqueda();
                 }
             },
-            mounted() {
-                // Asegurar que la selección automática funcione después de que Vue esté completamente montado
+            mounted: function () {
                 if (cargarAutomaticamente && initialCoCli && initialCliDes) {
-                    // Intentar seleccionar el cliente varias veces en caso de que la búsqueda tarde
                     let intentos = 0;
-                    const maxIntentos = 10;
-                    const interval = setInterval(() => {
+                    const self = this;
+                    const interval = setInterval(function () {
                         intentos++;
-                        if (this.todosResultados.length > 0) {
-                            const cliente = this.todosResultados.find(x => 
-                                x.co_cli && x.co_cli.trim() === initialCoCli.trim() && 
-                                x.cli_des && x.cli_des.trim() === initialCliDes.trim()
-                            );
+                        if (self.todosResultados.length > 0) {
+                            const cliente = self.todosResultados.find(function (x) {
+                                return x.co_cli && x.co_cli.trim() === initialCoCli.trim() &&
+                                    x.cli_des && x.cli_des.trim() === initialCliDes.trim();
+                            });
                             if (cliente) {
-                                this.seleccionarCliente(cliente);
+                                self.seleccionarCliente(cliente);
                                 clearInterval(interval);
                             }
                         }
-                        if (intentos >= maxIntentos) {
-                            clearInterval(interval);
-                            console.warn('No se pudo seleccionar automáticamente el cliente después de varios intentos');
-                        }
+                        if (intentos >= 10) clearInterval(interval);
                     }, 500);
                 }
+            },
+            beforeDestroy: function () {
+                this.cancelarBusquedaPendiente();
+                this.detenerProgresoTimer();
+                this.cerrarModalImagen();
             }
         });
     </script>

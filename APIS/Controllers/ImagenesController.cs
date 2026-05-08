@@ -21,12 +21,8 @@ namespace APIS.Controllers
                 using (var db = new A_ZULIA_12Entities())
                 {
                     // Buscar la imagen por código de cliente y descripción
-                    var imagen = db.Database.SqlQuery<byte[]>(
-                        "SELECT TOP 1 Imagen FROM buscarPorDocumCC1(@consulta, 1) WHERE co_cli = @co_cli AND cli_des = @cli_des",
-                        new SqlParameter("@consulta", $"{co_cli} {cli_des}"),
-                        new SqlParameter("@co_cli", co_cli),
-                        new SqlParameter("@cli_des", cli_des)
-                    ).FirstOrDefault();
+                    var resultado = ObtenerDocumentoConImagen(db, co_cli, cli_des);
+                    var imagen = resultado?.Imagen;
 
                     if (imagen != null && imagen.Length > 0)
                     {
@@ -56,12 +52,8 @@ namespace APIS.Controllers
                 using (var db = new A_ZULIA_12Entities())
                 {
                     // Buscar la imagen por código de cliente y descripción
-                    var imagen = db.Database.SqlQuery<byte[]>(
-                        "SELECT TOP 1 Imagen FROM buscarPorDocumCC1(@consulta, 1) WHERE co_cli = @co_cli AND cli_des = @cli_des",
-                        new SqlParameter("@consulta", $"{co_cli} {cli_des}"),
-                        new SqlParameter("@co_cli", co_cli),
-                        new SqlParameter("@cli_des", cli_des)
-                    ).FirstOrDefault();
+                    var resultado = ObtenerDocumentoConImagen(db, co_cli, cli_des);
+                    var imagen = resultado?.Imagen;
 
                     if (imagen != null && imagen.Length > 0)
                     {
@@ -77,6 +69,31 @@ namespace APIS.Controllers
             {
                 System.Diagnostics.Debug.WriteLine($"Error al obtener thumbnail: {ex.Message}");
                 return HttpNotFound();
+            }
+        }
+
+        private APIS.Models.DocumentoCC1ViewModel ObtenerDocumentoConImagen(A_ZULIA_12Entities db, string co_cli, string cli_des)
+        {
+            var usuario = User?.Identity?.Name ?? string.Empty;
+
+            try
+            {
+                return db.Database.SqlQuery<APIS.Models.DocumentoCC1ViewModel>(
+                    "EXEC buscarPorDocumCC1 @consulta, @cantidad, @usuario, @incluirImagen",
+                    new SqlParameter("@consulta", $"{co_cli} {cli_des}"),
+                    new SqlParameter("@cantidad", 1000),
+                    new SqlParameter("@usuario", usuario),
+                    new SqlParameter("@incluirImagen", true)
+                ).FirstOrDefault(x => x.co_cli == co_cli && x.cli_des == cli_des);
+            }
+            catch (SqlException)
+            {
+                return db.Database.SqlQuery<APIS.Models.DocumentoCC1ViewModel>(
+                    "EXEC buscarPorDocumCC1 @consulta, @cantidad, @usuario",
+                    new SqlParameter("@consulta", $"{co_cli} {cli_des}"),
+                    new SqlParameter("@cantidad", 1000),
+                    new SqlParameter("@usuario", usuario)
+                ).FirstOrDefault(x => x.co_cli == co_cli && x.cli_des == cli_des);
             }
         }
 

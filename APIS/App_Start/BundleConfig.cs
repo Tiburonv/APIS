@@ -1,4 +1,4 @@
-﻿using System.Web;
+using System.Web;
 using System.Web.Optimization;
 
 namespace APIS
@@ -16,10 +16,10 @@ namespace APIS
             bundles.Add(new ScriptBundle("~/bundles/modernizr").Include(
                         "~/Scripts/modernizr-*"));
 
-            // Bundle único para bootstrap y popper
+            // Bundle único para bootstrap (bootstrap.bundle.js ya incluye Popper;
+            // se corrige la referencia anterior a ~/Scripts/popper.js que NO existia)
             bundles.Add(new ScriptBundle("~/bundles/bootstrap").Include(
-                      "~/Scripts/bootstrap.js",
-                      "~/Scripts/popper.js"));
+                      "~/Scripts/bootstrap.bundle.js"));
 
             bundles.Add(new StyleBundle("~/Content/css").Include(
                       "~/Content/bootstrap.css",

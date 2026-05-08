@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -50,7 +50,8 @@ namespace APIS.Controllers
             }
             catch (Exception ex)
             {
-                return Json(new { success = false, mensaje = ex.Message });
+                System.Diagnostics.Debug.WriteLine($"Error en buscarPedidosActivos: {ex.ToString()}");
+                return Json(new { success = false, mensaje = "Error al buscar los pedidos activos." });
             }
         }
 
@@ -102,7 +103,8 @@ namespace APIS.Controllers
             }
             catch (Exception ex)
             {
-                return Json(new { success = false, mensaje = ex.Message });
+                System.Diagnostics.Debug.WriteLine($"Error en buscarRengPedidos: {ex.ToString()}");
+                return Json(new { success = false, mensaje = "Error al obtener los renglones del pedido." });
             }
         }
 

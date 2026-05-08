@@ -5,311 +5,122 @@
 }
 
 <style>
-    /* En Index.cshtml (Clientes) */
-    body {
-        background: #f4f6fb;
-        /* Mejoras para scroll móvil */
-        -webkit-overflow-scrolling: touch;
-        scroll-behavior: smooth;
-    }
+    /* Proveedores v2.0 - inherits from Site.css globals */
+    body { -webkit-overflow-scrolling: touch; scroll-behavior: smooth; }
 
-    /* Contenedor principal con scroll optimizado para móvil */
-    .container {
-        overflow-x: hidden;
-        -webkit-overflow-scrolling: touch;
-    }
+    .table tbody tr { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+    .btn { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
 
-    /* Scroll personalizado para móviles */
-    ::-webkit-scrollbar {
-        width: 8px;
-        height: 8px;
-    }
-
-    ::-webkit-scrollbar-track {
-        background: #f1f1f1;
-        border-radius: 4px;
-    }
-
-    ::-webkit-scrollbar-thumb {
-        background: #1565c0;
-        border-radius: 4px;
-    }
-
-    ::-webkit-scrollbar-thumb:hover {
-        background: #0d47a1;
-    }
-
-    /* Scroll horizontal para tablas en móvil */
-    .table-responsive {
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-        scrollbar-width: thin;
-        scrollbar-color: #1565c0 #f1f1f1;
-    }
-
-    /* Indicador de scroll para móviles */
-    .scroll-indicator {
-        position: fixed;
-        right: 10px;
-        top: 50%;
-        transform: translateY(-50%);
-        background: rgba(21, 101, 192, 0.8);
-        color: white;
-        padding: 8px 4px;
-        border-radius: 20px;
-        font-size: 12px;
-        z-index: 1000;
-        opacity: 0;
-        transition: opacity 0.3s;
-        pointer-events: none;
-    }
-
-    .scroll-indicator.show {
-        opacity: 1;
-    }
-
-    /* Mejoras para navegación táctil */
-    .table tbody tr {
-        touch-action: manipulation;
-        -webkit-tap-highlight-color: transparent;
-    }
-
-    .btn {
-        touch-action: manipulation;
-        -webkit-tap-highlight-color: transparent;
-    }
-
-    /* Scroll suave para secciones */
-    .scroll-smooth {
-        scroll-behavior: smooth;
-        -webkit-overflow-scrolling: touch;
-    }
-
-    h4 {
-        color: #1565c0;
-    }
-
+    /* Search container override for prov module */
     .search-container {
-        margin: 32px auto 24px auto;
-        max-width: 520px;
+        margin: 20px auto;
+        max-width: 640px;
         background: #fff;
-        border-radius: 10px;
-        box-shadow: 0 2px 16px rgba(21,101,192,0.10);
-        padding: 28px 36px 20px 36px;
+        border-radius: 16px;
+        box-shadow: 0 4px 20px rgba(15,23,42,0.09);
+        padding: 26px 30px 22px;
+        border: 1px solid #e2e8f0;
     }
-
-    .search-flex {
+    .search-container h4 {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: #1565c0;
+        margin-bottom: 16px;
         display: flex;
         align-items: center;
+        gap: 8px;
+        letter-spacing: -0.02em;
+    }
+    .search-container h4 .ph-icon {
+        width: 36px; height: 36px;
+        background: linear-gradient(135deg, #1565c0 0%, #1e88e5 100%);
+        color: #fff; border-radius: 8px;
+        display: inline-flex; align-items: center; justify-content: center;
+        font-size: 0.95rem; flex-shrink: 0;
     }
 
-        .search-flex img {
-            height: 38px;
-            margin-right: 14px;
-            border-radius: 6px;
-        }
+    .search-flex { display: flex; align-items: center; gap: 10px; }
+    .search-flex input.form-control {
+        flex: 1;
+        padding: 11px 14px;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 10px;
+        font-size: 0.95rem;
+        transition: all 0.2s ease;
+    }
+    .search-flex input.form-control:focus {
+        border-color: #1565c0;
+        box-shadow: 0 0 0 3.5px rgba(21,101,192,0.12);
+        outline: none;
+    }
 
-    .cabecera-azul-claro {
-        background-color: #1565c0 !important;
+    .btn-todos-prov {
+        background: linear-gradient(135deg, #1565c0 0%, #1e88e5 100%);
+        border: none; color: #fff; font-weight: 600; font-size: 0.9rem;
+        padding: 10px 20px; border-radius: 10px; white-space: nowrap;
+        box-shadow: 0 3px 10px rgba(21,101,192,0.3);
+        transition: all 0.2s ease; display: flex; align-items: center; gap: 7px;
+        height: 44px;
+    }
+    .btn-todos-prov:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 18px rgba(21,101,192,0.45);
+        background: linear-gradient(135deg, #0d47a1 0%, #1565c0 100%);
         color: #fff;
-        border-radius: 6px 6px 0 0;
-        font-size: 1.1rem;
-        letter-spacing: 0.5px;
     }
-
-    .row-seleccionada, .table-active {
-        background-color: #ffe082 !important;
-        font-weight: bold;
-    }
-
-    .table-hover tbody tr:hover {
-        background-color: #e3f2fd !important;
-        transition: background 0.2s;
-    }
-
-    .table-striped tbody tr:nth-of-type(odd) {
-        background-color: #f9f9f9;
-    }
-
-    .truncate {
-        max-width: 120px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
-    .highlight {
-        background-color: #ffff66;
-        padding: 0 2px;
-        border-radius: 2px;
-    }
+    .btn-todos-prov:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
     .autocomplete-list {
-        position: absolute;
-        z-index: 1000;
-        width: 100%;
-        max-height: 200px;
-        overflow-y: auto;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-        border-radius: 0 0 6px 6px;
+        position: absolute; z-index: 1000; width: 100%;
+        max-height: 220px; overflow-y: auto;
+        box-shadow: 0 8px 24px rgba(15,23,42,0.12);
+        border-radius: 10px; border: 1px solid #e2e8f0;
         -webkit-overflow-scrolling: touch;
+        animation: fadeInDropdown 0.2s ease;
     }
-
-    .autocomplete-item {
-        cursor: pointer;
-        transition: background 0.2s;
-        touch-action: manipulation;
-    }
-
-        .autocomplete-item:hover {
-            background: #e3f2fd;
-        }
+    @@keyframes fadeInDropdown { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+    .autocomplete-item { cursor: pointer; transition: background 0.15s; padding: 9px 14px; font-size: 0.9rem; }
+    .autocomplete-item:hover { background: #e3f2fd; color: #1565c0; }
 
     .table-responsive {
-        margin-top: 24px;
-        border-radius: 8px;
-        box-shadow: 0 2px 12px rgba(21,101,192,0.08);
-        background: #fff;
-        padding: 16px;
-    }
-
-    .pagination {
         margin-top: 20px;
+        border-radius: 16px;
+        box-shadow: 0 4px 14px rgba(15,23,42,0.07);
+        background: #fff;
+        overflow-x: auto;
+        border: 1px solid #e2e8f0;
     }
 
-    .alert-info {
-        margin-top: 24px;
-        border-radius: 6px;
+    /* Stat summary strip */
+    .prov-stat-strip {
+        display: flex; gap: 12px; flex-wrap: wrap;
+        margin: 16px 0 8px;
+    }
+    .prov-stat-strip .stat-chip {
+        font-size: 0.82rem;
     }
 
-    h4, h5 {
-        color: #1565c0;
-        font-weight: 600;
-        margin-bottom: 18px;
-    }
+    .document-link { color: #1565c0 !important; text-decoration: none; font-weight: 600; transition: color 0.2s ease; }
+    .document-link:hover { color: #0d47a1 !important; text-decoration: underline; }
 
-    /* Mejoras para el card de resultados seleccionados */
-    .card.border-primary {
-        border: 1.5px solid #1565c0 !important;
-    }
-
-    .card-header.bg-primary {
-        background: #1565c0 !important;
-        color: #fff !important;
-        font-weight: 600;
-        font-size: 1.15rem;
-        letter-spacing: 0.5px;
-        border-radius: 8px 8px 0 0;
-    }
-
-    .card {
-        border-radius: 8px;
-        box-shadow: 0 2px 12px rgba(21,101,192,0.10);
-    }
-
-    .table tfoot tr {
-        background: #e3f2fd !important;
-    }
-
-    /* Estilos para enlaces de documentos */
-    .document-link {
-        color: #1565c0 !important;
-        text-decoration: none;
-        font-weight: 600;
-        transition: color 0.2s ease;
-    }
-
-        .document-link:hover {
-            color: #0d47a1 !important;
-            text-decoration: underline;
-        }
-
-        .document-link:focus {
-            outline: 2px solid #1565c0;
-            outline-offset: 2px;
-        }
-
-        /* Indicador de que es clickeable */
-        .document-link::after {
-            content: " 🔗";
-            font-size: 0.8em;
-            opacity: 0.7;
-        }
-
-        .document-link:hover::after {
-            opacity: 1;
-        }
-
-    /* Botón de scroll hacia arriba para móviles */
     .scroll-to-top {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        background: #1565c0;
-        color: white;
-        border: none;
-        border-radius: 50%;
-        width: 50px;
-        height: 50px;
-        font-size: 20px;
-        cursor: pointer;
-        opacity: 0;
-        transition: opacity 0.3s, transform 0.3s;
-        z-index: 1000;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        box-shadow: 0 4px 12px rgba(21, 101, 192, 0.3);
+        position: fixed; bottom: 24px; right: 24px;
+        background: linear-gradient(135deg, #1565c0 0%, #1e88e5 100%);
+        color: #fff; border: none; border-radius: 50%;
+        width: 48px; height: 48px; font-size: 18px; cursor: pointer;
+        opacity: 0; transition: opacity 0.3s, transform 0.3s; z-index: 1000;
+        display: flex; align-items: center; justify-content: center;
+        box-shadow: 0 4px 14px rgba(21,101,192,0.4);
     }
+    .scroll-to-top.show { opacity: 1; }
+    .scroll-to-top:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(21,101,192,0.5); }
 
-    .scroll-to-top.show {
-        opacity: 1;
-    }
-
-    .scroll-to-top:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 16px rgba(21, 101, 192, 0.4);
-    }
-
-    /* Mejoras para móviles */
     @@media (max-width: 768px) {
-        /* Scroll horizontal mejorado para móviles */
-        .table-responsive {
-            margin: 16px -16px;
-            padding: 16px;
-            border-radius: 0;
-        }
-
-        /* Indicador de scroll visible en móviles */
-        .scroll-indicator {
-            opacity: 1;
-            right: 5px;
-            padding: 6px 3px;
-            font-size: 10px;
-        }
-
-        /* Mejoras para tablas en móvil */
-        .table {
-            font-size: 0.875rem;
-        }
-
-        .table td, .table th {
-            padding: 0.5rem 0.25rem;
-            white-space: nowrap;
-        }
-
-        /* Scroll suave para navegación móvil */
-        html {
-            scroll-behavior: smooth;
-        }
-
-        .scroll-to-top {
-            bottom: 15px;
-            right: 15px;
-            width: 45px;
-            height: 45px;
-            font-size: 18px;
-        }
+        .table-responsive { margin: 14px 0; border-radius: 12px; }
+        .table { font-size: 0.82rem; }
+        .table td, .table th { padding: 0.45rem 0.35rem; white-space: nowrap; }
+        .search-flex { flex-direction: column; align-items: stretch; }
+        .btn-todos-prov { width: 100%; }
     }
 </style>
 
@@ -318,27 +129,52 @@
     var initialCliDes = '@(prov_des ?? "")';
 </script>
 
-<div class="container" id="root">
+
+<div class="container-fluid" id="root">
+    <!-- Indicador de carga global -->
+    <div v-if="cargando" class="loading-overlay">
+        <div class="loading-spinner">
+            <div class="spinner-border spinner-border-custom text-primary" role="status">
+                <span class="visually-hidden">Cargando...</span>
+            </div>
+            <div class="loading-text">[[ textoCargar ]]</div>
+        </div>
+    </div>
+
     <div class="search-container">
-        <h4><i class="fa fa-search"></i> Buscar Proveedor</h4>
+        <h4>
+            <span class="ph-icon"><i class="fas fa-truck-moving"></i></span>
+            Buscar Proveedor
+        </h4>
+        <div class="search-meta" v-if="totalProveedoresEncontrados > 0" style="font-size:0.84rem;color:#64748b;margin-bottom:12px;">
+            <strong style="color:#0d47a1;font-size:1rem;">[[ totalProveedoresEncontrados ]]</strong> proveedores encontrados
+        </div>
         <div style="position:relative;">
             <div class="search-flex">
-                <img src="~/Content/Zulia_log.bmp" alt="Logo" />
                 <input type="text"
-                       class="form-control"
+                       :class="['form-control', {'search-loading': buscando}]"
                        v-model="txtBusqueda"
                        v-on:focus="limpiarBusqueda"
                        v-on:input="buscarSugerenciasDebounced"
                        v-on:keyup.enter="getBsuqueda()"
-                       placeholder="Buscar Proveedor..."
-                       autocomplete="off" />
+                       placeholder="Código o nombre del proveedor..."
+                       autocomplete="off"
+                       v-bind:disabled="buscando || cargando" />
+                <button class="btn-todos-prov"
+                        v-on:click="cargarTodos()"
+                        v-bind:disabled="buscando || cargando">
+                    <i class="fas fa-list" v-if="!buscando && !cargando"></i>
+                    <i class="fas fa-spinner fa-spin" v-else></i>
+                    <span v-if="!buscando && !cargando">Todos</span>
+                    <span v-else>...</span>
+                </button>
             </div>
             <ul v-if="sugerencias.length > 0" class="list-group autocomplete-list">
                 <li class="list-group-item autocomplete-item"
                     v-for="(s, i) in sugerencias"
                     :key="i"
                     v-on:click="seleccionarSugerencia(s)">
-                    <i class="fa fa-user"></i> [[ s ]]
+                    <i class="fas fa-building me-2" style="color:#94a3b8;"></i> [[ s ]]
                 </li>
             </ul>
         </div>
@@ -362,6 +198,20 @@
                             <span v-else>&#9660;</span>
                         </span>
                     </th>
+                    <th class="cabecera-azul-claro text-center" v-on:click="ordenarPor('cant_documentos')" style="cursor:pointer;">
+                        <i class="fa fa-file-alt"></i> Cant. Docs
+                        <span v-if="columnaOrden==='cant_documentos'">
+                            <span v-if="ordenAscendente">&#9650;</span>
+                            <span v-else>&#9660;</span>
+                        </span>
+                    </th>
+                    <th class="cabecera-azul-claro text-end" v-on:click="ordenarPor('total_saldo')" style="cursor:pointer;">
+                        <i class="fa fa-dollar-sign"></i> Total Saldo
+                        <span v-if="columnaOrden==='total_saldo'">
+                            <span v-if="ordenAscendente">&#9650;</span>
+                            <span v-else>&#9660;</span>
+                        </span>
+                    </th>
                 </tr>
             </thead>
             <tbody>
@@ -379,6 +229,8 @@
                     v-on:click="seleccionarCliente(item)">
                     <td v-html="highlight(item.co_prov)"></td>
                     <td v-html="highlight(item.prov_des)"></td>
+                    <td class="text-center"><strong>[[ item.cant_documentos || 0 ]]</strong></td>
+                    <td class="text-end"><strong>[[ formatNumero(item.total_saldo) ]]</strong></td>
                 </tr>
             </tbody>
         </table>
@@ -443,8 +295,9 @@
                                     </td>*@
 
                                 <td class="text-center">
-                                    <a :href="'/DocumentoCP/DetalleDocumento?co_tipo_doc=' + encodeURIComponent(item.co_tipo_doc.trim()) + '&nro_doc=' + encodeURIComponent(item.nro_doc.trim()) + '&co_prov=' + encodeURIComponent(clienteSeleccionado.co_prov.trim()) + '&prov_des=' + encodeURIComponent(clienteSeleccionado.prov_des.trim())"
+                                    <a href="javascript:void(0)"
                                        class="text-decoration-none"
+                                       v-on:click="navigateToDocument(item)"
                                        v-html="highlight(item.nro_doc)">
                                     </a>
                                 </td>
@@ -510,55 +363,149 @@
             data: {
                 txtBusqueda: '',
                 sugerencias: [],
-                todosResultados: [],
                 resultadosFiltrados: [],
+                todosLosDocumentos: [], // Almacenar todos los documentos originales
                 clienteSeleccionado: null,
                 resultadosPorCliente: [],
                 paginaActual: 1,
-                resultadosPorPagina: 10,
+                resultadosPorPagina: 20, // Changed to 20
+                totalRecords: 0, // Added totalRecords
                 columnaOrden: '',
-                ordenAscendente: true
+                ordenAscendente: true,
+                cargando: false,
+                buscando: false,
+                textoCargar: 'Cargando...'
             },
             computed: {
                 resultadosPaginados() {
-                    const inicio = (this.paginaActual - 1) * this.resultadosPorPagina;
-                    return this.resultadosFiltrados.slice(inicio, inicio + this.resultadosPorPagina);
+                    // Si no hay búsqueda activa (modo "Todos"), mostrar todos sin paginar
+                    if (this.txtBusqueda.trim() === '') {
+                        return this.resultadosFiltrados;
+                    }
+                    // Si hay búsqueda, retornar los resultados paginados del servidor
+                    return this.resultadosFiltrados;
                 },
                 totalPaginas() {
-                    return Math.ceil(this.resultadosFiltrados.length / this.resultadosPorPagina);
+                    // Solo mostrar paginación si hay búsqueda activa
+                    if (this.txtBusqueda.trim() === '') {
+                        return 1;
+                    }
+                    return Math.ceil(this.totalRecords / this.resultadosPorPagina);
                 }
             },
             methods: {
-                getBsuqueda() {
+                cargarTodos() {
+                    this.buscando = true;
+                    this.cargando = true;
+                    this.textoCargar = 'Cargando todos los proveedores...';
+                    this.txtBusqueda = '';
+                    this.sugerencias = [];
+                    this.paginaActual = 1;
+
+                    axios.get('/DocumentoCP/buscarPorDocumCP', {
+                        params: {
+                            nombre: '',
+                            page: 1,
+                            pageSize: 999999 // Cargar todos los registros sin paginación
+                        }
+                    })
+                        .then((response) => {
+                            const todosLosDatos = response.data.datos || [];
+                            
+                            // Guardar todos los documentos originales
+                            this.todosLosDocumentos = todosLosDatos;
+                            
+                            // Agrupar por proveedor y calcular estadísticas
+                            const proveedoresMap = {};
+                            
+                            todosLosDatos.forEach(item => {
+                                const coProv = item.co_prov || '';
+                                const provDes = item.prov_des || '';
+                                const key = coProv + '|' + provDes;
+                                
+                                if (!proveedoresMap[key]) {
+                                    proveedoresMap[key] = {
+                                        co_prov: coProv,
+                                        prov_des: provDes,
+                                        cant_documentos: 0,
+                                        total_saldo: 0
+                                    };
+                                }
+                                
+                                proveedoresMap[key].cant_documentos++;
+                                proveedoresMap[key].total_saldo += Number(item.saldo) || 0;
+                            });
+                            
+                            // Convertir el mapa a array
+                            this.resultadosFiltrados = Object.values(proveedoresMap);
+                            this.totalRecords = this.resultadosFiltrados.length;
+                            this.clienteSeleccionado = null;
+                            this.resultadosPorCliente = [];
+                            this.buscando = false;
+                            this.cargando = false;
+                        })
+                        .catch(() => {
+                            this.resultadosFiltrados = [];
+                            this.todosLosDocumentos = [];
+                            this.totalRecords = 0;
+                            this.clienteSeleccionado = null;
+                            this.resultadosPorCliente = [];
+                            this.buscando = false;
+                            this.cargando = false;
+                        });
+                },
+                getBsuqueda(page) {
                     if (this.txtBusqueda.trim() !== '') {
                         let cadena = this.txtBusqueda.trim();
-                        let cantidad = 1000;
+                        
+                        this.buscando = true;
+                        this.cargando = true;
+                        this.textoCargar = 'Buscando proveedores...';
 
                         axios.get('/DocumentoCP/buscarPorDocumCP', {
                             params: {
                                 nombre: cadena,
-                                cantidad: cantidad
+                                page: page || this.paginaActual,
+                                pageSize: this.resultadosPorPagina
                             }
                         })
                             .then((response) => {
-                                this.todosResultados = response.data.datos || [];
-                                const seen = {};
-                                this.resultadosFiltrados = this.todosResultados.filter(item => {
-                                    // Agregar validaciones para evitar errores null
+                                const todosLosDatos = response.data.datos || [];
+                                this.totalRecords = response.data.totalRecords || 0;
+                                
+                                // Guardar todos los documentos originales
+                                this.todosLosDocumentos = todosLosDatos;
+                                
+                                // Agrupar por proveedor y calcular estadísticas
+                                const proveedoresMap = {};
+                                
+                                todosLosDatos.forEach(item => {
                                     const coProv = item.co_prov || '';
                                     const provDes = item.prov_des || '';
                                     const key = coProv + '|' + provDes;
-                                    if (seen[key]) return false;
-                                    seen[key] = true;
-                                    return true;
+                                    
+                                    if (!proveedoresMap[key]) {
+                                        proveedoresMap[key] = {
+                                            co_prov: coProv,
+                                            prov_des: provDes,
+                                            cant_documentos: 0,
+                                            total_saldo: 0
+                                        };
+                                    }
+                                    
+                                    proveedoresMap[key].cant_documentos++;
+                                    proveedoresMap[key].total_saldo += Number(item.saldo) || 0;
                                 });
+                                
+                                // Convertir el mapa a array
+                                this.resultadosFiltrados = Object.values(proveedoresMap);
+
                                 this.clienteSeleccionado = null;
                                 this.resultadosPorCliente = [];
-                                this.paginaActual = 1;
                                 this.sugerencias = [];
-                                // Selección automática si hay parámetros iniciales
+
                                 if (initialCoCli && initialCliDes) {
-                                    const cliente = this.todosResultados.find(x => {
+                                    const cliente = this.resultadosFiltrados.find(x => {
                                         const xCoProv = x.co_prov || '';
                                         const xProvDes = x.prov_des || '';
                                         return xCoProv === initialCoCli && xProvDes === initialCliDes;
@@ -567,22 +514,28 @@
                                         this.seleccionarCliente(cliente);
                                     }
                                 }
+                                this.buscando = false;
+                                this.cargando = false;
                             })
                             .catch(() => {
-                                this.todosResultados = [];
                                 this.resultadosFiltrados = [];
+                                this.todosLosDocumentos = [];
+                                this.totalRecords = 0;
                                 this.clienteSeleccionado = null;
                                 this.resultadosPorCliente = [];
-                                this.paginaActual = 1;
                                 this.sugerencias = [];
+                                this.buscando = false;
+                                this.cargando = false;
                             });
                     } else {
-                        this.todosResultados = [];
                         this.resultadosFiltrados = [];
+                        this.todosLosDocumentos = [];
+                        this.totalRecords = 0;
                         this.clienteSeleccionado = null;
                         this.resultadosPorCliente = [];
-                        this.paginaActual = 1;
                         this.sugerencias = [];
+                        this.buscando = false;
+                        this.cargando = false;
                     }
                 },
                 buscarSugerencias() {
@@ -590,10 +543,10 @@
                         this.sugerencias = [];
                         return;
                     }
+                    // This method needs to be adapted for server-side search if the list is too large
                     const texto = this.txtBusqueda.toLowerCase();
                     const sugerenciasSet = new Set();
-                    this.todosResultados.forEach(item => {
-                        // Agregar validaciones para evitar errores null
+                    this.resultadosFiltrados.forEach(item => {
                         const provDes = item.prov_des || '';
                         const coProv = item.co_prov || '';
 
@@ -609,27 +562,35 @@
                 seleccionarSugerencia(s) {
                     this.txtBusqueda = s;
                     this.sugerencias = [];
+                    this.paginaActual = 1;
                     this.getBsuqueda();
                 },
                 seleccionarCliente(item) {
-                    this.clienteSeleccionado = item;
-                    this.resultadosPorCliente = this.todosResultados.filter(x => {
-                        // Agregar validaciones para evitar errores null
-                        const xCoProv = x.co_prov || '';
-                        const xProvDes = x.prov_des || '';
-                        const itemCoProv = item.co_prov || '';
-                        const itemProvDes = item.prov_des || '';
+                    this.cargando = true;
+                    this.textoCargar = 'Cargando documentos del proveedor...';
+                    
+                    setTimeout(() => {
+                        this.clienteSeleccionado = item;
+                        // Filtrar documentos desde todosLosDocumentos en lugar de resultadosFiltrados
+                        this.resultadosPorCliente = this.todosLosDocumentos.filter(x => {
+                            const xCoProv = x.co_prov || '';
+                            const xProvDes = x.prov_des || '';
+                            const itemCoProv = item.co_prov || '';
+                            const itemProvDes = item.prov_des || '';
 
-                        return xCoProv === itemCoProv && xProvDes === itemProvDes;
-                    });
+                            return xCoProv === itemCoProv && xProvDes === itemProvDes;
+                        });
 
-                    // Dejar solo el cliente seleccionado en los resultados filtrados
-                    this.resultadosFiltrados = [item];
-                    this.paginaActual = 1;
+                        this.resultadosFiltrados = [item];
+                        this.paginaActual = 1;
+                        this.totalRecords = 1;
+                        this.cargando = false;
+                    }, 300);
                 },
                 cambiarPagina(pagina) {
-                    if (pagina > 0 && pagina <= this.totalPaginas) {
+                    if (página > 0 && página <= this.totalPaginas) {
                         this.paginaActual = pagina;
+                        this.getBsuqueda(pagina);
                     }
                 },
                 ordenarPor(columna) {
@@ -640,28 +601,32 @@
                         this.ordenAscendente = true;
                     }
                     this.resultadosFiltrados.sort((a, b) => {
-                        if (a[columna] < b[columna]) return this.ordenAscendente ? -1 : 1;
-                        if (a[columna] > b[columna]) return this.ordenAscendente ? 1 : -1;
+                        let valA = a[columna];
+                        let valB = b[columna];
+                        
+                        // Para columnas numéricas, convertir a número
+                        if (columna === 'cant_documentos' || columna === 'total_saldo') {
+                            valA = Number(valA) || 0;
+                            valB = Number(valB) || 0;
+                        }
+                        
+                        if (valA < valB) return this.ordenAscendente ? -1 : 1;
+                        if (valA > valB) return this.ordenAscendente ? 1 : -1;
                         return 0;
                     });
-                    this.paginaActual = 1;
                 },
                 formatNumero(valor) {
                     if (valor == null || valor === '' || Number(valor) === 0) return '';
                     return Number(valor).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
                 },
-
-
                 formatFecha(valor) {
                     if (!valor) return '';
                     let fecha;
 
-                    // Si es formato /Date(1234567890)/
                     if (typeof valor === 'string' && valor.match(/\/Date\((\d+)\)\//)) {
                         const ms = parseInt(valor.match(/\/Date\((\d+)\)\//)[1], 10);
                         fecha = new Date(ms);
                     } else if (typeof valor === 'string' && valor.length === 10 && valor.match(/^\d{4}-\d{2}-\d{2}$/)) {
-                        // Si es formato YYYY-MM-DD, parsear manualmente como local
                         const [anio, mes, dia] = valor.split('-');
                         fecha = new Date(Number(anio), Number(mes) - 1, Number(dia));
                     } else {
@@ -674,16 +639,30 @@
                     const mes = ('0' + (fecha.getMonth() + 1)).slice(-2);
                     const anio = fecha.getFullYear();
                     return `${dia}/${mes}/${anio}`;
-
-
+                },
+                navigateToDocument(item) {
+                    this.cargando = true;
+                    this.textoCargar = 'Cargando detalle del documento...';
+                    
+                    setTimeout(() => {
+                        window.location.href = '/DocumentoCP/DetalleDocumento?co_tipo_doc=' + 
+                            encodeURIComponent(item.co_tipo_doc.trim()) + 
+                            '&nro_doc=' + encodeURIComponent(item.nro_doc.trim()) + 
+                            '&co_prov=' + encodeURIComponent(this.clienteSeleccionado.co_prov.trim()) + 
+                            '&prov_des=' + encodeURIComponent(this.clienteSeleccionado.prov_des.trim());
+                    }, 300);
                 },
                 limpiarBusqueda() {
                     this.txtBusqueda = '';
                     this.sugerencias = [];
                     this.resultadosFiltrados = [];
+                    this.todosLosDocumentos = [];
+                    this.totalRecords = 0;
                     this.clienteSeleccionado = null;
                     this.resultadosPorCliente = [];
                     this.paginaActual = 1;
+                    this.buscando = false;
+                    this.cargando = false;
                 },
                 sumaCol(campo) {
                     return this.resultadosPorCliente.reduce((acc, item) => {
@@ -693,19 +672,16 @@
                 },
                 highlight(text) {
                     if (!this.txtBusqueda) return text;
-                    // Agregar validación para evitar errores null
                     if (text == null || text === undefined) return '';
 
                     const regex = new RegExp(`(${this.txtBusqueda})`, 'gi');
                     return text.toString().replace(regex, '<span class="highlight">$1</span>');
                 },
-
                 setupMobileScroll() {
                     const scrollToTopBtn = document.getElementById('scrollToTop');
                     const scrollIndicator = document.getElementById('scrollIndicator');
                     let scrollTimeout;
 
-                    // Mostrar/ocultar botón de scroll hacia arriba
                     window.addEventListener('scroll', () => {
                         if (window.pageYOffset > 300) {
                             scrollToTopBtn.classList.add('show');
@@ -713,7 +689,6 @@
                             scrollToTopBtn.classList.remove('show');
                         }
 
-                        // Mostrar indicador de scroll
                         clearTimeout(scrollTimeout);
                         scrollIndicator.classList.add('show');
                         
@@ -722,7 +697,6 @@
                         }, 2000);
                     });
 
-                    // Scroll hacia arriba
                     scrollToTopBtn.addEventListener('click', () => {
                         window.scrollTo({
                             top: 0,
@@ -730,7 +704,6 @@
                         });
                     });
 
-                    // Scroll horizontal para tablas en móvil
                     const tables = document.querySelectorAll('.table-responsive');
                     tables.forEach(table => {
                         let isScrolling = false;
@@ -756,18 +729,14 @@
                     });
                 }
             },
-
             created() {
                 this.buscarSugerenciasDebounced = debounce(this.buscarSugerencias, 300);
-                // Si hay parámetros iniciales, realiza la búsqueda y selecciona el cliente automáticamente
                 if (initialCoCli && initialCliDes) {
                     this.txtBusqueda = initialCliDes;
                     this.getBsuqueda();
                 }
             },
-
             mounted() {
-                // Configurar funcionalidad de scroll para móviles
                 this.setupMobileScroll();
             }
         });
