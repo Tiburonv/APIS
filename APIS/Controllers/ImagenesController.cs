@@ -78,22 +78,19 @@ namespace APIS.Controllers
 
             try
             {
-                return db.Database.SqlQuery<APIS.Models.DocumentoCC1ViewModel>(
-                    "EXEC buscarPorDocumCC1 @consulta, @cantidad, @usuario, @incluirImagen",
-                    new SqlParameter("@consulta", $"{co_cli} {cli_des}"),
-                    new SqlParameter("@cantidad", 1000),
-                    new SqlParameter("@usuario", usuario),
-                    new SqlParameter("@incluirImagen", true)
+                // Helper compartido: ejecuta buscarPorDocumCC1 (con fallback a la version de 3 parametros)
+                return ConsultasCuentasCobrar.BuscarPorDocumCC1(
+                    db,
+                    co_cli + " " + cli_des,
+                    1000,
+                    usuario,
+                    incluirImagen: true
                 ).FirstOrDefault(x => x.co_cli == co_cli && x.cli_des == cli_des);
             }
-            catch (SqlException)
+            catch (Exception ex)
             {
-                return db.Database.SqlQuery<APIS.Models.DocumentoCC1ViewModel>(
-                    "EXEC buscarPorDocumCC1 @consulta, @cantidad, @usuario",
-                    new SqlParameter("@consulta", $"{co_cli} {cli_des}"),
-                    new SqlParameter("@cantidad", 1000),
-                    new SqlParameter("@usuario", usuario)
-                ).FirstOrDefault(x => x.co_cli == co_cli && x.cli_des == cli_des);
+                System.Diagnostics.Debug.WriteLine("Error en ObtenerDocumentoConImagen: " + ex.ToString());
+                return null;
             }
         }
 

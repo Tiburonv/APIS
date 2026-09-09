@@ -11,43 +11,6 @@ namespace APIS.Controllers
 {
     public class HomeController : Controller
     {
-        public string Nro_doc { get; set; }
-
-        /// <summary>
-        /// Ejecuta buscarPorDocumCC1. Usa @incluirImagen si el SP esta actualizado; si no, cae al SP de 3 parametros.
-        /// </summary>
-        private static List<DocumentoCC1ViewModel> EjecutarBuscarPorDocumCC1(
-            A_ZULIA_12Entities contexto,
-            string consulta,
-            int cantidad,
-            string usuario,
-            bool incluirImagen)
-        {
-            var consultaParam = new SqlParameter("@consulta", (object)(consulta ?? string.Empty) ?? DBNull.Value);
-            var cantidadParam = new SqlParameter("@cantidad", cantidad);
-            var usuarioParam = new SqlParameter("@usuario", (object)(usuario ?? string.Empty) ?? DBNull.Value);
-
-            try
-            {
-                var incluirParam = new SqlParameter("@incluirImagen", incluirImagen);
-                return contexto.Database.SqlQuery<DocumentoCC1ViewModel>(
-                    "EXEC buscarPorDocumCC1 @consulta, @cantidad, @usuario, @incluirImagen",
-                    consultaParam,
-                    cantidadParam,
-                    usuarioParam,
-                    incluirParam
-                ).ToList();
-            }
-            catch (SqlException)
-            {
-                return contexto.Database.SqlQuery<DocumentoCC1ViewModel>(
-                    "EXEC buscarPorDocumCC1 @consulta, @cantidad, @usuario",
-                    consultaParam,
-                    cantidadParam,
-                    usuarioParam
-                ).ToList();
-            }
-        }
 
         public ActionResult Index(string co_cli, string cli_des)
         {
@@ -90,7 +53,7 @@ namespace APIS.Controllers
                 using (var contexto = new A_ZULIA_12Entities())
                 {
                     // Obtener todos los documentos del cliente
-                    var documentos = EjecutarBuscarPorDocumCC1(
+                    var documentos = ConsultasCuentasCobrar.BuscarPorDocumCC1(
                         contexto,
                         string.Empty,
                         1000,
@@ -233,7 +196,7 @@ namespace APIS.Controllers
 
             foreach (var consulta in consultas.Distinct(StringComparer.OrdinalIgnoreCase))
             {
-                var lista = EjecutarBuscarPorDocumCC1(
+                var lista = ConsultasCuentasCobrar.BuscarPorDocumCC1(
                     contexto,
                     consulta ?? string.Empty,
                     1000,
@@ -398,7 +361,7 @@ namespace APIS.Controllers
                     System.Diagnostics.Debug.WriteLine($"Buscando documentos con: nombre='{nombre}', usuario='{usuario}', incluirImagen={incluirImagen}");
                     
                     int cantidadLimite = cantidad > 0 ? Math.Min(cantidad, 1000) : 100;
-                    var resultados = EjecutarBuscarPorDocumCC1(
+                    var resultados = ConsultasCuentasCobrar.BuscarPorDocumCC1(
                         contexto,
                         nombre ?? string.Empty,
                         cantidadLimite,
@@ -512,7 +475,7 @@ namespace APIS.Controllers
 
                 using (var contexto = new A_ZULIA_12Entities())
                 {
-                    var lista = EjecutarBuscarPorDocumCC1(
+                    var lista = ConsultasCuentasCobrar.BuscarPorDocumCC1(
                         contexto,
                         string.Empty,
                         1000,
