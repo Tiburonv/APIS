@@ -331,6 +331,8 @@
     <Content Include="sw.js" />
     <Content Include="kill-sw.html" />
     <Content Include="Web.config" />
+    <!-- Archivo local con credenciales (NO esta versionado en git; se genera en cada entorno) -->
+    <Content Include="connectionStrings.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>
@@ -448,6 +450,7 @@
     </ItemGroup>
     <Copy SourceFiles="@(PublishFiles)" DestinationFolder="$(PublishDir)%(RecursiveDir)" />
     <Copy SourceFiles="Web.config" DestinationFolder="$(PublishDir)" />
+    <Copy SourceFiles="connectionStrings.config" DestinationFolder="$(PublishDir)" />
     <Copy SourceFiles="Global.asax" DestinationFolder="$(PublishDir)" />
     <Copy SourceFiles="Content\**\*.*" DestinationFolder="$(PublishDir)Content\%(RecursiveDir)" />
     <Copy SourceFiles="Scripts\**\*.*" DestinationFolder="$(PublishDir)Scripts\%(RecursiveDir)" />
@@ -467,6 +470,7 @@
     </ItemGroup>
     <Copy SourceFiles="@(IISFiles)" DestinationFolder="$(IISPath)%(RecursiveDir)" />
     <Copy SourceFiles="Web.config" DestinationFolder="$(IISPath)" />
+    <Copy SourceFiles="connectionStrings.config" DestinationFolder="$(IISPath)" />
     <Copy SourceFiles="Global.asax" DestinationFolder="$(IISPath)" />
     <Copy SourceFiles="Content\**\*.*" DestinationFolder="$(IISPath)Content\%(RecursiveDir)" />
     <Copy SourceFiles="Scripts\**\*.*" DestinationFolder="$(IISPath)Scripts\%(RecursiveDir)" />

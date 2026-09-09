@@ -361,3 +361,5 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+# Cadena de conexion local con credenciales (NO subir a git)
+APIS/connectionStrings.config
