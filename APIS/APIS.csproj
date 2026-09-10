@@ -217,6 +217,8 @@
     <Compile Include="Repositorios\ClienteRepositorio.cs" />
     <Compile Include="Repositorios\ImagenesRepositorio.cs" />
     <Compile Include="Repositorios\ConfigEmpresaRepositorio.cs" />
+    <Compile Include="Repositorios\UsuariosRepositorio.cs" />
+    <Compile Include="Repositorios\PedidosRepositorio.cs" />
     <Compile Include="Repositorios\IPreciosRepositorio.cs" />
     <Compile Include="Repositorios\PreciosRepositorio.cs" />
     <Compile Include="Servicios\Log.cs" />

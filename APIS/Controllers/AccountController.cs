@@ -6,12 +6,22 @@ using System.Text;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Security;
-using APIS.ADO;
+using APIS.Repositorios;
 
 namespace APIS.Controllers
 {
     public class AccountController : Controller
     {
+        private readonly IUsuariosRepositorio _usuarios;
+
+        public AccountController() : this(new UsuariosRepositorio())
+        {
+        }
+
+        public AccountController(IUsuariosRepositorio usuarios)
+        {
+            _usuarios = usuarios;
+        }
         // ====== Contraseñas seguras (PBKDF2) ======
         // Formato almacenado: pbkdf2$<iteraciones>$<salt_base64>$<hash_base64>
         private const int PBKDF2_ITERACIONES = 60000;
@@ -86,78 +96,60 @@ namespace APIS.Controllers
 
             try
             {
-                using (var db = new A_ZULIA_12Entities())
+                var usuario = _usuarios.BuscarPorUsuarioONombre(username);
+
+                if (usuario != null)
                 {
-                    var usernameLower = username.ToLower();
+                    var claveRegistrada = usuario.Clave ?? string.Empty;
 
-                    // Buscar usuario por identificador de usuario o por nombre
-                    var usuario = db.Usuarios.FirstOrDefault(u =>
-                        u.Usuario.Trim().ToLower() == usernameLower ||
-                        (u.Nombre != null && u.Nombre.Trim().ToLower() == usernameLower)
-                    );
+                    bool esValido = false;
+                    bool requiereMigrar = false;
 
-                    // Si no se encuentra y se ingresó un número sin ceros a la izquierda (ej: '4' en lugar de '04')
-                    int numVal;
-                    if (usuario == null && int.TryParse(username, out numVal))
+                    if (claveRegistrada.StartsWith(PBKDF2_PREFIJO, StringComparison.Ordinal))
                     {
-                        var usernamePadded = username.PadLeft(2, '0');
-                        usuario = db.Usuarios.FirstOrDefault(u => u.Usuario.Trim() == usernamePadded);
+                        // Formato nuevo: PBKDF2
+                        esValido = VerificarPbkdf2(password, claveRegistrada);
+                    }
+                    else
+                    {
+                        // Formato legado (texto plano con asteriscos o SHA-256): se valida con compatibilidad
+                        // y, si es correcta, se migra automaticamente al formato seguro PBKDF2.
+                        var claveLegacy = claveRegistrada.Trim();
+                        esValido = string.Equals(claveLegacy, password, StringComparison.Ordinal) ||
+                                    string.Equals(claveLegacy.Replace("*", ""), password.Replace("*", ""), StringComparison.Ordinal) ||
+                                    VerificarHashSha256Legacy(password, claveLegacy);
+                        requiereMigrar = esValido;
                     }
 
-                    if (usuario != null)
+                    if (esValido)
                     {
-                        var claveRegistrada = usuario.Clave ?? string.Empty;
-
-                        bool esValido = false;
-                        bool requiereMigrar = false;
-
-                        if (claveRegistrada.StartsWith(PBKDF2_PREFIJO, StringComparison.Ordinal))
+                        // Migrar a PBKDF2 en el primer login exitoso (claves legadas)
+                        if (requiereMigrar)
                         {
-                            // Formato nuevo: PBKDF2
-                            esValido = VerificarPbkdf2(password, claveRegistrada);
-                        }
-                        else
-                        {
-                            // Formato legado (texto plano con asteriscos o SHA-256): se valida con compatibilidad
-                            // y, si es correcta, se migra automaticamente al formato seguro PBKDF2.
-                            var claveLegacy = claveRegistrada.Trim();
-                            esValido = string.Equals(claveLegacy, password, StringComparison.Ordinal) ||
-                                        string.Equals(claveLegacy.Replace("*", ""), password.Replace("*", ""), StringComparison.Ordinal) ||
-                                        VerificarHashSha256Legacy(password, claveLegacy);
-                            requiereMigrar = esValido;
-                        }
-
-                        if (esValido)
-                        {
-                            // Migrar a PBKDF2 en el primer login exitoso (claves legadas)
-                            if (requiereMigrar)
+                            try
                             {
-                                try
-                                {
-                                    usuario.Clave = HashPasswordPbkdf2(password);
-                                    db.SaveChanges();
-                                }
-                                catch (Exception ex)
-                                {
-                                    // Si falla la migracion no se debe impedir el acceso
-                                    System.Diagnostics.Debug.WriteLine("Error al migrar clave a PBKDF2: " + ex.ToString());
-                                }
+                                _usuarios.GuardarClave(usuario.Usuario.Trim(), HashPasswordPbkdf2(password));
                             }
-
-                            LimpiarIntentosFallidos(claveIntento);
-
-                            var codigoUsuario = usuario.Usuario.Trim();
-                            Session["Usuario"] = codigoUsuario;
-                            Session["NombreUsuario"] = (usuario.Nombre ?? codigoUsuario).Trim();
-                            FormsAuthentication.SetAuthCookie(codigoUsuario, false);
-
-                            if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+                            catch (Exception ex)
                             {
-                                return Redirect(returnUrl);
+                                // Si falla la migracion no se debe impedir el acceso
+                                APIS.Servicios.Log.Error("Error al migrar clave a PBKDF2", ex);
                             }
-
-                            return RedirectToAction("Index", "Home");
                         }
+
+                        LimpiarIntentosFallidos(claveIntento);
+
+                        var codigoUsuario = usuario.Usuario.Trim();
+                        Session["Usuario"] = codigoUsuario;
+                        Session["NombreUsuario"] = (usuario.Nombre ?? codigoUsuario).Trim();
+                        FormsAuthentication.SetAuthCookie(codigoUsuario, false);
+
+                        if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+                        {
+                            return Redirect(returnUrl);
+                        }
+
+                        return RedirectToAction("Index", "Home");
                     }
                 }
 

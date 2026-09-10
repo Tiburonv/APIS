@@ -3,14 +3,22 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using APIS.ADO;
-using System.Data.Entity;
+using APIS.Repositorios;
 
 namespace APIS.Controllers
 {
     public class PedidosController : Controller
     {
-        private A_ZULIA_12Entities db = new A_ZULIA_12Entities();
+        private readonly IPedidosRepositorio _pedidos;
+
+        public PedidosController() : this(new PedidosRepositorio())
+        {
+        }
+
+        public PedidosController(IPedidosRepositorio pedidos)
+        {
+            _pedidos = pedidos;
+        }
 
         // GET: Pedidos
         public ActionResult Index()
@@ -45,12 +53,12 @@ namespace APIS.Controllers
         {
             try
             {
-                var resultados = db.buscarPedidosActivos(consulta).ToList();
+                var resultados = _pedidos.BuscarPedidosActivos(consulta);
                 return Json(new { success = true, datos = resultados });
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Error en buscarPedidosActivos: {ex.ToString()}");
+                APIS.Servicios.Log.Error("Error en buscarPedidosActivos", ex);
                 return Json(new { success = false, mensaje = "Error al buscar los pedidos activos." });
             }
         }
@@ -67,7 +75,7 @@ namespace APIS.Controllers
                 }
 
                 // Obtener los renglones del pedido
-                var renglones = db.buscarRengPE2(doc_num).ToList();
+                var renglones = _pedidos.BuscarRenglones(doc_num);
                 
                 if (renglones.Any())
                 {
@@ -75,7 +83,7 @@ namespace APIS.Controllers
                     var primerRenglon = renglones.First();
                     
                     // Buscar información del cliente usando buscarPedidosActivos
-                    var pedidosCliente = db.buscarPedidosActivos(primerRenglon.co_cli).ToList();
+                    var pedidosCliente = _pedidos.BuscarPedidosActivos(primerRenglon.co_cli);
                     var pedidoInfo = pedidosCliente.FirstOrDefault(p => p.doc_num == doc_num);
                     
                     // Crear una nueva lista con objetos anónimos que incluyan todos los campos
@@ -103,18 +111,9 @@ namespace APIS.Controllers
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Error en buscarRengPedidos: {ex.ToString()}");
+                APIS.Servicios.Log.Error("Error en buscarRengPedidos", ex);
                 return Json(new { success = false, mensaje = "Error al obtener los renglones del pedido." });
             }
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                db.Dispose();
-            }
-            base.Dispose(disposing);
         }
     }
 }

@@ -46,6 +46,9 @@ namespace APIS
             RegistrarSingleton<IDocumentosCPRepositorio, DocumentosCPRepositorio>();
             RegistrarSingleton<IClienteRepositorio, ClienteRepositorio>();
             RegistrarSingleton<IImagenesRepositorio, ImagenesRepositorio>();
+            RegistrarSingleton<IConfigEmpresaRepositorio, ConfigEmpresaRepositorio>();
+            RegistrarSingleton<IUsuariosRepositorio, UsuariosRepositorio>();
+            RegistrarSingleton<IPedidosRepositorio, PedidosRepositorio>();
 
             DependencyResolver.SetResolver(new ResolvedorDependencias());
         }
