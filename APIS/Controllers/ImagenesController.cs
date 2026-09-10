@@ -1,13 +1,22 @@
 using System;
-using System.Data.SqlClient;
 using System.Linq;
 using System.Web.Mvc;
-using APIS.ADO;
+using APIS.Repositorios;
 
 namespace APIS.Controllers
 {
     public class ImagenesController : Controller
     {
+        private readonly IImagenesRepositorio _imagenes;
+
+        public ImagenesController() : this(new ImagenesRepositorio())
+        {
+        }
+
+        public ImagenesController(IImagenesRepositorio imagenes)
+        {
+            _imagenes = imagenes;
+        }
         [HttpGet]
         public ActionResult ObtenerImagen(string co_cli, string cli_des)
         {
@@ -18,23 +27,20 @@ namespace APIS.Controllers
                     return HttpNotFound();
                 }
 
-                using (var db = new A_ZULIA_12Entities())
-                {
-                    // Buscar la imagen por código de cliente y descripción
-                    var resultado = ObtenerDocumentoConImagen(db, co_cli, cli_des);
-                    var imagen = resultado?.Imagen;
+                // Buscar la imagen por código de cliente y descripción
+                var resultado = ObtenerDocumentoConImagen(co_cli, cli_des);
+                var imagen = resultado != null ? resultado.Imagen : null;
 
-                    if (imagen != null && imagen.Length > 0)
-                    {
-                        return File(imagen, "image/jpeg");
-                    }
-                    
-                    return HttpNotFound();
+                if (imagen != null && imagen.Length > 0)
+                {
+                    return File(imagen, "image/jpeg");
                 }
+                
+                return HttpNotFound();
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Error al obtener imagen: {ex.Message}");
+                APIS.Servicios.Log.Error("Error al obtener imagen", ex);
                 return HttpNotFound();
             }
         }
@@ -49,47 +55,37 @@ namespace APIS.Controllers
                     return HttpNotFound();
                 }
 
-                using (var db = new A_ZULIA_12Entities())
-                {
-                    // Buscar la imagen por código de cliente y descripción
-                    var resultado = ObtenerDocumentoConImagen(db, co_cli, cli_des);
-                    var imagen = resultado?.Imagen;
+                // Buscar la imagen por código de cliente y descripción
+                var resultado = ObtenerDocumentoConImagen(co_cli, cli_des);
+                var imagen = resultado != null ? resultado.Imagen : null;
 
-                    if (imagen != null && imagen.Length > 0)
-                    {
-                        // Crear un thumbnail pequeño (50x50 píxeles)
-                        var thumbnail = CrearThumbnail(imagen, 50, 50);
-                        return File(thumbnail, "image/jpeg");
-                    }
-                    
-                    return HttpNotFound();
+                if (imagen != null && imagen.Length > 0)
+                {
+                    // Crear un thumbnail pequeño (50x50 píxeles)
+                    var thumbnail = CrearThumbnail(imagen, 50, 50);
+                    return File(thumbnail, "image/jpeg");
                 }
+                
+                return HttpNotFound();
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Error al obtener thumbnail: {ex.Message}");
+                APIS.Servicios.Log.Error("Error al obtener thumbnail", ex);
                 return HttpNotFound();
             }
         }
 
-        private APIS.Models.DocumentoCC1ViewModel ObtenerDocumentoConImagen(A_ZULIA_12Entities db, string co_cli, string cli_des)
+        private APIS.Models.DocumentoCC1ViewModel ObtenerDocumentoConImagen(string co_cli, string cli_des)
         {
-            var usuario = User?.Identity?.Name ?? string.Empty;
+            var usuario = User != null && User.Identity != null ? (User.Identity.Name ?? string.Empty) : string.Empty;
 
             try
             {
-                // Helper compartido: ejecuta buscarPorDocumCC1 (con fallback a la version de 3 parametros)
-                return ConsultasCuentasCobrar.BuscarPorDocumCC1(
-                    db,
-                    co_cli + " " + cli_des,
-                    1000,
-                    usuario,
-                    incluirImagen: true
-                ).FirstOrDefault(x => x.co_cli == co_cli && x.cli_des == cli_des);
+                return _imagenes.ObtenerDocumentoConImagen(co_cli, cli_des, usuario);
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine("Error en ObtenerDocumentoConImagen: " + ex.ToString());
+                APIS.Servicios.Log.Error("Error en ImagenesController.ObtenerDocumentoConImagen", ex);
                 return null;
             }
         }

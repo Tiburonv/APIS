@@ -1,17 +1,23 @@
-using APIS.ADO;
-using APIS.Models;
 using System;
-using System.Data;
-using System.Data.SqlClient;
 using System.IO;
-using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using APIS.Repositorios;
 
 namespace APIS.Controllers
 {
     public class ConfigEmpresaController : Controller
     {
+        private readonly IConfigEmpresaRepositorio _config;
+
+        public ConfigEmpresaController() : this(new ConfigEmpresaRepositorio())
+        {
+        }
+
+        public ConfigEmpresaController(IConfigEmpresaRepositorio config)
+        {
+            _config = config;
+        }
         protected override void OnActionExecuting(ActionExecutingContext filterContext)
         {
             var action = filterContext.ActionDescriptor.ActionName;
@@ -41,40 +47,35 @@ namespace APIS.Controllers
         {
             try
             {
-                using (var db = new A_ZULIA_12Entities())
+                var cfg = _config.Obtener();
+
+                if (cfg == null)
                 {
-                    var cfg = db.Database.SqlQuery<ConfigEmpresaViewModel>(
-                        "EXEC obtenerZConfigEmpresa"
-                    ).FirstOrDefault();
-
-                    if (cfg == null)
-                    {
-                        return Json(new
-                        {
-                            rif = string.Empty,
-                            direccion = string.Empty,
-                            telefono = string.Empty,
-                            logoBase64 = (string)null,
-                            logoMimeType = (string)null
-                        }, JsonRequestBehavior.AllowGet);
-                    }
-
-                    string logoBase64 = null;
-                    if (cfg.Logo != null && cfg.Logo.Length > 0)
-                    {
-                        var mime = string.IsNullOrWhiteSpace(cfg.LogoMimeType) ? "image/png" : cfg.LogoMimeType;
-                        logoBase64 = "data:" + mime + ";base64," + Convert.ToBase64String(cfg.Logo);
-                    }
-
                     return Json(new
                     {
-                        rif = cfg.RIF ?? string.Empty,
-                        direccion = cfg.Direccion ?? string.Empty,
-                        telefono = cfg.Telefono ?? string.Empty,
-                        logoBase64 = logoBase64,
-                        logoMimeType = cfg.LogoMimeType
+                        rif = string.Empty,
+                        direccion = string.Empty,
+                        telefono = string.Empty,
+                        logoBase64 = (string)null,
+                        logoMimeType = (string)null
                     }, JsonRequestBehavior.AllowGet);
                 }
+
+                string logoBase64 = null;
+                if (cfg.Logo != null && cfg.Logo.Length > 0)
+                {
+                    var mime = string.IsNullOrWhiteSpace(cfg.LogoMimeType) ? "image/png" : cfg.LogoMimeType;
+                    logoBase64 = "data:" + mime + ";base64," + Convert.ToBase64String(cfg.Logo);
+                }
+
+                return Json(new
+                {
+                    rif = cfg.RIF ?? string.Empty,
+                    direccion = cfg.Direccion ?? string.Empty,
+                    telefono = cfg.Telefono ?? string.Empty,
+                    logoBase64 = logoBase64,
+                    logoMimeType = cfg.LogoMimeType
+                }, JsonRequestBehavior.AllowGet);
             }
             catch (Exception ex)
             {
@@ -134,39 +135,14 @@ namespace APIS.Controllers
 
                 var usuario = Session["Usuario"] as string ?? "999";
 
-                using (var db = new A_ZULIA_12Entities())
-                {
-                    var connection = db.Database.Connection;
-                    if (connection.State != ConnectionState.Open)
-                    {
-                        connection.Open();
-                    }
-
-                    using (var command = connection.CreateCommand())
-                    {
-                        command.CommandText = "EXEC guardarZConfigEmpresa @RIF, @Direccion, @Telefono, @Logo, @LogoMimeType, @ActualizarLogo, @Co_us_mo";
-                        command.CommandType = CommandType.Text;
-
-                        command.Parameters.Add(new SqlParameter("@RIF", SqlDbType.VarChar, 20) { Value = rif.Trim() });
-                        command.Parameters.Add(new SqlParameter("@Direccion", SqlDbType.NVarChar, 250) { Value = direccion.Trim() });
-                        command.Parameters.Add(new SqlParameter("@Telefono", SqlDbType.VarChar, 50) { Value = telefono.Trim() });
-
-                        var logoParam = new SqlParameter("@Logo", SqlDbType.VarBinary, -1)
-                        {
-                            Value = (object)logoBytes ?? DBNull.Value
-                        };
-                        command.Parameters.Add(logoParam);
-
-                        command.Parameters.Add(new SqlParameter("@LogoMimeType", SqlDbType.VarChar, 50)
-                        {
-                            Value = (object)logoMime ?? DBNull.Value
-                        });
-                        command.Parameters.Add(new SqlParameter("@ActualizarLogo", SqlDbType.Bit) { Value = actualizarLogo });
-                        command.Parameters.Add(new SqlParameter("@Co_us_mo", SqlDbType.VarChar, 10) { Value = usuario });
-
-                        command.ExecuteNonQuery();
-                    }
-                }
+                _config.Guardar(
+                    rif.Trim(),
+                    direccion.Trim(),
+                    telefono.Trim(),
+                    logoBytes,
+                    logoMime,
+                    actualizarLogo,
+                    usuario);
 
                 return Json(new { ok = true, mensaje = "Configuración guardada correctamente." });
             }

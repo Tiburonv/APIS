@@ -24,12 +24,25 @@ namespace APIS
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
+
+            // Inyeccion de dependencias (Fase 1) y registro de inicio
+            APIS.DependencyConfig.Inicializar();
+            APIS.Servicios.Log.Info("APIS iniciado (Application_Start).");
         }
 
         protected void Application_BeginRequest()
         {
             Response.ContentEncoding = System.Text.Encoding.UTF8;
             Response.HeaderEncoding = System.Text.Encoding.UTF8;
+        }
+
+        protected void Application_Error(object sender, EventArgs e)
+        {
+            var ex = Server.GetLastError();
+            if (ex != null)
+            {
+                APIS.Servicios.Log.Error("Excepcion no controlada", ex);
+            }
         }
 
         protected void Application_PostAcquireRequestState(object sender, EventArgs e)

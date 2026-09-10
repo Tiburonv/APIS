@@ -1,15 +1,23 @@
-﻿using APIS.ADO;
-using APIS.Models;
-using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Linq;
 using System.Web.Mvc;
+using APIS.Models;
+using APIS.Repositorios;
 
 namespace APIS.Controllers
 {
     public class PreciosController : Controller
     {
+        private readonly IPreciosRepositorio _precios;
+
+        public PreciosController() : this(new PreciosRepositorio())
+        {
+        }
+
+        public PreciosController(IPreciosRepositorio precios)
+        {
+            _precios = precios;
+        }
         protected override void OnActionExecuting(ActionExecutingContext filterContext)
         {
             var usuario = Session["Usuario"] as string;
@@ -44,16 +52,8 @@ namespace APIS.Controllers
         [HttpGet]
         public JsonResult ListarCategorias()
         {
-            using (var db = new A_ZULIA_12Entities())
-            {
-                var categorias = db.Database.SqlQuery<CategoriaViewModel>(
-                    "SELECT RTRIM(co_cat) AS co_cat, RTRIM(cat_des) AS cat_des " +
-                    "FROM saCatArticulo " +
-                    "ORDER BY cat_des"
-                ).ToList();
-
-                return Json(categorias, JsonRequestBehavior.AllowGet);
-            }
+            var categorias = _precios.ListarCategorias();
+            return Json(categorias, JsonRequestBehavior.AllowGet);
         }
 
         [HttpGet]
@@ -73,30 +73,22 @@ namespace APIS.Controllers
                 coCatLimpia = null;
             }
 
-            using (var db = new A_ZULIA_12Entities())
-            {
-                var paramBusqueda = new SqlParameter("@busqueda", (object)busquedaLimpia ?? DBNull.Value);
-                var paramCoCat = new SqlParameter("@co_cat", (object)coCatLimpia ?? DBNull.Value);
-                resultados = db.Database.SqlQuery<PreciosViewModel>(
-                    "EXEC buscarPrecios @busqueda, @co_cat", paramBusqueda, paramCoCat
-                ).ToList();
-            }
-
-            var data = resultados.Select(x => new
-            {
-                co_art = x.co_art,
-                art_des = x.art_des,
-                co_cat = x.co_cat,
-                cat_des = x.cat_des,
-                tipo_imp = x.tipo_imp,
-                iva = x.iva,
-                precio1 = x.Precio1,
-                precio2 = x.Precio2,
-                precio3 = x.Precio3,
-                precio4 = x.Precio4,
-                precio5 = x.Precio5,
-                tasa = x.tasa
-            });
+            var data = _precios.BuscarPrecios(busquedaLimpia, coCatLimpia)
+                .Select(x => new
+                {
+                    co_art = x.co_art,
+                    art_des = x.art_des,
+                    co_cat = x.co_cat,
+                    cat_des = x.cat_des,
+                    tipo_imp = x.tipo_imp,
+                    iva = x.iva,
+                    precio1 = x.Precio1,
+                    precio2 = x.Precio2,
+                    precio3 = x.Precio3,
+                    precio4 = x.Precio4,
+                    precio5 = x.Precio5,
+                    tasa = x.tasa
+                });
 
             return Json(data, JsonRequestBehavior.AllowGet);
         }

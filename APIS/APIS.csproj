@@ -212,8 +212,17 @@
     <Compile Include="ADO\ZCotizacionRengNB.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
+    <Compile Include="Repositorios\IDocumentosCPRepositorio.cs" />
+    <Compile Include="Repositorios\DocumentosCPRepositorio.cs" />
+    <Compile Include="Repositorios\ClienteRepositorio.cs" />
+    <Compile Include="Repositorios\ImagenesRepositorio.cs" />
+    <Compile Include="Repositorios\ConfigEmpresaRepositorio.cs" />
+    <Compile Include="Repositorios\IPreciosRepositorio.cs" />
+    <Compile Include="Repositorios\PreciosRepositorio.cs" />
+    <Compile Include="Servicios\Log.cs" />
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
+    <Compile Include="App_Start\DependencyConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Content Include="browserconfig.xml" />
     <Content Include="Content\Imagen\generarIconosPWA.html" />

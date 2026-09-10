@@ -175,7 +175,7 @@ namespace APIS.Controllers
             catch (Exception ex)
             {
                 // No exponer el detalle tecnico al usuario; solo registrarlo en el servidor
-                System.Diagnostics.Debug.WriteLine("Error Login: " + ex.ToString());
+                APIS.Servicios.Log.Error("Error Login", ex);
                 ViewBag.Error = "Error interno al validar el usuario. Intente nuevamente o contacte al administrador.";
                 ViewBag.Username = username;
                 ViewBag.ReturnUrl = returnUrl;

@@ -302,8 +302,7 @@ public class PagoController : Controller
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"Error al validar pago: {ex.Message}");
-            System.Diagnostics.Debug.WriteLine($"Stack trace: {ex.StackTrace}");
+            APIS.Servicios.Log.Error("Error al validar pago", ex);
             return Json(new { success = false, message = "Error al validar el pago. Intente nuevamente." });
         }
     }
